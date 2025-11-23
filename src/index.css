@@ -94,7 +94,7 @@ button {
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 14px;
   border: none;
   background: none;
   padding: 0;
@@ -237,6 +237,8 @@ h4 {
   box-shadow: 2px 2px 0px rgba(31, 26, 20, 0.15);
   font-weight: 600;
   font-size: 0.82rem;
+  color: var(--ink);
+  -webkit-text-fill-color: var(--ink);
   cursor: pointer;
   transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.1s ease;
 }
@@ -261,6 +263,7 @@ h4 {
   background: #e0f2f1;
   border-color: var(--pine);
   color: var(--pine);
+  -webkit-text-fill-color: var(--pine);
 }
 
 .pill.reset {
