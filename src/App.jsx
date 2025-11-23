@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import posts, { uniqueTags } from './posts';
+import logoMark from './assets/mohsin.png';
 
 const POSTS_PER_PAGE = 10;
 
@@ -13,6 +14,11 @@ const formatDate = (value) =>
 const Header = ({ label, onReset }) => (
   <header className="top-bar">
     <button className="brand" type="button" onClick={onReset} aria-label="Reset tag filter">
+      <span className="brand-mark">
+        <span className="brand-mark-inner">
+          <img src={logoMark} alt="Mohsin Ismail logo" />
+        </span>
+      </span>
       <span className="brand-name">{label}</span>
     </button>
     <a className="btn outline about" href="#about">
@@ -124,6 +130,19 @@ const AboutPanel = () => (
 function App() {
   const [selectedTags, setSelectedTags] = useState([]);
   const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    document.title = 'Mohsin Ismail';
+
+    const existingIcon = document.querySelector('link[rel="icon"]');
+    const icon = existingIcon || document.createElement('link');
+    icon.rel = 'icon';
+    icon.type = 'image/png';
+    icon.href = logoMark;
+    if (!existingIcon) {
+      document.head.appendChild(icon);
+    }
+  }, []);
 
   useEffect(() => {
     setPage(1);
