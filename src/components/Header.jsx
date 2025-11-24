@@ -21,9 +21,9 @@ const ChevronUpIcon = () => (
   </svg>
 );
 
-const ChevronLeftIcon = () => (
+const ChevronRightIcon = () => (
   <svg className="icon" viewBox="0 0 14 16" aria-hidden="true" focusable="false">
-    <path d="M9.5 3L4 8l5.5 5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    <path d="M4.5 3L10 8l-5.5 5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
   </svg>
 );
 
@@ -93,7 +93,7 @@ const Header = ({ label, onLogoClick }) => {
           aria-label={isOpen ? 'Hide navigation' : 'Show navigation'}
           onClick={toggleMenu}
         >
-          {isMobile ? (isOpen ? <ChevronUpIcon /> : <EllipsisIcon />) : isOpen ? <ChevronLeftIcon /> : <EllipsisIcon />}
+          {isMobile ? (isOpen ? <ChevronUpIcon /> : <EllipsisIcon />) : isOpen ? <ChevronRightIcon /> : <EllipsisIcon />}
         </button>
       </div>
       <div
