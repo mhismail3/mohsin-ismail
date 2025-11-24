@@ -75,20 +75,6 @@ function Home({ selectedTags, setSelectedTags, page, setPage }) {
     <div className="frame">
       <Header label={displayLabel} onLogoClick={resetTags} />
 
-      <section className="panel hero">
-        <div className="eyebrow">Filter by Tag</div>
-        {uniqueTags.length > 0 && (
-          <div className="filter-row">
-            <TagCloud
-              tags={uniqueTags}
-              selectedTags={selectedTags}
-              onToggle={handleTagToggle}
-              onClear={resetTags}
-            />
-          </div>
-        )}
-      </section>
-
       <section className="panel posts-panel">
         <div className="panel-head">
           <div>
@@ -130,6 +116,20 @@ function Home({ selectedTags, setSelectedTags, page, setPage }) {
         </div>
 
         <Pagination page={page} totalPages={totalPages} onPrev={handlePrev} onNext={handleNext} />
+      </section>
+
+      <section className="panel hero">
+        <div className="eyebrow">Filter by Tag</div>
+        {uniqueTags.length > 0 && (
+          <div className="filter-row">
+            <TagCloud
+              tags={uniqueTags}
+              selectedTags={selectedTags}
+              onToggle={handleTagToggle}
+              onClear={resetTags}
+            />
+          </div>
+        )}
       </section>
 
       <AboutPanel />
