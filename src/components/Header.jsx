@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import logoMark from '../assets/mohsin.png';
 
@@ -34,21 +34,37 @@ const Header = ({ label, onLogoClick }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const menuRef = useRef(null);
+  const menuContentRef = useRef(null);
 
   useEffect(() => {
     setIsOpen(false);
   }, [location.pathname]);
 
-  useEffect(() => {
-    const measure = () => {
-      if (menuRef.current) {
-        setMenuHeight(menuRef.current.scrollHeight);
-      }
-    };
-    measure();
-    window.addEventListener('resize', measure);
-    return () => window.removeEventListener('resize', measure);
+  const syncMenuHeight = useCallback(() => {
+    if (!menuContentRef.current) return;
+    const nextHeight = menuContentRef.current.scrollHeight;
+    setMenuHeight((prev) => (prev === nextHeight ? prev : nextHeight));
   }, []);
+
+  useLayoutEffect(() => {
+    syncMenuHeight();
+
+    const resizeObserver =
+      typeof ResizeObserver !== 'undefined' && menuContentRef.current
+        ? new ResizeObserver(syncMenuHeight)
+        : null;
+
+    window.addEventListener('resize', syncMenuHeight);
+
+    if (resizeObserver && menuContentRef.current) {
+      resizeObserver.observe(menuContentRef.current);
+    }
+
+    return () => {
+      window.removeEventListener('resize', syncMenuHeight);
+      if (resizeObserver) resizeObserver.disconnect();
+    };
+  }, [syncMenuHeight]);
 
   useEffect(() => {
     const setMatches = () => {
@@ -62,12 +78,6 @@ const Header = ({ label, onLogoClick }) => {
     media.addEventListener('change', handler);
     return () => media.removeEventListener('change', handler);
   }, []);
-
-  useEffect(() => {
-    if (menuRef.current) {
-      setMenuHeight(menuRef.current.scrollHeight);
-    }
-  }, [isOpen]);
 
   const handleHome = () => {
     if (onLogoClick) {
@@ -87,7 +97,10 @@ const Header = ({ label, onLogoClick }) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const toggleMenu = () => setIsOpen((value) => !value);
+  const toggleMenu = () => {
+    syncMenuHeight();
+    setIsOpen((value) => !value);
+  };
 
   const headerClass = `top-bar ${isOpen ? 'expanded' : ''} ${isMobile ? '' : 'flyout'}`;
   const menuClass = `top-menu ${isOpen ? 'visible' : ''} ${isMobile ? '' : 'desktop'}`;
@@ -117,18 +130,20 @@ const Header = ({ label, onLogoClick }) => {
         className={menuClass}
         aria-hidden={!isOpen}
         ref={menuRef}
-        style={isMobile ? { '--menu-height': `${menuHeight}px` } : undefined}
+        style={isMobile ? { '--menu-height': `${Math.max(menuHeight, 1)}px` } : undefined}
       >
-        {NAV_LINKS.map((link) => (
-          <button
-            key={link.path}
-            type="button"
-            className={`btn outline small ${location.pathname === link.path ? 'active' : ''}`}
-            onClick={() => handleNav(link.path)}
-          >
-            {link.label}
-          </button>
-        ))}
+        <div className="top-menu-content" ref={menuContentRef}>
+          {NAV_LINKS.map((link) => (
+            <button
+              key={link.path}
+              type="button"
+              className={`btn outline small ${location.pathname === link.path ? 'active' : ''}`}
+              onClick={() => handleNav(link.path)}
+            >
+              {link.label}
+            </button>
+          ))}
+        </div>
       </div>
     </header>
   );
