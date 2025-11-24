@@ -252,11 +252,11 @@ button {
 }
 
 .top-menu.mobile .btn:nth-child(1) {
-  --btn-stagger: 20ms;
+  --btn-stagger: 30ms;
 }
 
 .top-menu.mobile .btn:nth-child(2) {
-  --btn-stagger: 90ms;
+  --btn-stagger: 80ms;
 }
 
 .top-menu.desktop .btn {
