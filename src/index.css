@@ -25,7 +25,8 @@
 
 html {
   min-height: 100%;
-  background: linear-gradient(135deg, #f9f5eb 0%, #f6f1e6 45%, #eef5f3 100%);
+  background-color: #f9f5eb;
+  background-image: linear-gradient(135deg, #f9f5eb 0%, #f6f1e6 45%, #eef5f3 100%);
 }
 
 body {
@@ -33,7 +34,10 @@ body {
   min-height: 100vh;
   min-height: 100dvh;
   font-family: 'Newsreader', serif;
-  background: inherit;
+  background-color: #f9f5eb;
+  background-image: linear-gradient(135deg, #f9f5eb 0%, #f6f1e6 45%, #eef5f3 100%);
+  background-repeat: no-repeat;
+  background-size: cover;
   color: var(--ink);
   line-height: 1.6;
 }
@@ -85,19 +89,6 @@ button {
     var(--cream);
   filter: contrast(105%);
   z-index: 0;
-}
-
-.glass-gradient {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(to bottom, rgba(248, 243, 232, 0.92) 0%, rgba(248, 243, 232, 0.55) 14%, rgba(248, 243, 232, 0) 34%),
-    linear-gradient(to top, rgba(248, 243, 232, 0.92) 0%, rgba(248, 243, 232, 0.55) 14%, rgba(248, 243, 232, 0) 34%);
-  backdrop-filter: blur(22px) saturate(140%);
-  -webkit-backdrop-filter: blur(22px) saturate(140%);
-  z-index: 0;
-  opacity: 0;
 }
 
 .top-bar {
