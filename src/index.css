@@ -94,12 +94,12 @@ button {
 }
 
 .top-bar.expanded {
-  padding-bottom: 16px;
+  /* padding-bottom: 16px; Removed to reduce layout thrashing */
   box-shadow: 0 16px 42px rgba(31, 26, 20, 0.12);
 }
 
 .top-bar.flyout.expanded {
-  padding-bottom: 14px; /* Reset to original padding */
+  /* padding-bottom: 14px; Reset to original padding */
   box-shadow: 0 12px 30px rgba(31, 26, 20, 0.08); /* Reset to original shadow */
 }
 
@@ -131,21 +131,23 @@ button {
   pointer-events: none;
   transform: translateY(-8px);
   max-height: 0;
+  padding-top: 0;
   overflow: hidden;
   will-change: max-height, opacity, transform;
   transition:
     max-height 0.32s cubic-bezier(0.2, 0.8, 0.2, 1),
+    padding-top 0.32s cubic-bezier(0.2, 0.8, 0.2, 1),
     opacity 0.22s ease,
-    transform 0.26s ease,
-    margin-top 0.24s ease;
+    transform 0.26s ease;
 }
 
 .top-menu.visible {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
-  max-height: var(--menu-height, 140px);
-  margin-top: 10px;
+  max-height: calc(var(--menu-height, 140px) + 12px);
+  padding-top: 12px;
+  margin-top: 0;
   overflow: visible;
 }
 
@@ -157,6 +159,7 @@ button {
   gap: 8px;
   transform: translateY(-50%) translateX(40px) scale(0.92);
   margin-top: 0;
+  padding-top: 0;
   max-height: none;
   overflow: visible;
   transition:
