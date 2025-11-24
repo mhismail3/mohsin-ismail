@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './Home';
 import PostPage from './PostPage';
+import AboutPage from './AboutPage';
+import PortfolioPage from './PortfolioPage';
+import ProjectPage from './ProjectPage';
 import logoMark from './assets/mohsin.png';
 
 function App() {
@@ -44,6 +47,9 @@ function App() {
             }
           />
           <Route path="/posts/:slug" element={<PostPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/portfolio" element={<PortfolioPage />} />
+          <Route path="/portfolio/:slug" element={<ProjectPage />} />
         </Routes>
       </div>
     </Router>
