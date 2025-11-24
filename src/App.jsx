@@ -33,7 +33,6 @@ function App() {
   return (
     <Router>
       <div className="app">
-        <div className="grain" aria-hidden="true" />
         <Routes>
           <Route
             path="/"
