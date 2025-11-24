@@ -15,7 +15,7 @@ const processProject = (project, index) => ({
   ...project,
   id: `${project.title}-${index}`,
   // Keep the image optimization params
-  image: `${project.image}?auto=format&fit=crop&w=1400&q=80&sat=-5&ixlib=rb-4.0.3`,
+  image: `${project.image}?auto=format&fit=max&w=1400&q=80&sat=-5&ixlib=rb-4.0.3`,
 });
 
 const PortfolioPage = () => {
@@ -129,7 +129,6 @@ const PortfolioPage = () => {
                   to={`/portfolio/${project.slug}`}
                   key={project.id}
                   className="project-card"
-                  style={{ '--card-aspect': project.aspect }}
                 >
                   <div className="project-media">
                     <img
