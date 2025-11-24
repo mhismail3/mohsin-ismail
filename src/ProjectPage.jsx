@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Header from './components/Header';
+import AboutPanel from './components/AboutPanel';
 import portfolioProjects from './portfolioProjects';
 
 const ProjectPage = () => {
@@ -152,6 +153,7 @@ const ProjectPage = () => {
             </div>
         </div>
       )}
+      <AboutPanel />
     </div>
   );
 };

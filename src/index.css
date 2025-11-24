@@ -300,6 +300,12 @@ h4 {
   font-size: 0.95rem;
 }
 
+.btn.tldr-toggle {
+  width: 70px;
+  padding-left: 0;
+  padding-right: 0;
+}
+
 .btn.outline {
   background: #ffffff;
 }
@@ -477,7 +483,26 @@ h4 {
 }
 
 .about-panel p {
-  margin: 0 0 0.6rem;
+  margin: 0;
+}
+
+.about-header {
+  display: flex;
+  align-items: center; /* key for vertical alignment */
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.read-more-link {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--muted);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.read-more-link:hover {
+  color: var(--aero);
+  transform: translateX(4px);
 }
 
 .about-panel h2 {
@@ -726,18 +751,23 @@ h4 {
 }
 
 .post-page-head .eyebrow {
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.3rem;
 }
 
 .post-page .post-title {
   font-size: clamp(2rem, 5vw, 2.8rem);
-  margin-bottom: 1.2rem;
+  margin-bottom: 0.5rem;
   line-height: 1.15;
 }
 
+.post-page-head .tag-row {
+  margin-top: 0.4rem;
+  margin-bottom: 0;
+}
+
 .post-body.full-content {
-  font-size: 1.12rem;
-  line-height: 1.75;
+  font-size: 1.05rem;
+  line-height: 1.6;
   border-top: none;
   margin-top: 0;
   padding-top: 0;
@@ -783,7 +813,7 @@ h4 {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 0.1rem 0 0.2rem;
+  margin: 0;
   flex-wrap: wrap;
   row-gap: 8px;
 }

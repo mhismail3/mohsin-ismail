@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from './components/Header';
+import AboutPanel from './components/AboutPanel';
 import portfolioProjects from './portfolioProjects';
 
 const MOBILE_PAGE_SIZE = 4; // Kept for reference if needed, but removing pagination
@@ -149,6 +150,7 @@ const PortfolioPage = () => {
 
         {hasMore && <div ref={sentinelRef} className="scroll-sentinel" aria-hidden="true" />}
       </section>
+      <AboutPanel />
     </div>
   );
 };

@@ -1,12 +1,16 @@
 import React from 'react';
-import AboutContent from './AboutContent';
+import { Link } from 'react-router-dom';
 
 const AboutPanel = () => (
   <section id="about" className="panel about-panel">
-    <AboutContent />
+    <div className="about-header">
+      <div className="eyebrow">About Mohsin</div>
+      <Link to="/about" className="read-more-link">
+        Read More &rarr;
+      </Link>
+    </div>
+    <p>I focus on all of the details.</p>
   </section>
 );
 
 export default AboutPanel;
-
-
