@@ -86,6 +86,7 @@ button {
   backdrop-filter: blur(22px) saturate(140%);
   -webkit-backdrop-filter: blur(22px) saturate(140%);
   z-index: 0;
+  opacity: 0;
 }
 
 .top-bar {
