@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Header from './components/Header';
 import AboutPanel from './components/AboutPanel';
@@ -8,11 +8,19 @@ const ProjectPage = () => {
   const { slug } = useParams();
   const project = portfolioProjects.find((p) => p.slug === slug);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [activeIndex, setActiveIndex] = useState(0);
   const carouselRef = useRef(null);
   const requestRef = useRef(null);
+  const activeRafRef = useRef(null);
   const mouseXRef = useRef(0);
   const isHoveringRef = useRef(false);
   const [isTouch, setIsTouch] = useState(false);
+  const itemRefs = useRef([]);
+
+  const carouselImages = useMemo(() => {
+    if (!project) return [];
+    return [project.image, ...(project.gallery || [])];
+  }, [project]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -29,6 +37,59 @@ const ProjectPage = () => {
     media.addEventListener('change', handler);
     return () => media.removeEventListener('change', handler);
   }, []);
+
+  useEffect(() => {
+    // Reset refs and active state when switching projects
+    itemRefs.current = [];
+    setActiveIndex(0);
+  }, [project]);
+
+  const updateActiveItem = useCallback(() => {
+    const track = carouselRef.current;
+    if (!track || !carouselImages.length) return;
+
+    const centerX = track.scrollLeft + track.clientWidth / 2;
+
+    let closestIndex = 0;
+    let smallestDistance = Number.POSITIVE_INFINITY;
+
+    itemRefs.current.forEach((node, idx) => {
+      if (!node) return;
+      const itemCenter = node.offsetLeft + node.offsetWidth / 2;
+      const distance = Math.abs(itemCenter - centerX);
+      if (distance < smallestDistance) {
+        smallestDistance = distance;
+        closestIndex = idx;
+      }
+    });
+
+    setActiveIndex((prev) => (prev === closestIndex ? prev : closestIndex));
+  }, [carouselImages.length]);
+
+  useEffect(() => {
+    const id = requestAnimationFrame(updateActiveItem);
+    return () => cancelAnimationFrame(id);
+  }, [updateActiveItem, carouselImages.length]);
+
+  const handleScroll = useCallback(() => {
+    if (activeRafRef.current) return;
+    activeRafRef.current = requestAnimationFrame(() => {
+      activeRafRef.current = null;
+      updateActiveItem();
+    });
+  }, [updateActiveItem]);
+
+  useEffect(() => {
+    const handleResize = () => updateActiveItem();
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (activeRafRef.current) {
+        cancelAnimationFrame(activeRafRef.current);
+        activeRafRef.current = null;
+      }
+    };
+  }, [updateActiveItem]);
 
   // Carousel Animation Logic
   const animate = () => {
@@ -57,7 +118,7 @@ const ProjectPage = () => {
 
   useEffect(() => {
     if (!isTouch) {
-        requestRef.current = requestAnimationFrame(animate);
+    requestRef.current = requestAnimationFrame(animate);
     }
     return () => {
         if (requestRef.current) cancelAnimationFrame(requestRef.current);
@@ -119,24 +180,16 @@ const ProjectPage = () => {
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
         >
-            <div className="carousel-track" ref={carouselRef}>
-                {/* Main image first */}
-                <button 
-                    type="button" 
-                    className="carousel-item" 
-                    onClick={() => setSelectedImage(project.image)}
-                >
-                    <img src={project.image} alt={`${project.title} main`} loading="lazy" />
-                </button>
-                {/* Gallery images */}
-                {project.gallery && project.gallery.map((img, idx) => (
+            <div className="carousel-track" ref={carouselRef} onScroll={handleScroll}>
+                {carouselImages.map((img, idx) => (
                     <button 
-                        key={idx} 
+                        key={`${project.slug}-${idx}`} 
                         type="button" 
-                        className="carousel-item"
+                        className={`carousel-item ${activeIndex === idx ? 'is-active' : ''}`}
                         onClick={() => setSelectedImage(img)}
+                        ref={(el) => { itemRefs.current[idx] = el; }}
                     >
-                        <img src={img} alt={`${project.title} ${idx + 1}`} loading="lazy" />
+                        <img src={img} alt={`${project.title} ${idx === 0 ? 'main' : `image ${idx + 1}`}`} loading="lazy" />
                     </button>
                 ))}
             </div>
@@ -159,4 +212,3 @@ const ProjectPage = () => {
 };
 
 export default ProjectPage;
-
