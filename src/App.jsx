@@ -34,6 +34,7 @@ function App() {
     <Router>
       <div className="app">
         <div className="grain" aria-hidden="true" />
+        <div className="glass-gradient" aria-hidden="true" />
         <Routes>
           <Route
             path="/"

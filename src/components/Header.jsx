@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import logoMark from '../assets/mohsin.png';
 
@@ -29,42 +29,13 @@ const ChevronLeftIcon = () => (
 
 const Header = ({ label, onLogoClick }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [menuHeight, setMenuHeight] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const menuRef = useRef(null);
-  const menuContentRef = useRef(null);
 
   useEffect(() => {
     setIsOpen(false);
   }, [location.pathname]);
-
-  const syncMenuHeight = useCallback(() => {
-    if (!menuContentRef.current) return;
-    const nextHeight = menuContentRef.current.scrollHeight;
-    setMenuHeight((prev) => (prev === nextHeight ? prev : nextHeight));
-  }, []);
-
-  useLayoutEffect(() => {
-    syncMenuHeight();
-
-    const resizeObserver =
-      typeof ResizeObserver !== 'undefined' && menuContentRef.current
-        ? new ResizeObserver(syncMenuHeight)
-        : null;
-
-    window.addEventListener('resize', syncMenuHeight);
-
-    if (resizeObserver && menuContentRef.current) {
-      resizeObserver.observe(menuContentRef.current);
-    }
-
-    return () => {
-      window.removeEventListener('resize', syncMenuHeight);
-      if (resizeObserver) resizeObserver.disconnect();
-    };
-  }, [syncMenuHeight]);
 
   useEffect(() => {
     const setMatches = () => {
@@ -98,12 +69,11 @@ const Header = ({ label, onLogoClick }) => {
   };
 
   const toggleMenu = () => {
-    syncMenuHeight();
     setIsOpen((value) => !value);
   };
 
-  const headerClass = `top-bar ${isOpen ? 'expanded' : ''} ${isMobile ? '' : 'flyout'}`;
-  const menuClass = `top-menu ${isOpen ? 'visible' : ''} ${isMobile ? '' : 'desktop'}`;
+  const headerClass = `top-bar ${isOpen && !isMobile ? 'expanded' : ''} ${isMobile ? '' : 'flyout'}`;
+  const menuClass = `top-menu ${isOpen ? 'visible' : ''} ${isMobile ? 'mobile' : 'desktop'}`;
 
   return (
     <header className={headerClass}>
@@ -129,10 +99,8 @@ const Header = ({ label, onLogoClick }) => {
       <div
         className={menuClass}
         aria-hidden={!isOpen}
-        ref={menuRef}
-        style={isMobile ? { '--menu-height': `${Math.max(menuHeight, 1)}px` } : undefined}
       >
-        <div className="top-menu-content" ref={menuContentRef}>
+        <div className="top-menu-content">
           {NAV_LINKS.map((link) => (
             <button
               key={link.path}

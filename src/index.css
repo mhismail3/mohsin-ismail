@@ -76,6 +76,18 @@ button {
   z-index: 0;
 }
 
+.glass-gradient {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to bottom, rgba(248, 243, 232, 0.92) 0%, rgba(248, 243, 232, 0.55) 14%, rgba(248, 243, 232, 0) 34%),
+    linear-gradient(to top, rgba(248, 243, 232, 0.92) 0%, rgba(248, 243, 232, 0.55) 14%, rgba(248, 243, 232, 0) 34%);
+  backdrop-filter: blur(22px) saturate(140%);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  z-index: 0;
+}
+
 .top-bar {
   display: flex;
   flex-direction: column;
@@ -89,6 +101,7 @@ button {
   border-radius: 14px;
   box-shadow: 0 12px 30px rgba(31, 26, 20, 0.08);
   backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   z-index: 3;
   transition: padding 0.22s ease, box-shadow 0.22s ease;
   overflow-anchor: none;
@@ -124,45 +137,49 @@ button {
 }
 
 .top-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 14px;
   display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(31, 26, 20, 0.15);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 8px;
   opacity: 0;
   pointer-events: none;
-  transform: translateY(-8px);
-  max-height: 0;
-  padding-top: 0;
-  overflow: hidden;
-  will-change: max-height, opacity, transform;
-  transition:
-    max-height 0.32s cubic-bezier(0.2, 0.8, 0.2, 1),
-    padding-top 0.32s cubic-bezier(0.2, 0.8, 0.2, 1),
-    opacity 0.22s ease,
-    transform 0.26s ease;
+  transform: translateY(-12px) scale(0.92);
+  transform-origin: top right;
+  transition: opacity 0.2s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 20;
+  min-width: 140px;
 }
 
 .top-menu.visible {
   opacity: 1;
   pointer-events: auto;
-  transform: translateY(0);
-  max-height: calc(var(--menu-height, 140px) + 12px);
-  padding-top: 12px;
-  margin-top: 0;
-  overflow: visible;
+  transform: translateY(0) scale(1);
 }
 
 .top-menu.desktop {
   position: absolute;
   top: 50%;
   right: 90px;
-  flex-wrap: nowrap;
+  flex-direction: row;
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  padding: 0;
   gap: 8px;
   transform: translateY(-50%) translateX(40px) scale(0.92);
-  margin-top: 0;
-  padding-top: 0;
-  max-height: none;
-  overflow: visible;
+  min-width: 0;
   transition:
     transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
     opacity 0.3s ease;
@@ -174,9 +191,9 @@ button {
 
 .top-menu-content {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  width: 100%;
+  gap: 6px;
 }
 
 .top-menu.desktop.visible {
@@ -186,8 +203,44 @@ button {
 }
 
 .top-menu.desktop .top-menu-content {
-  flex-wrap: nowrap;
+  flex-direction: row;
   gap: 8px;
+  width: auto;
+}
+
+.top-menu.mobile {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  min-width: auto;
+  right: 14px;
+  top: calc(100% - 5px);
+  gap: 10px;
+  transform: translateY(-8px);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  align-items: flex-end;
+  transition:
+    opacity 0.18s ease,
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.top-menu.mobile .top-menu-content {
+  width: auto;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.top-menu.mobile .btn {
+  min-width: auto;
+  box-shadow: 3px 3px 0px var(--ink);
+  padding-left: 0.9rem;
+  padding-right: 0.9rem;
+}
+
+.top-menu.mobile.visible {
+  transform: translateY(0);
 }
 
 .brand {
@@ -266,6 +319,7 @@ h4 {
   padding: 1.4rem 1.35rem;
   box-shadow: 0 20px 50px rgba(31, 26, 20, 0.08);
   backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 }
 
 .hero h1 {
@@ -688,10 +742,6 @@ h4 {
     font-size: 1.65rem;
   }
 
-  .top-menu {
-    width: 100%;
-  }
-
   .panel {
     padding: 1.2rem 1.05rem;
   }
@@ -1104,6 +1154,7 @@ h4 {
   z-index: 100;
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: grid;
   place-items: center;
   padding: 20px;
