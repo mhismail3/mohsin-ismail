@@ -77,7 +77,7 @@ const PostCard = ({ post, onTagClick }) => {
           className="btn outline small"
           onClick={() => setExpanded((open) => !open)}
         >
-          {expanded ? 'Hide post' : 'Read post'}
+          {expanded ? 'Hide' : 'TL;DR'}
         </button>
       </div>
 
