@@ -12,10 +12,11 @@ tags:
   - Markdown
   - GitHub Pages
 status: Archived
-cover: cover.png
+cover: cover.jpeg
 gallery:
   - gallery-1.png
   - gallery-2.png
+  - gallery-3.png
 ---
 
 Before I made the current site you're on, I rebuilt my old portfolio as a static Astro site so the projects from my earlier years stay discoverable.
