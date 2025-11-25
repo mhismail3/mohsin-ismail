@@ -776,7 +776,7 @@ h4 {
 @media (hover: hover) and (pointer: fine) {
   .post-body img:hover {
     transform: translateY(-4px);
-    box-shadow: 12px 16px 14px rgba(31, 26, 20, 0.58);
+    box-shadow: 4px 12px 8px rgba(31, 26, 20, 0.70);
   }
 
   .post-body img:active {
