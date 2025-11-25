@@ -54,6 +54,18 @@ const Header = ({ label, onLogoClick }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
+  // Close menu on scroll
+  useEffect(() => {
+    if (!isOpen || isClosing) return;
+
+    const handleScroll = () => {
+      closeMenu();
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isOpen, isClosing, closeMenu]);
+
   useEffect(() => {
     const setMatches = () => {
       if (typeof window === 'undefined') return;

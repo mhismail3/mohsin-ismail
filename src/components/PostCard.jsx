@@ -9,8 +9,8 @@ const PostCard = ({ post, onTagClick, selectedTags = [] }) => {
 
   const handleCopyLink = async (e) => {
     e.stopPropagation();
-    // Construct the URL (works for both dev and prod if routing is correct)
-    const url = `${window.location.origin}/posts/${post.slug}`;
+    // Construct the URL with hash for HashRouter
+    const url = `${window.location.origin}/#/posts/${post.slug}`;
     try {
       await navigator.clipboard.writeText(url);
       setShowToast(true);
