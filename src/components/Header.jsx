@@ -8,27 +8,7 @@ const NAV_LINKS = [
 ];
 
 // Duration for the longest close animation (matches CSS)
-const CLOSE_ANIMATION_DURATION = 180;
-
-const EllipsisIcon = () => (
-  <svg className="icon" viewBox="0 0 32 10" aria-hidden="true" focusable="false">
-    <circle cx="6" cy="5" r="2.1" />
-    <circle cx="16" cy="5" r="2.1" />
-    <circle cx="26" cy="5" r="2.1" />
-  </svg>
-);
-
-const ChevronUpIcon = () => (
-  <svg className="icon" viewBox="0 0 20 12" aria-hidden="true" focusable="false">
-    <path d="M3 9L10 2l7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-  </svg>
-);
-
-const ChevronRightIcon = () => (
-  <svg className="icon" viewBox="0 0 14 16" aria-hidden="true" focusable="false">
-    <path d="M4.5 3L10 8l-5.5 5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-  </svg>
-);
+const CLOSE_ANIMATION_DURATION = 220;
 
 const Header = ({ label, onLogoClick }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -138,7 +118,22 @@ const Header = ({ label, onLogoClick }) => {
           aria-label={isOpen ? 'Hide navigation' : 'Show navigation'}
           onClick={toggleMenu}
         >
-          {isMobile ? (isOpen ? <ChevronUpIcon /> : <EllipsisIcon />) : isOpen ? <ChevronRightIcon /> : <EllipsisIcon />}
+          <span className="toggle-icon-wrap">
+            <svg className={`icon toggle-icon ellipsis ${!isOpen ? 'visible' : ''}`} viewBox="0 0 32 10" aria-hidden="true" focusable="false">
+              <circle cx="6" cy="5" r="2.1" />
+              <circle cx="16" cy="5" r="2.1" />
+              <circle cx="26" cy="5" r="2.1" />
+            </svg>
+            {isMobile ? (
+              <svg className={`icon toggle-icon chevron-up ${isOpen ? 'visible' : ''}`} viewBox="0 0 20 12" aria-hidden="true" focusable="false">
+                <path d="M3 9L10 2l7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            ) : (
+              <svg className={`icon toggle-icon chevron-right ${isOpen ? 'visible' : ''}`} viewBox="0 0 14 16" aria-hidden="true" focusable="false">
+                <path d="M4.5 3L10 8l-5.5 5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            )}
+          </span>
         </button>
       </div>
       <div

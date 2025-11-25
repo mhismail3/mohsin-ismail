@@ -264,10 +264,10 @@ button {
   padding-left: 0.9rem;
   padding-right: 0.9rem;
   opacity: 0;
-  transform: translateY(-8px) scale(0.96);
+  transform: translateY(-10px) scale(0.94);
   transition:
-    opacity 0.18s ease,
-    transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+    opacity 0.22s ease,
+    transform 0.42s cubic-bezier(0.34, 1.56, 0.64, 1);
   transition-delay: var(--btn-stagger, 0ms);
 }
 
@@ -281,25 +281,25 @@ button {
 }
 
 .top-menu.mobile .btn:nth-child(1) {
-  --btn-stagger: 30ms;
+  --btn-stagger: 40ms;
 }
 
 .top-menu.mobile .btn:nth-child(2) {
-  --btn-stagger: 80ms;
+  --btn-stagger: 100ms;
 }
 
 /* Mobile closing animation - reversed stagger */
 .top-menu.mobile.closing .btn {
   opacity: 0;
-  transform: translateY(-8px) scale(0.96);
+  transform: translateY(-10px) scale(0.94);
   transition:
-    opacity 0.12s ease,
-    transform 0.18s cubic-bezier(0.55, 0, 0.85, 0.36);
+    opacity 0.15s ease,
+    transform 0.22s cubic-bezier(0.55, 0, 0.85, 0.36);
   transition-delay: var(--btn-stagger-close, 0ms);
 }
 
 .top-menu.mobile.closing .btn:nth-child(1) {
-  --btn-stagger-close: 50ms;
+  --btn-stagger-close: 60ms;
 }
 
 .top-menu.mobile.closing .btn:nth-child(2) {
@@ -308,10 +308,10 @@ button {
 
 .top-menu.desktop .btn {
   opacity: 0;
-  transform: translateX(-12px) scale(0.96);
+  transform: translateX(-14px) scale(0.94);
   transition:
-    opacity 0.2s ease,
-    transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+    opacity 0.24s ease,
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   transition-delay: var(--btn-stagger, 0ms);
 }
 
@@ -321,25 +321,25 @@ button {
 }
 
 .top-menu.desktop .btn:nth-child(1) {
-  --btn-stagger: 30ms;
+  --btn-stagger: 40ms;
 }
 
 .top-menu.desktop .btn:nth-child(2) {
-  --btn-stagger: 60ms;
+  --btn-stagger: 80ms;
 }
 
 /* Desktop closing animation - reversed stagger */
 .top-menu.desktop.closing .btn {
   opacity: 0;
-  transform: translateX(20px) scale(0.96);
+  transform: translateX(20px) scale(0.94);
   transition:
-    opacity 0.12s ease,
-    transform 0.16s cubic-bezier(0.55, 0, 0.85, 0.36);
+    opacity 0.14s ease,
+    transform 0.2s cubic-bezier(0.55, 0, 0.85, 0.36);
   transition-delay: var(--btn-stagger-close, 0ms);
 }
 
 .top-menu.desktop.closing .btn:nth-child(1) {
-  --btn-stagger-close: 30ms;
+  --btn-stagger-close: 40ms;
 }
 
 .top-menu.desktop.closing .btn:nth-child(2) {
@@ -380,6 +380,54 @@ button {
 
 .menu-toggle.active {
   background: #f2f7f4;
+}
+
+/* Toggle icon animation */
+.toggle-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+}
+
+.toggle-icon {
+  position: absolute;
+  opacity: 0;
+  transform: scale(0.5) rotate(-90deg);
+  transition:
+    opacity 0.18s ease,
+    transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.toggle-icon.visible {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+
+.toggle-icon.ellipsis {
+  transform: scale(0.5);
+}
+
+.toggle-icon.ellipsis.visible {
+  transform: scale(1);
+}
+
+.toggle-icon.chevron-up {
+  transform: scale(0.5) rotate(180deg);
+}
+
+.toggle-icon.chevron-up.visible {
+  transform: scale(1) rotate(0deg);
+}
+
+.toggle-icon.chevron-right {
+  transform: scale(0.5) rotate(-90deg);
+}
+
+.toggle-icon.chevron-right.visible {
+  transform: scale(1) rotate(0deg);
 }
 
 .icon {

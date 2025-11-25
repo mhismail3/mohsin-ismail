@@ -72,6 +72,14 @@ const portfolioProjects = Object.entries(rawProjects).map(([path, raw]) => {
     tags: Array.isArray(data.tags) ? data.tags : [],
     status: data.status || null,
   };
-}).sort((a, b) => b.dateValue.getTime() - a.dateValue.getTime());
+}).sort((a, b) => {
+  const isArchivedA = typeof a.status === 'string' && a.status.toLowerCase() === 'archived';
+  const isArchivedB = typeof b.status === 'string' && b.status.toLowerCase() === 'archived';
+
+  if (isArchivedA && !isArchivedB) return 1;
+  if (isArchivedB && !isArchivedA) return -1;
+
+  return b.dateValue.getTime() - a.dateValue.getTime();
+});
 
 export default portfolioProjects;
