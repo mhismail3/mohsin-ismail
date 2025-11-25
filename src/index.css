@@ -471,8 +471,8 @@ h4 {
 }
 
 .pill.small {
-  padding: 0.3rem 0.6rem 0.2rem 0.6rem;
-  font-size: 0.77rem;
+  padding: 0.3rem 0.4rem 0.15rem;
+  font-size: 0.70rem;
 }
 
 .pill:hover {
@@ -501,7 +501,20 @@ h4 {
 
 /* Project link pills with icons */
 .pill.project-link-pill {
-  padding: 0.42rem 0.72rem 0.24rem;
+  padding: 0.5rem 0.85rem 0.4rem;
+  font-size: 0.88rem;
+  box-shadow: 2px 2px 0px var(--ink);
+  border-radius: var(--radius-sm);
+}
+
+.pill.project-link-pill:hover {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px var(--ink);
+}
+
+.pill.project-link-pill:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
 }
 
 .pill-icon {
