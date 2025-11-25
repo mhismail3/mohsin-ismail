@@ -6,6 +6,7 @@ import LinkIcon from './LinkIcon';
 const PostCard = ({ post, onTagClick, selectedTags = [] }) => {
   const [expanded, setExpanded] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const handleCopyLink = async (e) => {
     e.stopPropagation();
@@ -17,6 +18,13 @@ const PostCard = ({ post, onTagClick, selectedTags = [] }) => {
       setTimeout(() => setShowToast(false), 2200);
     } catch (err) {
       console.error('Failed to copy link:', err);
+    }
+  };
+
+  // Handle clicks on images in post body using event delegation
+  const handlePostBodyClick = (e) => {
+    if (e.target.tagName === 'IMG') {
+      setSelectedImage(e.target.src);
     }
   };
 
@@ -71,10 +79,21 @@ const PostCard = ({ post, onTagClick, selectedTags = [] }) => {
       {expanded && (
         <div
           className="post-body"
+          onClick={handlePostBodyClick}
           dangerouslySetInnerHTML={{
             __html: post.content,
           }}
         />
+      )}
+
+      {/* Lightbox Modal */}
+      {selectedImage && (
+        <div className="lightbox-overlay" onClick={() => setSelectedImage(null)}>
+          <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
+            <img src={selectedImage} alt="Full size view" />
+            <button className="lightbox-close" onClick={() => setSelectedImage(null)}>×</button>
+          </div>
+        </div>
       )}
     </article>
   );

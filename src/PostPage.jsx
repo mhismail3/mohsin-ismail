@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import posts from './posts';
 import Header from './components/Header';
@@ -9,6 +9,7 @@ const PostPage = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const post = posts.find((p) => p.slug === slug);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     if (post) {
@@ -18,6 +19,13 @@ const PostPage = () => {
     }
     window.scrollTo(0, 0);
   }, [post]);
+
+  // Handle clicks on images in post body using event delegation
+  const handlePostBodyClick = (e) => {
+    if (e.target.tagName === 'IMG') {
+      setSelectedImage(e.target.src);
+    }
+  };
 
   if (!post) {
     return (
@@ -56,6 +64,7 @@ const PostPage = () => {
 
         <div
           className="post-body full-content"
+          onClick={handlePostBodyClick}
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
 
@@ -66,6 +75,16 @@ const PostPage = () => {
           </Link>
         </div>
       </article>
+
+      {/* Lightbox Modal */}
+      {selectedImage && (
+        <div className="lightbox-overlay" onClick={() => setSelectedImage(null)}>
+          <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
+            <img src={selectedImage} alt="Full size view" />
+            <button className="lightbox-close" onClick={() => setSelectedImage(null)}>×</button>
+          </div>
+        </div>
+      )}
 
       <AboutPanel />
     </div>
