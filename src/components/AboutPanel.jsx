@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 const AboutPanel = () => (
   <section id="about" className="panel about-panel">
     <div className="about-header">
-      <div className="eyebrow">About Mohsin</div>
+      <div className="eyebrow">About Me</div>
       <Link to="/about" className="read-more-link">
         Read More &rarr;
       </Link>
