@@ -21,8 +21,8 @@ const sanitizeConfig = {
   ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'loading', 'src', 'title'],
 };
 
-// Import all markdown files from the projects directory
-const rawProjects = import.meta.glob('../projects/*.md', {
+// Import all project.md files from public/projects/{slug}/ directories
+const rawProjects = import.meta.glob('../public/projects/*/project.md', {
   query: '?raw',
   import: 'default',
   eager: true,
@@ -36,14 +36,16 @@ const parseDate = (value) => {
 const portfolioProjects = Object.entries(rawProjects).map(([path, raw]) => {
   const { data, content } = matter(raw);
   
-  // Extract slug from filename if not provided in frontmatter
-  const fileSlug = path.split('/').pop()?.replace('.md', '') ?? 'project';
+  // Extract slug from path: ../public/projects/{slug}/project.md
+  const pathParts = path.split('/');
+  const slugIndex = pathParts.indexOf('projects') + 1;
+  const fileSlug = pathParts[slugIndex] || 'project';
   const slug = data.slug || fileSlug;
   
   // Parse markdown content to HTML
   const description = DOMPurify.sanitize(marked.parse(content), sanitizeConfig);
   
-  // Build image paths from the public/projects/{slug}/ directory
+  // Build image paths from the /projects/{slug}/ directory (served from public)
   const basePath = `/projects/${slug}`;
   const cover = data.cover ? `${basePath}/${data.cover}` : null;
   const gallery = Array.isArray(data.gallery) 

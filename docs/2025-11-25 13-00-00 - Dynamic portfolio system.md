@@ -6,14 +6,12 @@ Converted the portfolio system from a hardcoded array to a dynamic file-based sy
 ## Changes Made
 
 ### New Dynamic System
-Projects are now loaded from markdown files in the `projects/` directory:
+All project resources are grouped together in `public/projects/{slug}/`:
 
 ```
-projects/
-  alces-pdf-merger.md    (frontmatter + content)
-
 public/projects/
   alces-pdf-merger/
+    project.md           (frontmatter + content)
     cover.jpg            (main image)
     gallery-1.png        (gallery images)
     gallery-2.png
@@ -67,9 +65,9 @@ Full markdown description content goes here...
 
 ## Adding New Projects
 
-1. Create markdown file: `projects/{slug}.md` with frontmatter
-2. Create image folder: `public/projects/{slug}/`
+1. Create folder: `public/projects/{slug}/`
+2. Add `project.md` with frontmatter (see schema above)
 3. Add images: `cover.jpg` + `gallery-*.{jpg,png}`
 4. Done! The project will auto-appear on the portfolio page
 
-No code changes required to add new projects.
+All resources for a project live in one folder. No code changes required.
