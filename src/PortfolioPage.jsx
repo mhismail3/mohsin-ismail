@@ -128,8 +128,7 @@ const PortfolioPage = () => {
                     <img
                       src={project.image}
                       alt={project.title}
-                      loading="lazy"
-                      decoding="async"
+                      loading="eager"
                     />
                     <div className="project-pill">
                       <span className="pill-label">{project.title}</span>

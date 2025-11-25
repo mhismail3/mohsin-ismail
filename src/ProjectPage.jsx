@@ -226,7 +226,7 @@ const ProjectPage = () => {
                             <img 
                                 src={img} 
                                 alt={`${project.title} ${idx === 0 ? 'main' : `screenshot ${idx}`}`} 
-                                loading={animated ? 'eager' : 'lazy'}
+                                loading="eager"
                             />
                             {animated && <span className="gif-badge">GIF</span>}
                         </button>

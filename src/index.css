@@ -711,6 +711,7 @@ h4 {
 .project-media img {
   width: 100%;
   height: auto;
+  min-height: 1px; /* Force Safari to allocate space for portrait images */
   display: block;
   z-index: 1;
 }
@@ -1238,6 +1239,7 @@ h4 {
 .carousel-item img {
   height: 100%;
   width: auto;
+  min-width: 1px; /* Force Safari to allocate space for portrait images */
   object-fit: contain;
   display: block;
 }
