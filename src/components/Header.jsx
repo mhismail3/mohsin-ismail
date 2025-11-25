@@ -8,7 +8,9 @@ const NAV_LINKS = [
 ];
 
 // Duration for the longest close animation (matches CSS)
-const CLOSE_ANIMATION_DURATION = 220;
+// Mobile: 0.24s transform + 50ms stagger = ~290ms
+// Desktop: 0.22s transform + 45ms stagger = ~265ms
+const CLOSE_ANIMATION_DURATION = 300;
 
 const Header = ({ label, onLogoClick }) => {
   const [isOpen, setIsOpen] = useState(false);
