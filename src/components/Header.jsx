@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import logoMark from '../assets/mohsin.png';
 
@@ -6,6 +6,9 @@ const NAV_LINKS = [
   { label: 'Portfolio', path: '/portfolio' },
   { label: 'About', path: '/about' },
 ];
+
+// Duration for the longest close animation (matches CSS)
+const CLOSE_ANIMATION_DURATION = 180;
 
 const EllipsisIcon = () => (
   <svg className="icon" viewBox="0 0 32 10" aria-hidden="true" focusable="false">
@@ -29,12 +32,44 @@ const ChevronRightIcon = () => (
 
 const Header = ({ label, onLogoClick }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const closeTimeoutRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Cleanup timeout on unmount
   useEffect(() => {
-    setIsOpen(false);
+    return () => {
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const closeMenu = useCallback(() => {
+    if (!isOpen || isClosing) return;
+    
+    // Start closing animation
+    setIsClosing(true);
+    
+    // Clear any existing timeout
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+    }
+    
+    // After animation completes, fully close
+    closeTimeoutRef.current = setTimeout(() => {
+      setIsOpen(false);
+      setIsClosing(false);
+    }, CLOSE_ANIMATION_DURATION);
+  }, [isOpen, isClosing]);
+
+  useEffect(() => {
+    if (isOpen) {
+      closeMenu();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   useEffect(() => {
@@ -56,7 +91,7 @@ const Header = ({ label, onLogoClick }) => {
     } else if (location.pathname !== '/') {
       navigate('/');
     }
-    setIsOpen(false);
+    closeMenu();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -64,16 +99,26 @@ const Header = ({ label, onLogoClick }) => {
     if (location.pathname !== path) {
       navigate(path);
     }
-    setIsOpen(false);
+    closeMenu();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const toggleMenu = () => {
-    setIsOpen((value) => !value);
+    if (isOpen) {
+      closeMenu();
+    } else {
+      // Clear any pending close animation
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+        closeTimeoutRef.current = null;
+      }
+      setIsClosing(false);
+      setIsOpen(true);
+    }
   };
 
   const headerClass = `top-bar ${isOpen && !isMobile ? 'expanded' : ''} ${isMobile ? '' : 'flyout'}`;
-  const menuClass = `top-menu ${isOpen ? 'visible' : ''} ${isMobile ? 'mobile' : 'desktop'}`;
+  const menuClass = `top-menu ${isOpen ? 'visible' : ''} ${isClosing ? 'closing' : ''} ${isMobile ? 'mobile' : 'desktop'}`;
 
   return (
     <header className={headerClass}>
