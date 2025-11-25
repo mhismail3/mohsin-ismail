@@ -18,3 +18,5 @@ Implemented a comprehensive detail page for portfolio projects.
 - **Carousel**: Uses `requestAnimationFrame` and mouse position tracking (`useRef`) to create a smooth, continuous scroll effect without direct scrollbars.
 - **Lightbox**: Uses a fixed overlay with a blur backdrop. The image pop-in animation creates a satisfying "card" effect.
 
+
+

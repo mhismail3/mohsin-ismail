@@ -19,3 +19,5 @@ Optimized the project gallery carousel for touch devices.
 ## Result
 On desktop (hover-capable), the "roulette" mouse-follow animation remains active. On mobile/touch devices, the animation is disabled, and users can natively swipe left/right with snap points for a standard, comfortable touch experience.
 
+
+

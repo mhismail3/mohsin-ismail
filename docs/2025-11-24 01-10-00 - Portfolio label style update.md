@@ -24,3 +24,5 @@ Updated the styling of the project labels (`.project-pill` and `.pill-label`) in
 ## Result
 The labels are now small, compact "glass" pills sitting in the bottom-left corner of each project card, rather than wide bars spanning the bottom.
 
+
+

@@ -10,3 +10,5 @@ Users reported that pill labels on portfolio project cards were "sticking" to th
 
 ## Rationale
 Using CSS Grid for overlay positioning avoids common issues with absolute positioning relative to fluid containers, ensuring the pill is always correctly offset from the container's corner regardless of the browser's layout calculation quirks.
+
+

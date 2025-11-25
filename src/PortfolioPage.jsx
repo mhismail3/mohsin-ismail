@@ -4,32 +4,28 @@ import Header from './components/Header';
 import AboutPanel from './components/AboutPanel';
 import portfolioProjects from './portfolioProjects';
 
-const MOBILE_PAGE_SIZE = 4; // Kept for reference if needed, but removing pagination
 const INITIAL_ITEMS = 10;
-const LOAD_BATCH = 4; // Small batch to finish the rest
+const LOAD_BATCH = 4;
 const MOBILE_BREAKPOINT = 720;
 
-// Just use the raw project for ID if unique, or index. 
-// Since we are not repeating, we can just use the project as is or add minimal metadata.
+// Process project for display - works with both local and external images
 const processProject = (project, index) => ({
   ...project,
-  id: `${project.title}-${index}`,
-  // Keep the image optimization params
-  image: `${project.image}?auto=format&fit=max&w=1400&q=80&sat=-5&ixlib=rb-4.0.3`,
+  id: `${project.slug}-${index}`,
 });
 
 const PortfolioPage = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [columnCount, setColumnCount] = useState(3);
   
-  // Initialize with first 10 items
+  // Initialize with first items (or all if fewer than INITIAL_ITEMS)
   const [items, setItems] = useState(() => 
     portfolioProjects.slice(0, INITIAL_ITEMS).map(processProject)
   );
   
-  const cursorRef = useRef(INITIAL_ITEMS);
+  const cursorRef = useRef(Math.min(INITIAL_ITEMS, portfolioProjects.length));
   const sentinelRef = useRef(null);
-  const [hasMore, setHasMore] = useState(true);
+  const [hasMore, setHasMore] = useState(portfolioProjects.length > INITIAL_ITEMS);
 
   useEffect(() => {
     document.title = 'Portfolio - Mohsin Ismail';
@@ -79,7 +75,6 @@ const PortfolioPage = () => {
   }, []);
 
   useEffect(() => {
-    // Use sentinel for both mobile and desktop now
     const sentinel = sentinelRef.current;
     if (!sentinel || !hasMore) return undefined;
 
@@ -115,10 +110,9 @@ const PortfolioPage = () => {
             <div className="eyebrow">Selected Work</div>
             <h1>Portfolio</h1>
             <p className="muted">
-              A rotating moodboard of shipped tools, visual systems, and explorations. Scroll to explore.
+              Real projects I've built—from weekend experiments to production tools.
             </p>
           </div>
-           {/* Removed "Endless scroll..." and pagination controls */}
         </div>
 
         <div className={`moodboard ${isMobile ? 'mobile' : ''}`}>

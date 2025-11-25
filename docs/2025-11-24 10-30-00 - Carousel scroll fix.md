@@ -21,3 +21,5 @@ Split the `@media (max-width: 720px)` block into two:
 - **Desktop (Wide):** Hover scroll works (Snap OFF).
 - **Desktop (Narrow < 720px):** Hover scroll works (Snap OFF). Previously broken.
 - **Mobile (Touch):** Native scroll with snap works (Snap ON).
+
+

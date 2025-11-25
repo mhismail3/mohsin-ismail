@@ -14,3 +14,5 @@ The initial grid fix failed to prevent the "Field Notes" pill from being clipped
 
 ## Rationale
 Explicit grid tracks are more robust than padding or margins for overlay positioning, as they reserve layout space that cannot be collapsed or ignored by the browser's layout engine. The transform hack fixes the specific iOS bug where child elements ignore `overflow: hidden` on rounded corners.
+
+

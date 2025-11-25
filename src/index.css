@@ -499,6 +499,20 @@ h4 {
   color: var(--clay);
 }
 
+/* Project link pills with icons */
+.pill.project-link-pill {
+  padding: 0.42rem 0.72rem 0.24rem;
+}
+
+.pill-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  display: block;
+  position: relative;
+  top: -1px;
+}
+
 .posts-panel {
   display: flex;
   flex-direction: column;
@@ -1052,17 +1066,63 @@ h4 {
   margin: 0;
 }
 
+.project-links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.project-header .tag-row {
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+}
+
 .project-content {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 12px;
 }
 
 .project-description {
-  font-size: 1.05rem;
-  line-height: 1.5;
-  max-width: 680px;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  max-width: 720px;
   margin: 0;
+}
+
+.project-description p {
+  margin-bottom: 0.9rem;
+}
+
+.project-description h2 {
+  font-size: 1.35rem;
+  margin-top: 1.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.project-description h3 {
+  font-size: 1.1rem;
+  margin-top: 1rem;
+  margin-bottom: 0.4rem;
+}
+
+.project-description ul,
+.project-description ol {
+  margin-top: 0.4rem;
+  margin-bottom: 0.9rem;
+  padding-left: 1.5rem;
+}
+
+.project-description li {
+  margin-bottom: 0.35rem;
+}
+
+.project-description code {
+  font-size: 0.88em;
+  background: rgba(31, 26, 20, 0.06);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
 }
 
 .github-card {

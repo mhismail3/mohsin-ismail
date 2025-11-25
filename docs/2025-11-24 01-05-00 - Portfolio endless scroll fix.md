@@ -25,3 +25,5 @@ The portfolio page previously used a "roulette" style infinite scroll that repea
 ## Result
 The portfolio now displays a finite list of unique projects, loading them progressively as the user scrolls on both desktop and mobile, without looping content.
 
+
+
