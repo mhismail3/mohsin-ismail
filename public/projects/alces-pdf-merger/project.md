@@ -17,8 +17,9 @@ cover: cover.jpg
 gallery:
   - gallery-1.png
   - gallery-2.png
-  - gallery-3.png
+  - gallery-3.gif
   - gallery-4.png
+  - gallery-5.png
 ---
 
 I developed this PDF Merger over the weekend as a way to test out the new Gemini 3 and GPT 5.1-Codex-Max models. And because merging PDFs is something I often have to do and I hate that I have to go do it on some website with ads. It runs entirely client-side using React 19 and Vite, ensuring no user documents ever leave the browser.

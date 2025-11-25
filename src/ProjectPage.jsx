@@ -22,6 +22,13 @@ const ProjectPage = () => {
     return [project.image, ...(project.gallery || [])];
   }, [project]);
 
+  // Helper to check if a file is an animated format (GIF, WebP could be animated)
+  const isAnimated = (src) => {
+    if (!src) return false;
+    const ext = src.split('.').pop()?.toLowerCase();
+    return ext === 'gif' || ext === 'webp';
+  };
+
   useEffect(() => {
     if (project) {
       document.title = `${project.title} - Mohsin Ismail`;
@@ -206,17 +213,25 @@ const ProjectPage = () => {
             onMouseLeave={handleMouseLeave}
         >
             <div className="carousel-track" ref={carouselRef} onScroll={handleScroll}>
-                {carouselImages.map((img, idx) => (
-                    <button 
-                        key={`${project.slug}-${idx}`} 
-                        type="button" 
-                        className={`carousel-item ${activeIndex === idx ? 'is-active' : ''}`}
-                        onClick={() => setSelectedImage(img)}
-                        ref={(el) => { itemRefs.current[idx] = el; }}
-                    >
-                        <img src={img} alt={`${project.title} ${idx === 0 ? 'main' : `screenshot ${idx}`}`} loading="lazy" />
-                    </button>
-                ))}
+                {carouselImages.map((img, idx) => {
+                    const animated = isAnimated(img);
+                    return (
+                        <button 
+                            key={`${project.slug}-${idx}`} 
+                            type="button" 
+                            className={`carousel-item ${activeIndex === idx ? 'is-active' : ''} ${animated ? 'is-animated' : ''}`}
+                            onClick={() => setSelectedImage(img)}
+                            ref={(el) => { itemRefs.current[idx] = el; }}
+                        >
+                            <img 
+                                src={img} 
+                                alt={`${project.title} ${idx === 0 ? 'main' : `screenshot ${idx}`}`} 
+                                loading={animated ? 'eager' : 'lazy'}
+                            />
+                            {animated && <span className="gif-badge">GIF</span>}
+                        </button>
+                    );
+                })}
             </div>
             <div className="carousel-hint">{isTouch ? 'Scroll to view more' : 'Hover sides to scroll'}</div>
         </div>

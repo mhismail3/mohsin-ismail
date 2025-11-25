@@ -33,6 +33,12 @@ const parseDate = (value) => {
   return Number.isNaN(parsed.getTime()) ? new Date() : parsed;
 };
 
+const formatDate = (value) => {
+  const date = parseDate(value);
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return `${months[date.getMonth()]} ${date.getFullYear()}`;
+};
+
 const portfolioProjects = Object.entries(rawProjects).map(([path, raw]) => {
   const { data, content } = matter(raw);
   
@@ -55,7 +61,7 @@ const portfolioProjects = Object.entries(rawProjects).map(([path, raw]) => {
   return {
     slug,
     title: data.title || fileSlug,
-    date: data.date ? new Date(data.date).getFullYear().toString() : new Date().getFullYear().toString(),
+    date: formatDate(data.date),
     dateValue: parseDate(data.date),
     summary: data.summary || '',
     description,

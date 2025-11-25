@@ -1247,6 +1247,26 @@ h4 {
   box-shadow: 6px 10px 0px var(--ink);
 }
 
+/* GIF badge for animated content */
+.carousel-item {
+  position: relative;
+}
+
+.gif-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #eaeaea;
+  color: var(--ink);
+  font-size: 0.64rem;
+  font-weight: 900;
+  line-height: 1.0;
+  padding: 0.20rem 0.28rem 0.02rem;
+  border: var(--border-retro);
+  border-radius: 6px;
+  pointer-events: none;
+}
+
 .carousel-hint {
   text-align: center;
   font-size: 0.8rem;

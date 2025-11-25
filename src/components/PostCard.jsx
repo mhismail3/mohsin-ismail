@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { formatDate } from '../utils';
 import LinkIcon from './LinkIcon';
 
-const PostCard = ({ post, onTagClick }) => {
+const PostCard = ({ post, onTagClick, selectedTags = [] }) => {
   const [expanded, setExpanded] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
@@ -50,7 +50,7 @@ const PostCard = ({ post, onTagClick }) => {
           <button
             key={tag}
             type="button"
-            className="pill small"
+            className={`pill small ${selectedTags.includes(tag) ? 'active' : ''}`}
             onClick={() => onTagClick(tag)}
           >
             #{tag}

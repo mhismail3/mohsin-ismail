@@ -106,7 +106,7 @@ function Home({ selectedTags, setSelectedTags, page, setPage }) {
 
         <div className="post-list">
           {visiblePosts.map((post) => (
-            <PostCard key={post.slug} post={post} onTagClick={handleTagToggle} />
+            <PostCard key={post.slug} post={post} onTagClick={handleTagToggle} selectedTags={selectedTags} />
           ))}
           {visiblePosts.length === 0 && (
             <div className="empty-state">
