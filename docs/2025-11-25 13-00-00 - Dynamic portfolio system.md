@@ -71,3 +71,4 @@ Full markdown description content goes here...
 4. Done! The project will auto-appear on the portfolio page
 
 All resources for a project live in one folder. No code changes required.
+
