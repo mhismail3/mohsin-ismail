@@ -763,13 +763,29 @@ h4 {
 }
 
 .post-body img {
-  max-width: 100%;
+  max-width: 50%;
+  display: block;
+  margin: 0 auto;
   border: var(--border-retro);
   border-radius: var(--radius-sm);
   background: #fffefb;
   box-shadow: var(--shadow-retro);
-  cursor: pointer;
+  cursor: default;
   transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* Mobile: TL;DR images stay full width */
+@media (max-width: 640px) {
+  .post-body img {
+    max-width: 100%;
+  }
+}
+
+/* Full post page images stay at full width and clickable */
+.post-body.full-content img {
+  max-width: 100%;
+  margin: 0;
+  cursor: pointer;
 }
 
 /* Desktop hover - only on devices with true hover capability */
