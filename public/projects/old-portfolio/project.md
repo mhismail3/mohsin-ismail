@@ -18,10 +18,10 @@ gallery:
   - gallery-2.png
 ---
 
-Home Base is my retired portfolio, rebuilt as a static Astro site so the projects from my earlier years stay discoverable.
+Before I made the current site you're on, I rebuilt my old portfolio as a static Astro site so the projects from my earlier years stay discoverable.
 
 ### Static Astro shell
-Built with Astro 4 and TypeScript, exported fully static for zero runtime overhead. The layout leans on one small global stylesheet and a BASE_URL-aware nav so it serves cleanly from GitHub Pages under `/HomeBase` without any client-side framework.
+Built with Astro 4 and TypeScript, exported fully static for zero runtime overhead. The layout leans on one small global stylesheet and a BASE_URL-aware nav so it serves cleanly from GitHub Pages without any client-side framework.
 
 ### Content-first and lightweight
 Navigation, skip links, and semantic templates come from `Base.astro`, keeping typography and spacing front and center. Aside from a small tag filter on the posts list, there is essentially no client JavaScript; everything else is server-rendered and kept under tight size budgets.

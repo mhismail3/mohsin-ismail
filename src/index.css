@@ -417,9 +417,9 @@ h4 {
 }
 
 .btn.tldr-toggle {
-  width: 70px;
-  padding-left: 0;
-  padding-right: 0;
+  height: 24px;
+  width: 60px;
+  padding: 0.2rem 0 0;
 }
 
 .btn.outline {
