@@ -772,14 +772,23 @@ h4 {
   transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
 
-.post-body img:hover {
-  transform: translateY(-4px);
-  box-shadow: 12px 16px 14px rgba(31, 26, 20, 0.58);
+/* Desktop hover - only on devices with true hover capability */
+@media (hover: hover) and (pointer: fine) {
+  .post-body img:hover {
+    transform: translateY(-4px);
+    box-shadow: 12px 16px 14px rgba(31, 26, 20, 0.58);
+  }
+
+  .post-body img:active {
+    transform: translateY(-1px);
+    box-shadow: 4px 5px 2px rgba(31, 26, 20, 0.15);
+  }
 }
 
-.post-body img:active {
-  transform: translateY(-1px);
-  box-shadow: 4px 5px 2px rgba(31, 26, 20, 0.15);
+/* Touch hover - applied via JavaScript on touch-and-hold */
+.post-body img.touch-hover {
+  transform: translateY(-4px);
+  box-shadow: 12px 16px 14px rgba(31, 26, 20, 0.58);
 }
 
 .post-body video,
@@ -1000,7 +1009,16 @@ h4 {
   transform: translateZ(0);
 }
 
-.project-card:hover {
+/* Desktop hover - only on devices with true hover capability */
+@media (hover: hover) and (pointer: fine) {
+  .project-card:hover {
+    transform: translateY(-5px) translateZ(0);
+    box-shadow: 5px 11px 10px rgba(31, 26, 20, 0.7);
+  }
+}
+
+/* Touch hover - applied via JavaScript on touch-and-hold */
+.project-card.touch-hover {
   transform: translateY(-5px) translateZ(0);
   box-shadow: 5px 11px 10px rgba(31, 26, 20, 0.7);
 }

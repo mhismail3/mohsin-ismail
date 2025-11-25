@@ -7,6 +7,8 @@ import portfolioProjects from './portfolioProjects';
 const INITIAL_ITEMS = 10;
 const LOAD_BATCH = 4;
 const MOBILE_BREAKPOINT = 720;
+const TOUCH_HOLD_DELAY = 120;
+const TOUCH_MOVE_THRESHOLD = 10;
 
 // Process project for display - works with both local and external images
 const processProject = (project, index) => ({
@@ -25,6 +27,8 @@ const PortfolioPage = () => {
   
   const cursorRef = useRef(Math.min(INITIAL_ITEMS, portfolioProjects.length));
   const sentinelRef = useRef(null);
+  const moodboardRef = useRef(null);
+  const touchStateRef = useRef({ timer: null, startX: 0, startY: 0, activeEl: null });
   const [hasMore, setHasMore] = useState(portfolioProjects.length > INITIAL_ITEMS);
 
   useEffect(() => {
@@ -101,6 +105,69 @@ const PortfolioPage = () => {
     return cols;
   }, [items, columnCount]);
 
+  // Touch handling for project cards - only activate hover on press-and-hold, not scroll
+  useEffect(() => {
+    if (!moodboardRef.current) return;
+    const container = moodboardRef.current;
+    const state = touchStateRef.current;
+
+    const clearTouchState = () => {
+      if (state.timer) {
+        clearTimeout(state.timer);
+        state.timer = null;
+      }
+      if (state.activeEl) {
+        state.activeEl.classList.remove('touch-hover');
+        state.activeEl = null;
+      }
+    };
+
+    const handleTouchStart = (e) => {
+      // Find the project-card parent
+      const card = e.target.closest('.project-card');
+      if (!card) return;
+      
+      const touch = e.touches[0];
+      state.startX = touch.clientX;
+      state.startY = touch.clientY;
+      state.activeEl = card;
+      
+      state.timer = setTimeout(() => {
+        if (state.activeEl) {
+          state.activeEl.classList.add('touch-hover');
+        }
+      }, TOUCH_HOLD_DELAY);
+    };
+
+    const handleTouchMove = (e) => {
+      if (!state.timer && !state.activeEl?.classList.contains('touch-hover')) return;
+      const touch = e.touches[0];
+      const dx = Math.abs(touch.clientX - state.startX);
+      const dy = Math.abs(touch.clientY - state.startY);
+      
+      if (dx > TOUCH_MOVE_THRESHOLD || dy > TOUCH_MOVE_THRESHOLD) {
+        clearTouchState();
+      }
+    };
+
+    const handleTouchEnd = () => {
+      clearTouchState();
+    };
+
+    container.addEventListener('touchstart', handleTouchStart, { passive: true });
+    container.addEventListener('touchmove', handleTouchMove, { passive: true });
+    container.addEventListener('touchend', handleTouchEnd, { passive: true });
+    container.addEventListener('touchcancel', handleTouchEnd, { passive: true });
+
+    return () => {
+      clearTouchState();
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchmove', handleTouchMove);
+      container.removeEventListener('touchend', handleTouchEnd);
+      container.removeEventListener('touchcancel', handleTouchEnd);
+    };
+  }, []);
+
   return (
     <div className="frame">
       <Header label="Mohsin Ismail" />
@@ -115,7 +182,7 @@ const PortfolioPage = () => {
           </div>
         </div>
 
-        <div className={`moodboard ${isMobile ? 'mobile' : ''}`}>
+        <div ref={moodboardRef} className={`moodboard ${isMobile ? 'mobile' : ''}`}>
           {columns.map((col, colIndex) => (
             <div key={colIndex} className="moodboard-column">
               {col.map((project) => (

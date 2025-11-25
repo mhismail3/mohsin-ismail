@@ -30,3 +30,4 @@ Updated the styling of images in blog posts (both TL;DR expanded view and full p
 - The lightbox uses the existing `.lightbox-overlay` and `.lightbox-content` CSS classes that were already defined for ProjectPage
 - Image click handlers are added/removed via `useEffect` since the content is rendered via `dangerouslySetInnerHTML`
 - The effect cleanup properly removes event listeners to prevent memory leaks
+

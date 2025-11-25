@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import posts from './posts';
 import Header from './components/Header';
@@ -10,6 +10,8 @@ const PostPage = () => {
   const navigate = useNavigate();
   const post = posts.find((p) => p.slug === slug);
   const [selectedImage, setSelectedImage] = useState(null);
+  const postBodyRef = useRef(null);
+  const touchStateRef = useRef({ timer: null, startX: 0, startY: 0, activeEl: null });
 
   useEffect(() => {
     if (post) {
@@ -26,6 +28,68 @@ const PostPage = () => {
       setSelectedImage(e.target.src);
     }
   };
+
+  // Touch handling for images - only activate hover on press-and-hold, not scroll
+  useEffect(() => {
+    if (!post || !postBodyRef.current) return;
+    const container = postBodyRef.current;
+    const state = touchStateRef.current;
+    const HOLD_DELAY = 120;
+    const MOVE_THRESHOLD = 10;
+
+    const clearTouchState = () => {
+      if (state.timer) {
+        clearTimeout(state.timer);
+        state.timer = null;
+      }
+      if (state.activeEl) {
+        state.activeEl.classList.remove('touch-hover');
+        state.activeEl = null;
+      }
+    };
+
+    const handleTouchStart = (e) => {
+      if (e.target.tagName !== 'IMG') return;
+      const touch = e.touches[0];
+      state.startX = touch.clientX;
+      state.startY = touch.clientY;
+      state.activeEl = e.target;
+      
+      state.timer = setTimeout(() => {
+        if (state.activeEl) {
+          state.activeEl.classList.add('touch-hover');
+        }
+      }, HOLD_DELAY);
+    };
+
+    const handleTouchMove = (e) => {
+      if (!state.timer && !state.activeEl?.classList.contains('touch-hover')) return;
+      const touch = e.touches[0];
+      const dx = Math.abs(touch.clientX - state.startX);
+      const dy = Math.abs(touch.clientY - state.startY);
+      
+      if (dx > MOVE_THRESHOLD || dy > MOVE_THRESHOLD) {
+        clearTouchState();
+      }
+    };
+
+    const handleTouchEnd = () => {
+      clearTouchState();
+    };
+
+    container.addEventListener('touchstart', handleTouchStart, { passive: true });
+    container.addEventListener('touchmove', handleTouchMove, { passive: true });
+    container.addEventListener('touchend', handleTouchEnd, { passive: true });
+    container.addEventListener('touchcancel', handleTouchEnd, { passive: true });
+
+    return () => {
+      clearTouchState();
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchmove', handleTouchMove);
+      container.removeEventListener('touchend', handleTouchEnd);
+      container.removeEventListener('touchcancel', handleTouchEnd);
+    };
+  }, [post, slug]);
 
   if (!post) {
     return (
@@ -63,6 +127,7 @@ const PostPage = () => {
         </div>
 
         <div
+          ref={postBodyRef}
           className="post-body full-content"
           onClick={handlePostBodyClick}
           dangerouslySetInnerHTML={{ __html: post.content }}
