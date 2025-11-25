@@ -568,8 +568,11 @@ h4 {
   line-height: 1.3;
 }
 
-.post-head .muted {
+.post-summary {
+  grid-area: summary;
   margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.45;
 }
 
 .tag-row {
@@ -947,25 +950,39 @@ h4 {
 
 /* Link Icon & Toast Styles */
 
-.title-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 0;
-  flex-wrap: wrap;
+.post-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    'meta link'
+    'summary summary';
+  column-gap: 12px;
   row-gap: 8px;
+  align-items: flex-start;
 }
 
-.title-row h3 {
-  flex: 1 1 auto;
+.post-meta {
+  grid-area: meta;
   min-width: 0;
 }
 
+.post-meta .eyebrow {
+  margin-bottom: 4px;
+}
+
+.post-meta h3 {
+  margin: 0;
+}
+
 .link-btn-wrapper {
-  position: relative;
+  grid-area: link;
   display: inline-flex;
   align-items: center;
-  flex-shrink: 0;
+  justify-content: center;
+  position: relative;
+  justify-self: end;
+  align-self: start;
+  z-index: 2;
 }
 
 .pill.icon-btn {

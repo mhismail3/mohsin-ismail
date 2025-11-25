@@ -23,26 +23,26 @@ const PostCard = ({ post, onTagClick, selectedTags = [] }) => {
   return (
     <article className={`post-card ${expanded ? 'expanded' : ''}`}>
       <div className="post-head">
-        <div className="eyebrow">{formatDate(post.date)}</div>
-        <div className="title-row">
+        <div className="post-meta">
+          <div className="eyebrow">{formatDate(post.date)}</div>
           <h3>
             <Link to={`/posts/${post.slug}`} className="post-title-link">
               {post.title}
             </Link>
           </h3>
-          <div className="link-btn-wrapper">
-            <button
-              type="button"
-              className="pill icon-btn"
-              onClick={handleCopyLink}
-              aria-label="Copy link to post"
-            >
-              <LinkIcon />
-            </button>
-            {showToast && <div className="toast">Copied link</div>}
-          </div>
         </div>
-        <p className="muted">{post.summary}</p>
+        <div className="link-btn-wrapper">
+          <button
+            type="button"
+            className="pill icon-btn"
+            onClick={handleCopyLink}
+            aria-label="Copy link to post"
+          >
+            <LinkIcon />
+          </button>
+          {showToast && <div className="toast">Copied link</div>}
+        </div>
+        <p className="muted post-summary">{post.summary}</p>
       </div>
 
       <div className="tag-row">
