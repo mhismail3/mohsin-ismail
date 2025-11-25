@@ -725,8 +725,8 @@ h4 {
   padding: 0.42rem 0.95rem 0.38rem;
   border: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
   display: inline-flex;
   align-items: center;
   justify-content: center;
