@@ -177,7 +177,7 @@ const PortfolioPage = () => {
             <div className="eyebrow">Selected Work</div>
             <h1>Portfolio</h1>
             <p className="muted">
-              Real projects I've built—from weekend experiments to production tools.
+              Some of the projects that I've worked on recently. More coming soon...
             </p>
           </div>
         </div>

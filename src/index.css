@@ -519,6 +519,7 @@ h4 {
 
 .eyebrow {
   font-size: 0.78rem;
+  font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted);
@@ -860,7 +861,19 @@ h4 {
   margin-bottom: 0.6rem;
 }
 
+.about-body {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.about-body p {
+  margin: 0;
+}
+
 .read-more-link {
+  flex-shrink: 0;
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--muted);

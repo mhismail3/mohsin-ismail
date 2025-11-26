@@ -79,7 +79,6 @@ function Home({ selectedTags, setSelectedTags, page, setPage }) {
         <div className="panel-head">
           <div>
             <div className="eyebrow">Posts</div>
-            <h2>Latest</h2>
           </div>
           <div className="active-tags">
             {selectedTags.length > 0 && (
