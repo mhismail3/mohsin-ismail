@@ -77,7 +77,7 @@ button {
 }
 
 .frame {
-  max-width: 1200px;
+  max-width: 860px;
   margin: 0 auto;
   position: relative;
   display: flex;
@@ -95,7 +95,7 @@ button {
   top: 18px;
   left: 14px;
   right: 14px;
-  max-width: calc(1200px - 28px);
+  max-width: 860px;
   margin: 0 auto;
   padding: 12px 14px;
   background: rgba(255, 255, 255, 0.82);
