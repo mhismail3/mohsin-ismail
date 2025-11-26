@@ -21,8 +21,8 @@ const rawPosts = import.meta.glob('../posts/*.md', {
 });
 
 const sanitizeConfig = {
-  ADD_TAGS: ['iframe'],
-  ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'loading', 'src', 'title'],
+  ADD_TAGS: ['iframe', 'div'],
+  ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'loading', 'src', 'title', 'data-code', 'data-language', 'data-codeblock'],
 };
 
 const stripMarkdown = (text = '') =>
@@ -45,10 +45,45 @@ const parseDate = (value) => {
   return Number.isNaN(parsed.getTime()) ? new Date() : parsed;
 };
 
+/**
+ * Extract code blocks from markdown and replace with placeholders.
+ * Returns { processedContent, codeBlocks }
+ */
+const extractCodeBlocks = (markdown) => {
+  const codeBlocks = [];
+  const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
+  
+  const processedContent = markdown.replace(codeBlockRegex, (match, language, code) => {
+    const index = codeBlocks.length;
+    const lang = language || 'text';
+    const trimmedCode = code.trim();
+    
+    codeBlocks.push({
+      language: lang,
+      code: trimmedCode,
+    });
+    
+    // Return a placeholder div that we'll replace with CodeBlock component
+    return `<div data-codeblock="${index}" data-language="${lang}" data-code="${encodeURIComponent(trimmedCode)}"></div>`;
+  });
+  
+  return { processedContent, codeBlocks };
+};
+
 const posts = Object.entries(rawPosts).map(([path, raw]) => {
   const { data, content } = matter(raw);
   const slug = path.split('/').pop()?.replace('.md', '') ?? 'post';
-  const html = DOMPurify.sanitize(marked.parse(content), sanitizeConfig);
+  
+  // Extract code blocks before parsing markdown
+  const { processedContent, codeBlocks } = extractCodeBlocks(content);
+  
+  // Parse markdown (code blocks are now placeholders)
+  const html = DOMPurify.sanitize(marked.parse(processedContent), sanitizeConfig);
+  
+  // Parse tldr field if present (it's markdown too)
+  const tldrHtml = data.tldr 
+    ? DOMPurify.sanitize(marked.parse(data.tldr), sanitizeConfig)
+    : null;
 
   return {
     slug,
@@ -57,7 +92,9 @@ const posts = Object.entries(rawPosts).map(([path, raw]) => {
     dateValue: parseDate(data.date),
     tags: Array.isArray(data.tags) ? data.tags : [],
     summary: data.summary || buildExcerpt(content),
+    tldr: tldrHtml,
     content: html,
+    codeBlocks,
   };
 }).sort((a, b) => b.dateValue.getTime() - a.dateValue.getTime());
 

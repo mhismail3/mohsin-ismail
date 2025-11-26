@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import posts from './posts';
 import Header from './components/Header';
@@ -6,72 +6,66 @@ import AboutPanel from './components/AboutPanel';
 import CodeBlock from './components/CodeBlock';
 import { formatDate } from './utils';
 
-// Example code for the CodeBlock demo
-const EXAMPLE_CODE = `// Tactile button press physics
-const useTactilePress = (ref) => {
-  const [isPressed, setIsPressed] = useState(false);
-  
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    
-    const handleDown = () => setIsPressed(true);
-    const handleUp = () => setIsPressed(false);
-    
-    el.addEventListener('pointerdown', handleDown);
-    el.addEventListener('pointerup', handleUp);
-    el.addEventListener('pointerleave', handleUp);
-    
-    return () => {
-      el.removeEventListener('pointerdown', handleDown);
-      el.removeEventListener('pointerup', handleUp);
-      el.removeEventListener('pointerleave', handleUp);
-    };
-  }, [ref]);
-  
-  return {
-    style: {
-      transform: isPressed 
-        ? 'translate(4px, 4px)' 
-        : 'translate(0, 0)',
-      boxShadow: isPressed 
-        ? 'none' 
-        : '4px 4px 0px var(--ink)',
-      transition: 'transform 0.1s ease, box-shadow 0.1s ease',
-    },
-  };
-};
-
-export default useTactilePress;`;
-
-const PostPage = () => {
-  const { slug } = useParams();
-  const navigate = useNavigate();
-  const post = posts.find((p) => p.slug === slug);
-  const [selectedImage, setSelectedImage] = useState(null);
-  const postBodyRef = useRef(null);
+/**
+ * Component that renders post content with CodeBlock components
+ * replacing the placeholder divs
+ */
+const PostContent = ({ html, codeBlocks, onImageClick }) => {
+  const containerRef = useRef(null);
   const touchStateRef = useRef({ timer: null, startX: 0, startY: 0, activeEl: null });
 
-  useEffect(() => {
-    if (post) {
-      document.title = `${post.title} - Mohsin Ismail`;
-    } else {
-      document.title = 'Post Not Found - Mohsin Ismail';
-    }
-    window.scrollTo(0, 0);
-  }, [post]);
+  // Parse HTML and find code block placeholders
+  const contentParts = useMemo(() => {
+    if (!html) return [];
+    
+    const parts = [];
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    const body = doc.body;
+    
+    // Process all child nodes
+    const processNode = (node) => {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        const el = node;
+        if (el.hasAttribute('data-codeblock')) {
+          const index = parseInt(el.getAttribute('data-codeblock'), 10);
+          const codeBlock = codeBlocks[index];
+          if (codeBlock) {
+            parts.push({
+              type: 'codeblock',
+              language: codeBlock.language,
+              code: codeBlock.code,
+              key: `code-${index}`,
+            });
+          }
+          return;
+        }
+      }
+      
+      // For other nodes, get the outer HTML
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        parts.push({
+          type: 'html',
+          content: node.outerHTML,
+          key: `html-${parts.length}`,
+        });
+      } else if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
+        parts.push({
+          type: 'html',
+          content: node.textContent,
+          key: `text-${parts.length}`,
+        });
+      }
+    };
+    
+    body.childNodes.forEach(processNode);
+    return parts;
+  }, [html, codeBlocks]);
 
-  // Handle clicks on images in post body using event delegation
-  const handlePostBodyClick = (e) => {
-    if (e.target.tagName === 'IMG') {
-      setSelectedImage(e.target.src);
-    }
-  };
-
-  // Touch handling for images - only activate hover on press-and-hold, not scroll
+  // Touch handling for images
   useEffect(() => {
-    if (!post || !postBodyRef.current) return;
-    const container = postBodyRef.current;
+    if (!containerRef.current) return;
+    const container = containerRef.current;
     const state = touchStateRef.current;
     const HOLD_DELAY = 120;
     const MOVE_THRESHOLD = 10;
@@ -128,7 +122,52 @@ const PostPage = () => {
       container.removeEventListener('touchend', handleTouchEnd);
       container.removeEventListener('touchcancel', handleTouchEnd);
     };
-  }, [post, slug]);
+  }, []);
+
+  const handleClick = (e) => {
+    if (e.target.tagName === 'IMG') {
+      onImageClick(e.target.src);
+    }
+  };
+
+  return (
+    <div ref={containerRef} className="post-body full-content" onClick={handleClick}>
+      {contentParts.map((part) => {
+        if (part.type === 'codeblock') {
+          return (
+            <CodeBlock
+              key={part.key}
+              code={part.code}
+              language={part.language}
+              maxLines={12}
+            />
+          );
+        }
+        return (
+          <div
+            key={part.key}
+            dangerouslySetInnerHTML={{ __html: part.content }}
+          />
+        );
+      })}
+    </div>
+  );
+};
+
+const PostPage = () => {
+  const { slug } = useParams();
+  const navigate = useNavigate();
+  const post = posts.find((p) => p.slug === slug);
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  useEffect(() => {
+    if (post) {
+      document.title = `${post.title} - Mohsin Ismail`;
+    } else {
+      document.title = 'Post Not Found - Mohsin Ismail';
+    }
+    window.scrollTo(0, 0);
+  }, [post]);
 
   if (!post) {
     return (
@@ -165,26 +204,15 @@ const PostPage = () => {
           </div>
         </div>
 
-        <div
-          ref={postBodyRef}
-          className="post-body full-content"
-          onClick={handlePostBodyClick}
-          dangerouslySetInnerHTML={{ __html: post.content }}
+        <PostContent
+          html={post.content}
+          codeBlocks={post.codeBlocks}
+          onImageClick={setSelectedImage}
         />
 
-        {/* Render CodeBlock demo for field-notes post */}
-        {slug === '2025-11-15-field-notes' && (
-          <div className="post-body full-content" style={{ marginTop: '2rem' }}>
-            <h2>Bonus: the hook</h2>
-            <p>Here's the actual React hook that powers the press physics. Click "Copy" to grab it, or expand to see the full implementation:</p>
-            <CodeBlock code={EXAMPLE_CODE} language="javascript" maxLines={10} />
-          </div>
-        )}
-
         <div className="post-footer">
-          <div className="divider" />
-          <Link to="/" className="btn outline">
-            Back to all posts
+          <Link to="/" className="back-link">
+            ← All Posts
           </Link>
         </div>
       </article>
@@ -205,6 +233,3 @@ const PostPage = () => {
 };
 
 export default PostPage;
-
-
-
