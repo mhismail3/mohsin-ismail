@@ -25,27 +25,7 @@
 
 html {
   min-height: 100%;
-  background-color: #f8f3e8;
-}
-
-/* iOS Safari overscroll background - extends the gradient into rubber-band areas */
-html::before {
-  content: '';
-  position: fixed;
-  inset: -100vh -50vw;
-  z-index: -9999;
-  background-color: #f8f3e8;
-  background-image:
-    linear-gradient(to bottom, rgba(248, 243, 232, 0.92) 0%, rgba(248, 243, 232, 0.6) 8%, rgba(248, 243, 232, 0) 18%),
-    linear-gradient(to top, rgba(248, 243, 232, 0.92) 0%, rgba(248, 243, 232, 0.6) 8%, rgba(248, 243, 232, 0) 18%),
-    radial-gradient(circle at 20% 20%, rgba(196, 91, 55, 0.08), transparent 34%),
-    radial-gradient(circle at 80% 10%, rgba(44, 143, 122, 0.12), transparent 30%),
-    radial-gradient(circle at 40% 90%, rgba(15, 115, 99, 0.08), transparent 35%),
-    linear-gradient(135deg, #f9f5eb 0%, #f6f1e6 45%, #eef5f3 100%);
-  background-repeat: no-repeat;
-  background-size: 100% 260px, 100% 260px, auto, auto, auto, cover;
-  background-position: top, bottom, center, center, center, center;
-  pointer-events: none;
+  background: #f8f3e8;
 }
 
 body {
@@ -53,7 +33,7 @@ body {
   min-height: 100vh;
   min-height: 100dvh;
   font-family: 'Newsreader', serif;
-  background: transparent;
+  background: #f8f3e8;
   color: var(--ink);
   line-height: 1.6;
 }
