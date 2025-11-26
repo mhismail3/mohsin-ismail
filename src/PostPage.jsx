@@ -3,7 +3,46 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import posts from './posts';
 import Header from './components/Header';
 import AboutPanel from './components/AboutPanel';
+import CodeBlock from './components/CodeBlock';
 import { formatDate } from './utils';
+
+// Example code for the CodeBlock demo
+const EXAMPLE_CODE = `// Tactile button press physics
+const useTactilePress = (ref) => {
+  const [isPressed, setIsPressed] = useState(false);
+  
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    
+    const handleDown = () => setIsPressed(true);
+    const handleUp = () => setIsPressed(false);
+    
+    el.addEventListener('pointerdown', handleDown);
+    el.addEventListener('pointerup', handleUp);
+    el.addEventListener('pointerleave', handleUp);
+    
+    return () => {
+      el.removeEventListener('pointerdown', handleDown);
+      el.removeEventListener('pointerup', handleUp);
+      el.removeEventListener('pointerleave', handleUp);
+    };
+  }, [ref]);
+  
+  return {
+    style: {
+      transform: isPressed 
+        ? 'translate(4px, 4px)' 
+        : 'translate(0, 0)',
+      boxShadow: isPressed 
+        ? 'none' 
+        : '4px 4px 0px var(--ink)',
+      transition: 'transform 0.1s ease, box-shadow 0.1s ease',
+    },
+  };
+};
+
+export default useTactilePress;`;
 
 const PostPage = () => {
   const { slug } = useParams();
@@ -132,6 +171,15 @@ const PostPage = () => {
           onClick={handlePostBodyClick}
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
+
+        {/* Render CodeBlock demo for field-notes post */}
+        {slug === '2025-11-15-field-notes' && (
+          <div className="post-body full-content" style={{ marginTop: '2rem' }}>
+            <h2>Bonus: the hook</h2>
+            <p>Here's the actual React hook that powers the press physics. Click "Copy" to grab it, or expand to see the full implementation:</p>
+            <CodeBlock code={EXAMPLE_CODE} language="javascript" maxLines={10} />
+          </div>
+        )}
 
         <div className="post-footer">
           <div className="divider" />
