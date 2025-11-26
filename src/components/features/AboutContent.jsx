@@ -77,7 +77,7 @@ const AboutContent = () => {
 
       {/* Photo Gallery Section */}
       <div className="photo-gallery-section">
-        <p className="carousel-caption">A snapshot of some things right now</p>
+        <p className="carousel-caption">❤️</p>
         <Carousel
           images={aboutPhotos}
           onImageClick={setSelectedImage}
