@@ -91,8 +91,12 @@ button {
   flex-direction: column;
   align-items: stretch;
   gap: 0;
-  position: sticky;
-  top: 14px;
+  position: fixed;
+  top: 18px;
+  left: 14px;
+  right: 14px;
+  max-width: calc(1200px - 28px);
+  margin: 0 auto;
   padding: 12px 14px;
   background: rgba(255, 255, 255, 0.82);
   border: 1px solid var(--line);
@@ -100,9 +104,14 @@ button {
   box-shadow: 0 12px 30px rgba(31, 26, 20, 0.08);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  z-index: 3;
+  z-index: 100;
   transition: padding 0.22s ease, box-shadow 0.22s ease;
   overflow-anchor: none;
+}
+
+/* Spacer to push content below fixed header */
+.top-bar + * {
+  margin-top: 95px;
 }
 
 .top-bar.expanded {
@@ -117,7 +126,6 @@ button {
 
 .top-bar.flyout {
   overflow: visible;
-  position: sticky;
 }
 
 .top-bar-row {
@@ -1122,13 +1130,25 @@ h4 {
 
   .top-bar {
     padding: 14px 18px;
+    top: 28px;
+    left: 28px;
+    right: 28px;
+  }
+  
+  .top-bar + * {
+    margin-top: 105px;
   }
 }
 
 @media (max-width: 640px) {
   .top-bar {
-    position: sticky;
-    top: 10px;
+    top: 20px;
+    left: 14px;
+    right: 14px;
+  }
+  
+  .top-bar + * {
+    margin-top: 95px;
   }
 
   .brand {
