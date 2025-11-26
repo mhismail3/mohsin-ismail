@@ -1,0 +1,135 @@
+/* =============================================================================
+   PANEL COMPONENT
+   Container panels with variants for different content types
+   ============================================================================= */
+
+.panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 1.4rem 1.35rem;
+  box-shadow: var(--shadow-soft-lg);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PANEL HEADER
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-base);
+  flex-wrap: wrap;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   HERO VARIANT
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.hero h1 {
+  font-size: var(--text-4xl);
+  margin-top: 0.4rem;
+}
+
+.hero .muted {
+  max-width: 680px;
+}
+
+/* Decorative inner border for hero and posts panels */
+.posts-panel,
+.hero {
+  position: relative;
+}
+
+.posts-panel::before,
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border-radius: calc(var(--radius-lg) - 8px);
+  pointer-events: none;
+  border: 1px dashed rgba(31, 26, 20, 0.04);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   POSTS PANEL
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.posts-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-base);
+}
+
+.post-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-base);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FEATURED PROJECT PANEL
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.featured-project-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.featured-project-panel .panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-base);
+  flex-wrap: wrap;
+}
+
+.recent-posts-panel .panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-base);
+  flex-wrap: wrap;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SEE ALL LINK
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.see-all-link {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--muted);
+  transition: color var(--duration-normal) ease, transform var(--duration-normal) ease;
+  flex-shrink: 0;
+}
+
+.see-all-link:hover {
+  color: var(--aero);
+  transform: translateX(4px);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   RESPONSIVE
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (min-width: 840px) {
+  .panel {
+    padding: 1.8rem 1.6rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .panel {
+    padding: 1.2rem 1.05rem;
+  }
+
+  .posts-panel::before,
+  .hero::before {
+    inset: 6px;
+  }
+}

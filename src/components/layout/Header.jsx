@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import logoMark from '../assets/mohsin.png';
+import logoMark from '../../assets/mohsin.png';
 
 const NAV_LINKS = [
   { label: 'Blog', path: '/blog' },

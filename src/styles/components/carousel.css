@@ -1,0 +1,139 @@
+/* =============================================================================
+   CAROUSEL COMPONENT
+   Horizontal scrolling image carousel with active state
+   ============================================================================= */
+
+.carousel-container {
+  position: relative;
+  margin-top: 24px;
+  width: 100%;
+  overflow: visible;
+  mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+}
+
+.carousel-track {
+  display: flex;
+  gap: var(--space-xl);
+  overflow-x: auto;
+  scroll-behavior: auto;
+  padding: 20px 5vw;
+  align-items: center;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   CAROUSEL ITEM
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.carousel-item {
+  position: relative;
+  flex: 0 0 auto;
+  height: 320px;
+  width: auto;
+  border: var(--border-retro);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  padding: 0;
+  background: var(--bg-card);
+  cursor: pointer;
+  box-shadow: var(--shadow-retro-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(0) scale(1);
+  transition: transform 0.42s var(--ease-out), 
+              box-shadow 0.42s var(--ease-out);
+}
+
+.carousel-item img {
+  height: 100%;
+  width: auto;
+  min-width: 1px;
+  object-fit: contain;
+  display: block;
+}
+
+.carousel-item.is-active {
+  transform: translateY(-8px) scale(1.01);
+  box-shadow: 4px 6px 0px var(--ink);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   GIF BADGE
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.gif-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #eaeaea;
+  color: var(--ink);
+  font-size: 0.64rem;
+  font-weight: 900;
+  line-height: 1.0;
+  padding: 0.20rem 0.28rem 0.02rem;
+  border: var(--border-retro);
+  border-radius: var(--radius-sm);
+  pointer-events: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   CAROUSEL HINT
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.carousel-hint {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: var(--space-sm);
+  opacity: 0.6;
+}
+
+.carousel-caption {
+  text-align: center;
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ABOUT PAGE CAROUSEL
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.about-carousel {
+  margin-top: 0.75rem;
+  margin-bottom: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   RESPONSIVE
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 720px) {
+  .carousel-item {
+    height: 220px;
+  }
+
+  .carousel-container {
+    mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+  }
+}
+
+@media (max-width: 720px) and (hover: none) {
+  .carousel-track {
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .carousel-item {
+    scroll-snap-align: center;
+  }
+}

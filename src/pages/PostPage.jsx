@@ -1,18 +1,21 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import posts from './posts';
-import Header from './components/Header';
-import AboutPanel from './components/AboutPanel';
-import CodeBlock from './components/CodeBlock';
-import { formatDate } from './utils';
+import { usePageTitle, useTouchHover } from '../hooks';
+import { posts } from '../data';
+import { formatDate } from '../utils/formatDate';
+import { Header } from '../components/layout';
+import { AboutPanel, CodeBlock, Lightbox } from '../components/features';
+import { Pill } from '../components/ui';
 
 /**
  * Component that renders post content with CodeBlock components
  * replacing the placeholder divs
  */
 const PostContent = ({ html, codeBlocks, onImageClick }) => {
-  const containerRef = useRef(null);
-  const touchStateRef = useRef({ timer: null, startX: 0, startY: 0, activeEl: null });
+  const { containerRef } = useTouchHover({
+    selector: 'IMG',
+    hoverClass: 'touch-hover',
+  });
 
   // Parse HTML and find code block placeholders
   const contentParts = useMemo(() => {
@@ -62,68 +65,6 @@ const PostContent = ({ html, codeBlocks, onImageClick }) => {
     return parts;
   }, [html, codeBlocks]);
 
-  // Touch handling for images
-  useEffect(() => {
-    if (!containerRef.current) return;
-    const container = containerRef.current;
-    const state = touchStateRef.current;
-    const HOLD_DELAY = 120;
-    const MOVE_THRESHOLD = 10;
-
-    const clearTouchState = () => {
-      if (state.timer) {
-        clearTimeout(state.timer);
-        state.timer = null;
-      }
-      if (state.activeEl) {
-        state.activeEl.classList.remove('touch-hover');
-        state.activeEl = null;
-      }
-    };
-
-    const handleTouchStart = (e) => {
-      if (e.target.tagName !== 'IMG') return;
-      const touch = e.touches[0];
-      state.startX = touch.clientX;
-      state.startY = touch.clientY;
-      state.activeEl = e.target;
-      
-      state.timer = setTimeout(() => {
-        if (state.activeEl) {
-          state.activeEl.classList.add('touch-hover');
-        }
-      }, HOLD_DELAY);
-    };
-
-    const handleTouchMove = (e) => {
-      if (!state.timer && !state.activeEl?.classList.contains('touch-hover')) return;
-      const touch = e.touches[0];
-      const dx = Math.abs(touch.clientX - state.startX);
-      const dy = Math.abs(touch.clientY - state.startY);
-      
-      if (dx > MOVE_THRESHOLD || dy > MOVE_THRESHOLD) {
-        clearTouchState();
-      }
-    };
-
-    const handleTouchEnd = () => {
-      clearTouchState();
-    };
-
-    container.addEventListener('touchstart', handleTouchStart, { passive: true });
-    container.addEventListener('touchmove', handleTouchMove, { passive: true });
-    container.addEventListener('touchend', handleTouchEnd, { passive: true });
-    container.addEventListener('touchcancel', handleTouchEnd, { passive: true });
-
-    return () => {
-      clearTouchState();
-      container.removeEventListener('touchstart', handleTouchStart);
-      container.removeEventListener('touchmove', handleTouchMove);
-      container.removeEventListener('touchend', handleTouchEnd);
-      container.removeEventListener('touchcancel', handleTouchEnd);
-    };
-  }, []);
-
   const handleClick = (e) => {
     if (e.target.tagName === 'IMG') {
       onImageClick(e.target.src);
@@ -160,14 +101,10 @@ const PostPage = () => {
   const post = posts.find((p) => p.slug === slug);
   const [selectedImage, setSelectedImage] = useState(null);
 
-  useEffect(() => {
-    if (post) {
-      document.title = `${post.title} - Mohsin Ismail`;
-    } else {
-      document.title = 'Post Not Found - Mohsin Ismail';
-    }
-    window.scrollTo(0, 0);
-  }, [post]);
+  usePageTitle(
+    post ? `${post.title} - Mohsin Ismail` : 'Post Not Found - Mohsin Ismail',
+    { scrollToTop: true, scrollBehavior: 'auto' }
+  );
 
   if (!post) {
     return (
@@ -197,9 +134,9 @@ const PostPage = () => {
           <h1 className="post-title">{post.title}</h1>
           <div className="tag-row">
             {post.tags.map((tag) => (
-              <span key={tag} className="pill small disabled">
+              <Pill key={tag} size="small" variant="disabled" as="span">
                 #{tag}
-              </span>
+              </Pill>
             ))}
           </div>
         </div>
@@ -218,14 +155,11 @@ const PostPage = () => {
       </article>
 
       {/* Lightbox Modal */}
-      {selectedImage && (
-        <div className="lightbox-overlay" onClick={() => setSelectedImage(null)}>
-          <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
-            <img src={selectedImage} alt="Full size view" />
-            <button className="lightbox-close" onClick={() => setSelectedImage(null)}>×</button>
-          </div>
-        </div>
-      )}
+      <Lightbox
+        src={selectedImage}
+        alt="Full size view"
+        onClose={() => setSelectedImage(null)}
+      />
 
       <AboutPanel />
     </div>

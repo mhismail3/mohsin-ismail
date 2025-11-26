@@ -1,0 +1,171 @@
+/* =============================================================================
+   PROJECT DETAIL PAGE STYLES
+   Individual project page with header, description, carousel
+   ============================================================================= */
+
+.project-detail-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xl);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PROJECT HEADER
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.project-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.project-header h1 {
+  font-size: var(--text-4xl);
+  line-height: var(--leading-tight);
+  margin: 0.12em 0 0.24em;
+}
+
+.project-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xl);
+  flex-wrap: wrap;
+  margin: 0.12em 0 0.28em;
+}
+
+.project-title-row h1 {
+  margin: 0;
+}
+
+.project-links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.project-header .tag-row {
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PROJECT CONTENT
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.project-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-base);
+}
+
+.project-description {
+  font-size: var(--text-base);
+  line-height: 1.55;
+  max-width: 720px;
+  margin: 0;
+}
+
+.project-description p {
+  margin-bottom: 0.9rem;
+}
+
+.project-description h2 {
+  font-size: 1.35rem;
+  margin-top: 1.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.project-description h3 {
+  font-size: var(--text-lg);
+  margin-top: 1rem;
+  margin-bottom: 0.4rem;
+}
+
+.project-description ul,
+.project-description ol {
+  margin-top: 0.4rem;
+  margin-bottom: 0.9rem;
+  padding-left: 1.5rem;
+}
+
+.project-description li {
+  margin-bottom: 0.35rem;
+}
+
+.project-description code {
+  font-size: 0.88em;
+  background: rgba(31, 26, 20, 0.06);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   GITHUB CARD (Legacy - if used)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.github-card {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-lg);
+  padding: var(--space-xl);
+  border: var(--border-retro);
+  border-radius: var(--radius-sm);
+  background: var(--bg-white);
+  box-shadow: var(--shadow-retro-sm);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  width: max-content;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.github-card:hover {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px var(--ink);
+  color: var(--ink);
+}
+
+.github-icon {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+}
+
+.github-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.github-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.github-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  color: var(--muted);
+}
+
+.github-url {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  line-height: 1;
+}
+
+.github-arrow {
+  margin-left: var(--space-base);
+  color: var(--muted);
+  transition: transform var(--duration-normal) ease, color var(--duration-normal) ease;
+}
+
+.github-card:hover .github-arrow {
+  color: var(--pine);
+  transform: translateX(2px) translateY(-2px);
+}

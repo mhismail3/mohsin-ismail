@@ -1,0 +1,177 @@
+/* =============================================================================
+   PORTFOLIO PAGE STYLES
+   Moodboard grid, project cards, featured project
+   ============================================================================= */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PORTFOLIO PANEL
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.portfolio-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.portfolio-panel .panel-head {
+  align-items: flex-start;
+}
+
+.portfolio-panel .muted {
+  max-width: 520px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MOODBOARD GRID
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.moodboard {
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-lg);
+  align-items: flex-start;
+  width: 100%;
+}
+
+.moodboard-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
+.moodboard.mobile {
+  flex-direction: column;
+}
+
+.scroll-sentinel {
+  width: 100%;
+  height: 24px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PROJECT CARD
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.project-card {
+  position: relative;
+  border: var(--border-retro);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-retro-sm);
+  overflow: hidden;
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: transform 0.32s var(--ease-out), box-shadow 0.32s var(--ease-out);
+  isolation: isolate;
+  transform: translateZ(0);
+}
+
+.project-media {
+  position: relative;
+  width: 100%;
+  height: auto;
+  display: block;
+  background: var(--bg-card);
+}
+
+.project-media img {
+  width: 100%;
+  height: auto;
+  min-height: 1px;
+  display: block;
+  z-index: 1;
+}
+
+/* Project title pill */
+.project-pill {
+  position: absolute;
+  left: var(--space-lg);
+  bottom: var(--space-lg);
+  margin: 0;
+  z-index: 2;
+  border-radius: var(--radius-full);
+  padding: 0.42rem 0.95rem 0.38rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  max-width: calc(100% - 28px);
+}
+
+.pill-label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: var(--tracking-tight);
+  color: var(--ink);
+  line-height: var(--leading-tight);
+}
+
+/* Desktop hover */
+@media (hover: hover) and (pointer: fine) {
+  .project-card:hover {
+    transform: translateY(-5px) translateZ(0);
+    box-shadow: var(--shadow-hover);
+  }
+}
+
+/* Touch hover */
+.project-card.touch-hover {
+  transform: translateY(-5px) translateZ(0);
+  box-shadow: var(--shadow-hover);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FEATURED PROJECT
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.featured-project-card {
+  display: block;
+  position: relative;
+  border: var(--border-retro);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-retro-sm);
+  overflow: hidden;
+  width: 100%;
+  transition: transform 0.32s var(--ease-out), box-shadow 0.32s var(--ease-out);
+  isolation: isolate;
+  transform: translateZ(0);
+}
+
+.featured-project-media {
+  position: relative;
+  width: 100%;
+  height: auto;
+  display: block;
+  background: var(--bg-card);
+}
+
+.featured-project-media img {
+  width: 100%;
+  height: auto;
+  max-height: 420px;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .featured-project-card:hover {
+    transform: translateY(-5px) translateZ(0);
+    box-shadow: var(--shadow-hover);
+  }
+}
+
+@media (max-width: 640px) {
+  .featured-project-media img {
+    max-height: 280px;
+  }
+}

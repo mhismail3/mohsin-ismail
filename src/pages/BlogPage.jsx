@@ -1,56 +1,14 @@
-import React, { useEffect, useMemo } from 'react';
-import posts, { uniqueTags } from './posts';
-import Header from './components/Header';
-import PostCard from './components/PostCard';
+import React, { useMemo } from 'react';
+import { usePageTitle } from '../hooks';
+import { posts, uniqueTags } from '../data';
+import { Header } from '../components/layout';
+import { PostCard, Pagination, TagCloud } from '../components/features';
+import { Button } from '../components/ui';
 
 const POSTS_PER_PAGE = 10;
 
-const TagCloud = ({ tags, selectedTags, onToggle, onClear }) => (
-  <div className="tag-cloud">
-    {tags.map((tag) => (
-      <button
-        key={tag}
-        type="button"
-        className={`pill ${selectedTags.includes(tag) ? 'active' : ''}`}
-        onClick={() => onToggle(tag)}
-      >
-        #{tag}
-      </button>
-    ))}
-    {selectedTags.length > 0 && onClear && (
-      <button type="button" className="pill reset" onClick={onClear}>
-        Clear tags
-      </button>
-    )}
-  </div>
-);
-
-const Pagination = ({ page, totalPages, onPrev, onNext }) => (
-  <div className="pagination">
-    <button type="button" className="btn outline small" onClick={onPrev} disabled={page === 1}>
-      <span className="pagination-text">Previous</span>
-      <span className="pagination-arrow">←</span>
-    </button>
-    <span className="muted pagination-status">
-      Page {page} of {totalPages}
-    </span>
-    <button
-      type="button"
-      className="btn outline small"
-      onClick={onNext}
-      disabled={page >= totalPages}
-    >
-      <span className="pagination-text">Next</span>
-      <span className="pagination-arrow">→</span>
-    </button>
-  </div>
-);
-
 function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
-  useEffect(() => {
-    document.title = 'Blog - Mohsin Ismail';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, []);
+  usePageTitle('Blog - Mohsin Ismail');
 
   const filteredPosts = useMemo(
     () =>
@@ -84,21 +42,15 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
           <div className="active-tags">
             {selectedTags.length > 0 && (
               <>
-                <div className="tag-cloud">
-                  {selectedTags.map((tag) => (
-                    <button
-                      key={tag}
-                      type="button"
-                      className="pill active small"
-                      onClick={() => handleTagToggle(tag)}
-                    >
-                      #{tag}
-                    </button>
-                  ))}
-                </div>
-                <button type="button" className="btn outline small" onClick={resetTags}>
+                <TagCloud
+                  tags={selectedTags}
+                  selectedTags={selectedTags}
+                  onToggle={handleTagToggle}
+                  showClear={false}
+                />
+                <Button variant="outline" size="small" onClick={resetTags}>
                   Clear tags
-                </button>
+                </Button>
               </>
             )}
           </div>
@@ -136,4 +88,3 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
 }
 
 export default BlogPage;
-

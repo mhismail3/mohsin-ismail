@@ -1,0 +1,103 @@
+/* =============================================================================
+   BUTTON COMPONENT
+   Standard button with variants: primary, outline, ghost, small
+   ============================================================================= */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  border: var(--border-retro);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 1rem 0.55rem 1rem;
+  font-weight: 600;
+  font-size: var(--text-md);
+  line-height: 1.0;
+  background: var(--bg-white);
+  color: var(--ink);
+  box-shadow: var(--shadow-retro-sm);
+  cursor: pointer;
+  transition: transform var(--duration-fast) ease, 
+              box-shadow var(--duration-fast) ease, 
+              background-color var(--duration-fast) ease;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SIZE VARIANTS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.btn.small {
+  padding: 0.45rem 0.8rem 0.35rem 0.8rem;
+  font-size: var(--text-base);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   STYLE VARIANTS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.btn.outline {
+  background: var(--bg-white);
+}
+
+.btn.ghost {
+  background: rgba(31, 26, 20, 0.04);
+  border: 2px solid transparent;
+}
+
+.btn.primary {
+  background: var(--aero);
+  color: var(--bg-white);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   INTERACTIVE STATES
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.btn:hover {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px var(--ink);
+}
+
+.btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FOCUS STATES
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.btn:focus-visible {
+  outline: 2px dashed var(--clay);
+  outline-offset: 4px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SPECIAL VARIANTS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* TL;DR toggle button */
+.btn.tldr-toggle {
+  height: 24px;
+  width: 60px;
+  padding: 0.2rem 0 0;
+}
+
+/* Active state for nav buttons */
+.btn.active {
+  background: #e0f2f1;
+  border-color: var(--pine);
+  color: var(--pine);
+}

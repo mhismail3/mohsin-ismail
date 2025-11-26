@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './Home';
-import BlogPage from './BlogPage';
-import PostPage from './PostPage';
-import AboutPage from './AboutPage';
-import PortfolioPage from './PortfolioPage';
-import ProjectPage from './ProjectPage';
+import {
+  Home,
+  BlogPage,
+  PostPage,
+  AboutPage,
+  PortfolioPage,
+  ProjectPage,
+} from './pages';
 import logoMark from './assets/mohsin.png';
 
 function App() {

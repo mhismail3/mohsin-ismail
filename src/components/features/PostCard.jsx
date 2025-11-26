@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { formatDate } from '../utils';
-import LinkIcon from './LinkIcon';
+import { formatDate } from '../../utils/formatDate';
+import { Icon } from '../ui';
+import Pill from '../ui/Pill';
+import Button from '../ui/Button';
 
 const PostCard = ({ post, onTagClick, selectedTags = [] }) => {
   const [expanded, setExpanded] = useState(false);
@@ -32,14 +34,13 @@ const PostCard = ({ post, onTagClick, selectedTags = [] }) => {
           </h3>
         </div>
         <div className="link-btn-wrapper">
-          <button
-            type="button"
-            className="pill icon-btn"
+          <Pill
+            variant="icon"
             onClick={handleCopyLink}
             aria-label="Copy link to post"
           >
-            <LinkIcon />
-          </button>
+            <Icon name="link" size={16} />
+          </Pill>
           {showToast && <div className="toast">Copied link</div>}
         </div>
         <p className="muted post-summary">{post.summary}</p>
@@ -47,25 +48,26 @@ const PostCard = ({ post, onTagClick, selectedTags = [] }) => {
 
       <div className="tag-row">
         {post.tags.map((tag) => (
-          <button
+          <Pill
             key={tag}
-            type="button"
-            className={`pill small ${selectedTags.includes(tag) ? 'active' : ''}`}
+            size="small"
+            active={selectedTags.includes(tag)}
             onClick={() => onTagClick(tag)}
           >
             #{tag}
-          </button>
+          </Pill>
         ))}
       </div>
 
       <div className="post-actions">
-        <button
-          type="button"
-          className="btn outline small tldr-toggle"
+        <Button
+          variant="outline"
+          size="small"
+          className="tldr-toggle"
           onClick={() => setExpanded((open) => !open)}
         >
           {expanded ? 'hide' : 'tl;dr'}
-        </button>
+        </Button>
       </div>
 
       {post.tldr && (

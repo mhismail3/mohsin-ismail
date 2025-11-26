@@ -2,6 +2,7 @@ import DOMPurify from 'dompurify';
 import matter from 'gray-matter';
 import { marked } from 'marked';
 import { Buffer } from 'buffer';
+import { parseDate } from '../utils/formatDate';
 
 if (typeof globalThis !== 'undefined' && !globalThis.Buffer) {
   globalThis.Buffer = Buffer;
@@ -14,7 +15,7 @@ marked.setOptions({
   headerIds: false,
 });
 
-const rawPosts = import.meta.glob('../posts/*.md', {
+const rawPosts = import.meta.glob('../../public/posts/*.md', {
   query: '?raw',
   import: 'default',
   eager: true,
@@ -38,11 +39,6 @@ const stripMarkdown = (text = '') =>
 const buildExcerpt = (content = '') => {
   const cleaned = stripMarkdown(content);
   return cleaned.length > 180 ? `${cleaned.slice(0, 180)}…` : cleaned;
-};
-
-const parseDate = (value) => {
-  const parsed = value ? new Date(value) : new Date();
-  return Number.isNaN(parsed.getTime()) ? new Date() : parsed;
 };
 
 /**

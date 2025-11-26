@@ -1,0 +1,60 @@
+/* =============================================================================
+   TOAST COMPONENT
+   Notification popups for copy confirmations, etc.
+   ============================================================================= */
+
+.toast {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%) translateY(0);
+  bottom: calc(100% + 10px);
+  background: var(--bg-white);
+  color: var(--ink);
+  border: var(--border-retro);
+  padding: 0.34rem 0.72rem 0.26rem 0.72rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.77rem;
+  font-weight: 600;
+  white-space: nowrap;
+  max-width: calc(100vw - 40px);
+  pointer-events: none;
+  text-align: center;
+  z-index: var(--z-dropdown);
+  box-shadow: 2px 2px 0 rgba(31, 26, 20, 0.15);
+  animation:
+    toast-pop var(--duration-slower) var(--ease-bounce) forwards,
+    toast-fade 0.32s ease forwards 1.5s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toast::after {
+  display: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ANIMATIONS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@keyframes toast-pop {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(8px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+@keyframes toast-fade {
+  0% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(6px) scale(0.99);
+  }
+}

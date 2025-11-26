@@ -1,0 +1,161 @@
+/* =============================================================================
+   BLOG PAGE STYLES
+   Posts listing, pagination, tag filtering
+   ============================================================================= */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TAG CLOUD / FILTER
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.filter-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-top: var(--space-base);
+}
+
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.active-tags {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PAGINATION
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  margin-top: var(--space-sm);
+}
+
+.pagination .btn {
+  min-width: 90px;
+}
+
+.pagination .muted {
+  min-width: 100px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* Hide arrows by default, show text */
+.pagination-arrow {
+  display: none;
+}
+
+.pagination-text {
+  display: inline;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   POST PAGE
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--muted);
+  transition: color var(--duration-normal) ease, transform var(--duration-normal) ease;
+}
+
+.back-link:hover {
+  color: var(--aero);
+  transform: translateX(-4px);
+}
+
+.post-page-head {
+  margin-bottom: 2rem;
+}
+
+.post-page-head .eyebrow {
+  margin-bottom: 0.3rem;
+}
+
+.post-page .post-title {
+  font-size: var(--text-3xl);
+  margin-bottom: 0.5rem;
+  line-height: var(--leading-tight);
+}
+
+.post-page-head .tag-row {
+  margin-top: 0.4rem;
+  margin-bottom: 0;
+}
+
+.post-footer {
+  margin-top: 2.5rem;
+  padding-top: 1rem;
+  padding-bottom: 0;
+  margin-bottom: -0.4rem;
+  border-top: 1px solid var(--line);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   RESPONSIVE - DESKTOP
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (min-width: 840px) {
+  .filter-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   RESPONSIVE - SMALL MOBILE
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 380px) {
+  .pagination {
+    flex-wrap: nowrap;
+    gap: var(--space-sm);
+  }
+  
+  .pagination .btn {
+    min-width: auto;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    position: relative;
+  }
+  
+  .pagination .muted {
+    min-width: auto;
+    font-size: 0.85rem;
+  }
+  
+  /* Show arrows, hide text */
+  .pagination-text {
+    display: none;
+  }
+  
+  .pagination-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-size: 1rem;
+    line-height: 1;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+}

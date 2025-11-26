@@ -1,0 +1,149 @@
+/* =============================================================================
+   PILL COMPONENT
+   Tag/pill buttons with variants: default, active, reset, disabled, icon
+   ============================================================================= */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 0.38rem 0.68rem 0.28rem 0.68rem;
+  border: var(--border-retro);
+  border-radius: var(--radius-sm);
+  background: var(--bg-white);
+  box-shadow: 2px 2px 0px rgba(31, 26, 20, 0.15);
+  font-weight: 600;
+  font-size: 0.82rem;
+  line-height: 1.0;
+  color: var(--ink);
+  -webkit-text-fill-color: var(--ink);
+  cursor: pointer;
+  transition: transform var(--duration-fast) ease, 
+              box-shadow var(--duration-fast) ease, 
+              background-color var(--duration-fast) ease;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SIZE VARIANTS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.pill.small {
+  padding: 0.3rem 0.4rem 0.15rem;
+  font-size: 0.70rem;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   INTERACTIVE STATES
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.pill:hover {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px rgba(31, 26, 20, 0.2);
+  background: #fdfbf7;
+}
+
+.pill:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   STYLE VARIANTS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Active/selected state */
+.pill.active {
+  background: #e0f2f1;
+  border-color: var(--pine);
+  color: var(--pine);
+  -webkit-text-fill-color: var(--pine);
+}
+
+/* Reset/clear button */
+.pill.reset {
+  background: #fbe9e7;
+  border-color: var(--clay);
+  color: var(--clay);
+}
+
+/* Disabled (non-interactive) */
+.pill.disabled {
+  cursor: default;
+  opacity: 1;
+  background: var(--bg-white);
+}
+
+.pill.disabled:hover {
+  transform: none;
+  box-shadow: 2px 2px 0px rgba(31, 26, 20, 0.15);
+  background: var(--bg-white);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ICON BUTTON VARIANT
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.pill.icon-btn {
+  padding: 0;
+  width: 34px;
+  height: 34px;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--muted);
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+  transition: all var(--duration-normal) ease;
+}
+
+.pill.icon-btn:hover {
+  color: var(--pine);
+  background: var(--bg-white);
+  border-color: var(--line);
+  box-shadow: 2px 2px 0px rgba(31, 26, 20, 0.15);
+  transform: translateY(-1px);
+}
+
+.pill.icon-btn:active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PROJECT LINK PILLS (with icons)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.pill.project-link-pill {
+  padding: 0.5rem 0.85rem 0.4rem;
+  font-size: 0.88rem;
+  box-shadow: var(--shadow-retro-sm);
+  border-radius: var(--radius-sm);
+}
+
+.pill.project-link-pill:hover {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px var(--ink);
+}
+
+.pill.project-link-pill:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.pill-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  display: block;
+  position: relative;
+  top: -1px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FOCUS STATES
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.pill:focus-visible {
+  outline: 2px dashed var(--clay);
+  outline-offset: 4px;
+}

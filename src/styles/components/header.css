@@ -1,0 +1,466 @@
+/* =============================================================================
+   HEADER COMPONENT
+   Top bar navigation with brand, menu toggle, and nav links
+   ============================================================================= */
+
+.top-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  position: fixed;
+  top: 18px;
+  left: 14px;
+  right: 14px;
+  max-width: var(--max-width-content);
+  margin: 0 auto;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: var(--z-fixed);
+  transition: padding var(--duration-normal) ease, box-shadow var(--duration-normal) ease;
+  overflow-anchor: none;
+}
+
+/* Spacer to push content below fixed header */
+.top-bar + * {
+  margin-top: var(--header-height-mobile);
+}
+
+.top-bar.expanded {
+  box-shadow: 0 16px 42px rgba(31, 26, 20, 0.12);
+}
+
+.top-bar.flyout.expanded {
+  box-shadow: var(--shadow-soft);
+}
+
+.top-bar.flyout {
+  overflow: visible;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TOP BAR ROW
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.top-bar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-base);
+  position: relative;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.top-bar-row > * {
+  pointer-events: auto;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   BRAND
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-lg);
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: clamp(1.55rem, 4.5vw, 2.2rem);
+  letter-spacing: var(--tracking-tight);
+}
+
+.brand:hover {
+  color: var(--pine);
+}
+
+.brand:focus-visible {
+  outline: 2px dashed var(--clay);
+  outline-offset: 4px;
+}
+
+.brand-mark {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-mark-inner {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--ink);
+  background: var(--cream);
+  box-shadow: var(--shadow-retro-lg);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.brand-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MENU TOGGLE
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.menu-toggle {
+  min-width: 62px;
+  font-weight: 800;
+  letter-spacing: var(--tracking-wide);
+}
+
+.menu-toggle.active {
+  background: #f2f7f4;
+}
+
+/* Toggle icon animation */
+.toggle-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+}
+
+.toggle-icon {
+  position: absolute;
+  opacity: 0;
+  -webkit-transform: scale(0.5) rotate(-90deg);
+  transform: scale(0.5) rotate(-90deg);
+  -webkit-transition: opacity var(--duration-normal) ease-out,
+                      -webkit-transform var(--duration-slow) var(--ease-snap);
+  transition: opacity var(--duration-normal) ease-out,
+              transform var(--duration-slow) var(--ease-snap);
+}
+
+.toggle-icon.visible {
+  opacity: 1;
+  -webkit-transform: scale(1) rotate(0deg);
+  transform: scale(1) rotate(0deg);
+  -webkit-transition: opacity var(--duration-normal) ease-out,
+                      -webkit-transform var(--duration-slower) var(--ease-bounce);
+  transition: opacity var(--duration-normal) ease-out,
+              transform var(--duration-slower) var(--ease-bounce);
+}
+
+.toggle-icon.ellipsis {
+  -webkit-transform: scale(0.5);
+  transform: scale(0.5);
+}
+
+.toggle-icon.ellipsis.visible {
+  -webkit-transform: scale(1);
+  transform: scale(1);
+}
+
+.toggle-icon.chevron-up {
+  -webkit-transform: scale(0.5) rotate(180deg);
+  transform: scale(0.5) rotate(180deg);
+}
+
+.toggle-icon.chevron-up.visible {
+  -webkit-transform: scale(1) rotate(0deg);
+  transform: scale(1) rotate(0deg);
+}
+
+.toggle-icon.chevron-right {
+  -webkit-transform: scale(0.5) rotate(-90deg);
+  transform: scale(0.5) rotate(-90deg);
+}
+
+.toggle-icon.chevron-right.visible {
+  -webkit-transform: scale(1) rotate(0deg);
+  transform: scale(1) rotate(0deg);
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TOP MENU
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.top-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 30px rgba(31, 26, 20, 0.15);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: var(--space-sm);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-12px) scale(0.92);
+  transform-origin: top right;
+  transition: opacity var(--duration-normal) ease, 
+              transform var(--duration-slower) var(--ease-bounce);
+  z-index: var(--z-sticky);
+  min-width: 140px;
+}
+
+.top-menu.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+.top-menu-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: var(--space-xs);
+}
+
+.top-menu .btn.active {
+  background: #e0f2f1;
+  border-color: var(--pine);
+  color: var(--pine);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   DESKTOP NAV
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.top-menu.desktop {
+  position: absolute;
+  top: 50%;
+  right: 90px;
+  flex-direction: row;
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  padding: 0;
+  gap: var(--space-sm);
+  min-width: 0;
+  z-index: var(--z-base);
+  transform: translateY(-50%);
+  opacity: 1;
+  pointer-events: none;
+  transition: none;
+}
+
+.top-menu.desktop.visible {
+  pointer-events: auto;
+}
+
+.top-menu.desktop.closing {
+  pointer-events: none;
+}
+
+.top-menu.desktop .top-menu-content {
+  flex-direction: row;
+  gap: var(--space-sm);
+  width: auto;
+}
+
+/* Desktop nav button animations */
+.top-menu.desktop .btn {
+  opacity: 0;
+  -webkit-transform: translateX(-16px) scale(0.88) rotate(-3deg);
+  transform: translateX(-16px) scale(0.88) rotate(-3deg);
+  -webkit-transform-origin: left center;
+  transform-origin: left center;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transition: opacity var(--duration-slow) var(--ease-out),
+                      -webkit-transform 0.42s var(--ease-bounce);
+  transition: opacity var(--duration-slow) var(--ease-out),
+              transform 0.42s var(--ease-bounce);
+  -webkit-transition-delay: var(--btn-stagger, 0ms);
+  transition-delay: var(--btn-stagger, 0ms);
+}
+
+.top-menu.desktop.visible .btn {
+  opacity: 1;
+  -webkit-transform: translateX(0) scale(1) rotate(0deg);
+  transform: translateX(0) scale(1) rotate(0deg);
+}
+
+.top-menu.desktop .btn:nth-child(1) { --btn-stagger: 30ms; }
+.top-menu.desktop .btn:nth-child(2) { --btn-stagger: 75ms; }
+.top-menu.desktop .btn:nth-child(3) { --btn-stagger: 120ms; }
+
+/* Desktop closing animation */
+.top-menu.desktop.visible.closing .btn {
+  opacity: 0;
+  -webkit-transform: translateX(18px) scale(0.85) rotate(4deg);
+  transform: translateX(18px) scale(0.85) rotate(4deg);
+  -webkit-transition: opacity 0.16s cubic-bezier(0.4, 0, 1, 1),
+                      -webkit-transform var(--duration-normal) var(--ease-snap);
+  transition: opacity 0.16s cubic-bezier(0.4, 0, 1, 1),
+              transform var(--duration-normal) var(--ease-snap);
+  -webkit-transition-delay: var(--btn-stagger-close, 0ms);
+  transition-delay: var(--btn-stagger-close, 0ms);
+}
+
+.top-menu.desktop.visible.closing .btn:nth-child(1) { --btn-stagger-close: 80ms; }
+.top-menu.desktop.visible.closing .btn:nth-child(2) { --btn-stagger-close: 40ms; }
+.top-menu.desktop.visible.closing .btn:nth-child(3) { --btn-stagger-close: 0ms; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MOBILE NAV
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.top-menu.mobile {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  min-width: auto;
+  right: 14px;
+  top: calc(100% - 5px);
+  gap: var(--space-md);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  align-items: flex-end;
+  transform: none;
+  opacity: 1;
+  transition: none;
+}
+
+.top-menu.mobile.closing {
+  pointer-events: none;
+}
+
+.top-menu.mobile .top-menu-content {
+  width: auto;
+  gap: var(--space-md);
+  align-items: flex-end;
+}
+
+/* Mobile nav button animations */
+.top-menu.mobile .btn {
+  min-width: auto;
+  padding-left: 0.9rem;
+  padding-right: 0.9rem;
+  opacity: 0;
+  -webkit-transform: translateY(-12px) scale(0.88) rotate(-2deg);
+  transform: translateY(-12px) scale(0.88) rotate(-2deg);
+  -webkit-transform-origin: right center;
+  transform-origin: right center;
+  box-shadow: 1px 1px 0px var(--ink);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transition: opacity 0.28s var(--ease-out),
+                      -webkit-transform var(--duration-slower) var(--ease-bounce),
+                      box-shadow 0.32s var(--ease-bounce);
+  transition: opacity 0.28s var(--ease-out),
+              transform var(--duration-slower) var(--ease-bounce),
+              box-shadow 0.32s var(--ease-bounce);
+  -webkit-transition-delay: var(--btn-stagger, 0ms);
+  transition-delay: var(--btn-stagger, 0ms);
+}
+
+.top-menu.mobile.visible .btn {
+  opacity: 1;
+  -webkit-transform: translateY(0) scale(1) rotate(0deg);
+  transform: translateY(0) scale(1) rotate(0deg);
+  box-shadow: 3px 3px 0px var(--ink);
+}
+
+.top-menu.mobile .btn:nth-child(1) { --btn-stagger: 20ms; }
+.top-menu.mobile .btn:nth-child(2) { --btn-stagger: 70ms; }
+.top-menu.mobile .btn:nth-child(3) { --btn-stagger: 120ms; }
+
+/* Mobile closing animation */
+.top-menu.mobile.visible.closing .btn {
+  opacity: 0;
+  -webkit-transform: translateY(-14px) scale(0.85) rotate(3deg);
+  transform: translateY(-14px) scale(0.85) rotate(3deg);
+  box-shadow: 0px 0px 0px var(--ink);
+  -webkit-transition: opacity 0.18s cubic-bezier(0.4, 0, 1, 1),
+                      -webkit-transform 0.24s var(--ease-snap),
+                      box-shadow 0.18s ease-out;
+  transition: opacity 0.18s cubic-bezier(0.4, 0, 1, 1),
+              transform 0.24s var(--ease-snap),
+              box-shadow 0.18s ease-out;
+  -webkit-transition-delay: var(--btn-stagger-close, 0ms);
+  transition-delay: var(--btn-stagger-close, 0ms);
+}
+
+.top-menu.mobile.visible.closing .btn:nth-child(1) { --btn-stagger-close: 80ms; }
+.top-menu.mobile.visible.closing .btn:nth-child(2) { --btn-stagger-close: 40ms; }
+.top-menu.mobile.visible.closing .btn:nth-child(3) { --btn-stagger-close: 0ms; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   RESPONSIVE
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (min-width: 840px) {
+  .top-bar {
+    padding: 14px 18px;
+    top: 28px;
+    left: 28px;
+    right: 28px;
+  }
+  
+  .top-bar + * {
+    margin-top: var(--header-height-desktop);
+  }
+}
+
+@media (max-width: 640px) {
+  .top-bar {
+    top: 20px;
+    left: 14px;
+    right: 14px;
+  }
+  
+  .top-bar + * {
+    margin-top: var(--header-height-mobile);
+  }
+
+  .brand {
+    font-size: 1.65rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .brand {
+    gap: var(--space-md);
+    font-size: 1.35rem;
+  }
+  
+  .brand-mark-inner {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .top-bar {
+    padding: 10px 12px;
+  }
+  
+  .menu-toggle {
+    min-width: 52px;
+    padding-left: 0.6rem;
+    padding-right: 0.6rem;
+  }
+}

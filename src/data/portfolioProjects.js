@@ -2,6 +2,7 @@ import DOMPurify from 'dompurify';
 import matter from 'gray-matter';
 import { marked } from 'marked';
 import { Buffer } from 'buffer';
+import { parseDate, formatShortDate } from '../utils/formatDate';
 
 // Polyfill Buffer for gray-matter in browser
 if (typeof globalThis !== 'undefined' && !globalThis.Buffer) {
@@ -22,27 +23,16 @@ const sanitizeConfig = {
 };
 
 // Import all project.md files from public/projects/{slug}/ directories
-const rawProjects = import.meta.glob('../public/projects/*/project.md', {
+const rawProjects = import.meta.glob('../../public/projects/*/project.md', {
   query: '?raw',
   import: 'default',
   eager: true,
 });
 
-const parseDate = (value) => {
-  const parsed = value ? new Date(value) : new Date();
-  return Number.isNaN(parsed.getTime()) ? new Date() : parsed;
-};
-
-const formatDate = (value) => {
-  const date = parseDate(value);
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  return `${months[date.getMonth()]} ${date.getFullYear()}`;
-};
-
 const portfolioProjects = Object.entries(rawProjects).map(([path, raw]) => {
   const { data, content } = matter(raw);
   
-  // Extract slug from path: ../public/projects/{slug}/project.md
+  // Extract slug from path: ../../public/projects/{slug}/project.md
   const pathParts = path.split('/');
   const slugIndex = pathParts.indexOf('projects') + 1;
   const fileSlug = pathParts[slugIndex] || 'project';
@@ -61,7 +51,7 @@ const portfolioProjects = Object.entries(rawProjects).map(([path, raw]) => {
   return {
     slug,
     title: data.title || fileSlug,
-    date: formatDate(data.date),
+    date: formatShortDate(data.date),
     dateValue: parseDate(data.date),
     summary: data.summary || '',
     description,

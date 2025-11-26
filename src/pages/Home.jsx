@@ -1,17 +1,14 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import posts from './posts';
-import portfolioProjects from './portfolioProjects';
-import Header from './components/Header';
-import AboutPanel from './components/AboutPanel';
-import PostCard from './components/PostCard';
+import { usePageTitle } from '../hooks';
+import { posts, portfolioProjects } from '../data';
+import { Header } from '../components/layout';
+import { AboutPanel, PostCard } from '../components/features';
 
 const RECENT_POSTS_COUNT = 3;
 
 function Home() {
-  useEffect(() => {
-    document.title = 'Mohsin Ismail';
-  }, []);
+  usePageTitle('Mohsin Ismail');
 
   // Get the most recent portfolio project
   const featuredProject = portfolioProjects[0];

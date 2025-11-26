@@ -1,53 +1,51 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Header from './components/Header';
-import AboutPanel from './components/AboutPanel';
-import portfolioProjects from './portfolioProjects';
+import { usePageTitle, useTouchHover, useIsMobile } from '../hooks';
+import { portfolioProjects } from '../data';
+import { Header } from '../components/layout';
+import { AboutPanel } from '../components/features';
 
 const INITIAL_ITEMS = 10;
 const LOAD_BATCH = 4;
 const MOBILE_BREAKPOINT = 720;
-const TOUCH_HOLD_DELAY = 120;
-const TOUCH_MOVE_THRESHOLD = 10;
 
-// Process project for display - works with both local and external images
+// Process project for display
 const processProject = (project, index) => ({
   ...project,
   id: `${project.slug}-${index}`,
 });
 
 const PortfolioPage = () => {
-  const [isMobile, setIsMobile] = useState(false);
+  const isMobile = useIsMobile(MOBILE_BREAKPOINT);
   const [columnCount, setColumnCount] = useState(3);
   
-  // Initialize with first items (or all if fewer than INITIAL_ITEMS)
+  // Initialize with first items
   const [items, setItems] = useState(() => 
     portfolioProjects.slice(0, INITIAL_ITEMS).map(processProject)
   );
   
   const cursorRef = useRef(Math.min(INITIAL_ITEMS, portfolioProjects.length));
   const sentinelRef = useRef(null);
-  const moodboardRef = useRef(null);
-  const touchStateRef = useRef({ timer: null, startX: 0, startY: 0, activeEl: null });
   const [hasMore, setHasMore] = useState(portfolioProjects.length > INITIAL_ITEMS);
 
-  useEffect(() => {
-    document.title = 'Portfolio - Mohsin Ismail';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, []);
+  // Touch hover handling
+  const { containerRef: moodboardRef } = useTouchHover({
+    selector: '.project-card',
+    hoverClass: 'touch-hover',
+  });
 
-  useEffect(() => {
+  usePageTitle('Portfolio - Mohsin Ismail');
+
+  // Handle responsive column count
+  React.useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
       if (width <= MOBILE_BREAKPOINT) {
         setColumnCount(1);
-        setIsMobile(true);
       } else if (width <= 1080) {
         setColumnCount(2);
-        setIsMobile(false);
       } else {
         setColumnCount(3);
-        setIsMobile(false);
       }
     };
 
@@ -78,7 +76,8 @@ const PortfolioPage = () => {
     });
   }, []);
 
-  useEffect(() => {
+  // Intersection observer for infinite scroll
+  React.useEffect(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel || !hasMore) return undefined;
 
@@ -104,69 +103,6 @@ const PortfolioPage = () => {
     });
     return cols;
   }, [items, columnCount]);
-
-  // Touch handling for project cards - only activate hover on press-and-hold, not scroll
-  useEffect(() => {
-    if (!moodboardRef.current) return;
-    const container = moodboardRef.current;
-    const state = touchStateRef.current;
-
-    const clearTouchState = () => {
-      if (state.timer) {
-        clearTimeout(state.timer);
-        state.timer = null;
-      }
-      if (state.activeEl) {
-        state.activeEl.classList.remove('touch-hover');
-        state.activeEl = null;
-      }
-    };
-
-    const handleTouchStart = (e) => {
-      // Find the project-card parent
-      const card = e.target.closest('.project-card');
-      if (!card) return;
-      
-      const touch = e.touches[0];
-      state.startX = touch.clientX;
-      state.startY = touch.clientY;
-      state.activeEl = card;
-      
-      state.timer = setTimeout(() => {
-        if (state.activeEl) {
-          state.activeEl.classList.add('touch-hover');
-        }
-      }, TOUCH_HOLD_DELAY);
-    };
-
-    const handleTouchMove = (e) => {
-      if (!state.timer && !state.activeEl?.classList.contains('touch-hover')) return;
-      const touch = e.touches[0];
-      const dx = Math.abs(touch.clientX - state.startX);
-      const dy = Math.abs(touch.clientY - state.startY);
-      
-      if (dx > TOUCH_MOVE_THRESHOLD || dy > TOUCH_MOVE_THRESHOLD) {
-        clearTouchState();
-      }
-    };
-
-    const handleTouchEnd = () => {
-      clearTouchState();
-    };
-
-    container.addEventListener('touchstart', handleTouchStart, { passive: true });
-    container.addEventListener('touchmove', handleTouchMove, { passive: true });
-    container.addEventListener('touchend', handleTouchEnd, { passive: true });
-    container.addEventListener('touchcancel', handleTouchEnd, { passive: true });
-
-    return () => {
-      clearTouchState();
-      container.removeEventListener('touchstart', handleTouchStart);
-      container.removeEventListener('touchmove', handleTouchMove);
-      container.removeEventListener('touchend', handleTouchEnd);
-      container.removeEventListener('touchcancel', handleTouchEnd);
-    };
-  }, []);
 
   return (
     <div className="frame">

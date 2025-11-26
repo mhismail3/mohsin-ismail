@@ -1,0 +1,242 @@
+/* =============================================================================
+   POST CARD COMPONENT
+   Blog post preview card with expandable TL;DR
+   ============================================================================= */
+
+.post-card {
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.1rem;
+  background: var(--bg-card);
+  box-shadow: 0 10px 24px rgba(31, 26, 20, 0.08);
+  position: relative;
+}
+
+.post-card h3 {
+  margin: 0;
+  line-height: var(--leading-snug);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   POST HEAD LAYOUT
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.post-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    'meta link'
+    'summary summary';
+  column-gap: var(--space-base);
+  row-gap: var(--space-sm);
+  align-items: flex-start;
+}
+
+.post-meta {
+  grid-area: meta;
+  min-width: 0;
+}
+
+.post-meta .eyebrow {
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.post-meta h3 {
+  margin: 0;
+}
+
+.post-summary {
+  grid-area: summary;
+  margin: 0;
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   LINK BUTTON
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.link-btn-wrapper {
+  grid-area: link;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  justify-self: end;
+  align-self: start;
+  z-index: 2;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   POST TITLE LINK
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.post-title-link {
+  color: var(--ink);
+  text-decoration: none;
+  transition: color var(--duration-normal) ease;
+}
+
+.post-title-link:hover {
+  color: var(--pine);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TAG ROW
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin: var(--space-md) 0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   POST ACTIONS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.post-actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TL;DR EXPANSION
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.post-body-wrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  margin-top: 0;
+  transition: grid-template-rows 0.35s var(--ease-snap),
+              margin-top 0.35s var(--ease-snap);
+  overflow: hidden;
+}
+
+.post-card.expanded .post-body-wrapper {
+  grid-template-rows: 1fr;
+  margin-top: var(--space-base);
+}
+
+.post-body-wrapper > .post-body {
+  min-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.25s ease, transform var(--duration-slow) ease;
+  border-top: 1px dashed var(--line);
+  padding-top: var(--space-base);
+}
+
+.post-card.expanded .post-body-wrapper > .post-body {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity var(--duration-slow) ease var(--duration-fast), 
+              transform 0.35s ease 0.05s;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   POST BODY CONTENT
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.post-body {
+  border-top: 1px dashed var(--line);
+  padding-top: var(--space-base);
+}
+
+.post-body img {
+  max-width: 50%;
+  display: block;
+  margin: 0 auto;
+  border: var(--border-retro);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-retro-sm);
+  cursor: default;
+  transition: transform var(--duration-slower) ease, box-shadow var(--duration-slower) ease;
+}
+
+.post-body video,
+.post-body iframe {
+  max-width: 100%;
+  border: var(--border-retro);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-retro-sm);
+}
+
+.post-body pre {
+  background: #111827;
+  color: #e5e7eb;
+  padding: var(--space-base);
+  border-radius: var(--radius-base);
+  overflow: auto;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   IMAGE HOVER EFFECTS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Desktop hover */
+@media (hover: hover) and (pointer: fine) {
+  .post-body img:hover {
+    transform: translateY(-4px);
+    box-shadow: 4px 12px 8px rgba(31, 26, 20, 0.70);
+  }
+
+  .post-body img:active {
+    transform: translateY(-1px);
+    box-shadow: 4px 5px 2px rgba(31, 26, 20, 0.15);
+  }
+}
+
+/* Touch hover */
+.post-body img.touch-hover {
+  transform: translateY(-4px);
+  box-shadow: 12px 16px 14px rgba(31, 26, 20, 0.58);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FULL CONTENT (Post Page)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.post-body.full-content {
+  font-size: 0.92rem;
+  line-height: 1.5;
+  border-top: none;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.post-body.full-content p {
+  margin-bottom: 0.85rem;
+}
+
+.post-body.full-content h2 {
+  font-size: var(--text-2xl);
+  margin-top: 1.8rem;
+  margin-bottom: 0.6rem;
+}
+
+.post-body.full-content h3 {
+  font-size: 1.2rem;
+  margin-top: 1.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.post-body.full-content img {
+  max-width: 100%;
+  margin: 0;
+  cursor: pointer;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   RESPONSIVE
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .post-body img {
+    max-width: 100%;
+  }
+}
