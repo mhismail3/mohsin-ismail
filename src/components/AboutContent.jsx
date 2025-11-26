@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 const contactLinks = [
   {
@@ -36,49 +36,207 @@ const contactLinks = [
   },
 ];
 
-const AboutContent = () => (
-  <>
-    <div className="eyebrow">About Me</div>
-    <p>
-      I&apos;ve been interested in technology and software development for over 10 years, and I&apos;ve
-      been doing it professionally for the last six and a half. I currently work at Amazon on the
-      Devices &amp; Services Privacy Engineering team. Recently, my team and I have been supporting{' '}
-      <a
-        href="https://www.linkedin.com/posts/mariadelourdeszollo_bee-is-joining-amazon-and-we-couldnt-be-activity-7353453923795378176-zEbR?utm_source=share&utm_medium=member_desktop&rcm=ACoAABayTsIBe2EfZX_vl21PXh5k8rQUW-MHyCA"
-        target="_blank"
-        rel="noreferrer"
-      >
-        Amazon&apos;s acquisition of Bee
-      </a>
-      .
-    </p>
-    <p>
-      My key strength is my attention to detail. I&apos;m a perfectionist, and I can obsess over the
-      tiniest things. But I also love figuring out systems and boring details and helping everyone be
-      more efficient.
-    </p>
-    <p>
-      Lately, I&apos;m all-in on AI and figuring out what the future of all of this (especially as a
-      developer) will be.
-    </p>
-    <div className="contact-section">
-      <h3>Get in touch</h3>
-      <div className="contact-links">
-        {contactLinks.map((link) => (
-          <a
-            key={link.label}
-            className="contact-icon-btn"
-            href={link.href}
-            aria-label={link.label}
-            target={link.external ? '_blank' : undefined}
-            rel={link.external ? 'noreferrer' : undefined}
-          >
-            {link.icon}
-          </a>
-        ))}
+const aboutPhotos = [
+  '/about/gallery-1.JPG',
+  '/about/gallery-2.jpeg',
+  '/about/gallery-3.JPG',
+  '/about/gallery-4.jpeg',
+  '/about/gallery-5.JPG',
+];
+
+const AboutContent = () => {
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const carouselRef = useRef(null);
+  const requestRef = useRef(null);
+  const activeRafRef = useRef(null);
+  const mouseXRef = useRef(0);
+  const isHoveringRef = useRef(false);
+  const [isTouch, setIsTouch] = useState(false);
+  const itemRefs = useRef([]);
+
+  useEffect(() => {
+    const setTouch = () => {
+      if (typeof window === 'undefined') return;
+      setIsTouch(window.matchMedia('(hover: none)').matches);
+    };
+    setTouch();
+    const media = window.matchMedia('(hover: none)');
+    const handler = (e) => setIsTouch(e.matches);
+    media.addEventListener('change', handler);
+    return () => media.removeEventListener('change', handler);
+  }, []);
+
+  const updateActiveItem = useCallback(() => {
+    const track = carouselRef.current;
+    if (!track || !aboutPhotos.length) return;
+
+    const centerX = track.scrollLeft + track.clientWidth / 2;
+
+    let closestIndex = 0;
+    let smallestDistance = Number.POSITIVE_INFINITY;
+
+    itemRefs.current.forEach((node, idx) => {
+      if (!node) return;
+      const itemCenter = node.offsetLeft + node.offsetWidth / 2;
+      const distance = Math.abs(itemCenter - centerX);
+      if (distance < smallestDistance) {
+        smallestDistance = distance;
+        closestIndex = idx;
+      }
+    });
+
+    setActiveIndex((prev) => (prev === closestIndex ? prev : closestIndex));
+  }, []);
+
+  useEffect(() => {
+    const id = requestAnimationFrame(updateActiveItem);
+    return () => cancelAnimationFrame(id);
+  }, [updateActiveItem]);
+
+  const handleScroll = useCallback(() => {
+    if (activeRafRef.current) return;
+    activeRafRef.current = requestAnimationFrame(() => {
+      activeRafRef.current = null;
+      updateActiveItem();
+    });
+  }, [updateActiveItem]);
+
+  useEffect(() => {
+    const handleResize = () => updateActiveItem();
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (activeRafRef.current) {
+        cancelAnimationFrame(activeRafRef.current);
+        activeRafRef.current = null;
+      }
+    };
+  }, [updateActiveItem]);
+
+  // Carousel Animation Logic
+  const animate = useCallback(() => {
+    if (isTouch || !carouselRef.current || !isHoveringRef.current) {
+      requestRef.current = requestAnimationFrame(animate);
+      return;
+    }
+
+    const container = carouselRef.current;
+    const { left, width } = container.getBoundingClientRect();
+    const centerX = left + width / 2;
+
+    const delta = (mouseXRef.current - centerX) / (width / 2);
+
+    if (Math.abs(delta) > 0.1) {
+      const speed = delta * 8;
+      container.scrollLeft += speed;
+    }
+
+    requestRef.current = requestAnimationFrame(animate);
+  }, [isTouch]);
+
+  useEffect(() => {
+    if (!isTouch) {
+      requestRef.current = requestAnimationFrame(animate);
+    }
+    return () => {
+      if (requestRef.current) cancelAnimationFrame(requestRef.current);
+    };
+  }, [isTouch, animate]);
+
+  const handleMouseMove = (e) => {
+    mouseXRef.current = e.clientX;
+    isHoveringRef.current = true;
+  };
+
+  const handleMouseLeave = () => {
+    isHoveringRef.current = false;
+  };
+
+  return (
+    <>
+      <div className="eyebrow about-eyebrow">About Me</div>
+      <p>
+        I&apos;ve been interested in technology and software development for over 10 years, and I&apos;ve
+        been doing it professionally for the last six and a half. I currently work at Amazon on the
+        Devices &amp; Services Privacy Engineering team. Recently, my team and I have been supporting{' '}
+        <a
+          href="https://www.linkedin.com/posts/mariadelourdeszollo_bee-is-joining-amazon-and-we-couldnt-be-activity-7353453923795378176-zEbR?utm_source=share&utm_medium=member_desktop&rcm=ACoAABayTsIBe2EfZX_vl21PXh5k8rQUW-MHyCA"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Amazon&apos;s acquisition of Bee
+        </a>
+        .
+      </p>
+      <p>
+        My key strength is my attention to detail. I&apos;m a perfectionist, and I can obsess over the
+        tiniest things. But I also love figuring out systems and boring details and helping everyone be
+        more efficient.
+      </p>
+      <p>
+        Lately, I&apos;m all-in on AI and figuring out what the future of all of this (especially as a
+        developer) will be.
+      </p>
+
+      {/* Photo Gallery Section */}
+      <div className="photo-gallery-section">
+        <p className="carousel-caption">A snapshot of some things right now</p>
+        <div
+          className="carousel-container about-carousel"
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+        >
+          <div className="carousel-track" ref={carouselRef} onScroll={handleScroll}>
+            {aboutPhotos.map((img, idx) => (
+              <button
+                key={`about-photo-${idx}`}
+                type="button"
+                className={`carousel-item ${activeIndex === idx ? 'is-active' : ''}`}
+                onClick={() => setSelectedImage(img)}
+                ref={(el) => {
+                  itemRefs.current[idx] = el;
+                }}
+              >
+                <img src={img} alt={`About photo ${idx + 1}`} loading="eager" />
+              </button>
+            ))}
+          </div>
+          <div className="carousel-hint">{isTouch ? 'Scroll to view more' : 'Hover sides to scroll'}</div>
+        </div>
       </div>
-    </div>
-  </>
-);
+
+      {/* Lightbox Modal */}
+      {selectedImage && (
+        <div className="lightbox-overlay" onClick={() => setSelectedImage(null)}>
+          <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
+            <img src={selectedImage} alt="About detail" />
+            <button className="lightbox-close" onClick={() => setSelectedImage(null)}>
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="contact-section">
+        <h3>Get in touch</h3>
+        <div className="contact-links">
+          {contactLinks.map((link) => (
+            <a
+              key={link.label}
+              className="contact-icon-btn"
+              href={link.href}
+              aria-label={link.label}
+              target={link.external ? '_blank' : undefined}
+              rel={link.external ? 'noreferrer' : undefined}
+            >
+              {link.icon}
+            </a>
+          ))}
+        </div>
+      </div>
+    </>
+  );
+};
 
 export default AboutContent;

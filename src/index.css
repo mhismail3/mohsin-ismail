@@ -889,6 +889,8 @@ h4 {
 .pagination .muted {
   min-width: 100px;
   text-align: center;
+  font-weight: 600;
+  font-size: 0.85rem;
 }
 
 /* Hide arrows by default, show text */
@@ -1042,6 +1044,36 @@ h4 {
   max-width: 860px;
   width: 100%;
   margin: 0 auto;
+  margin-top: 95px;
+}
+
+@media (min-width: 840px) {
+  .about-page-panel {
+    margin-top: 105px;
+  }
+}
+
+.about-eyebrow {
+  margin-bottom: 1rem;
+}
+
+.photo-gallery-section {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px dashed var(--line);
+}
+
+.about-carousel {
+  margin-top: 0.75rem;
+  margin-bottom: 0;
+}
+
+.carousel-caption {
+  text-align: center;
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--muted);
+  margin: 0;
 }
 
 .portfolio-panel {
@@ -1844,6 +1876,11 @@ h4 {
 @media (max-width: 720px) {
   .carousel-item {
     height: 220px;
+  }
+
+  .carousel-container {
+    mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
   }
 }
 
