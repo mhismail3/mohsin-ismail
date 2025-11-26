@@ -16,9 +16,9 @@ tldr: |
   I've been using this with Sonnet 4.5, and I'm planning to tweak it for Opus 4.5.
 ---
 
-I've been refining a rules file for AI coding assistants over the past few months. The core idea is simple: agents should improve their own operating instructions when they fail, not just fix the immediate problem.
+I've been refining my default agent rules file for agentic coding tools over the past few months. Right now, the core idea I'm testing is: agents should improve their own operating instructions when they fail, not just fix the immediate problem.
 
-Here's the current version:
+Here's the current version I use (tweaked slightly to remove any sensitive info from my job):
 
 ```markdown
 # Agent: Master Protocols
@@ -97,13 +97,11 @@ Format: `YYYY-MM-DD HH-MM-SS - Topic.md`
 
 ## Why self-correction matters
 
-The "You should have..." trigger is the most important part. When I catch the agent doing something wrong, that phrase automatically kicks off a rule update. The agent doesn't just apologize—it has to figure out *why* the rule failed and patch it.
+The "You should have..." trigger is the most important part. When I catch the agent doing something wrong, that phrase automatically kicks off a rule update. The agent doesn't just apologize, it tries to figure out why the rule failed and patch it (with mixed results so far...).
 
-Over time, this creates a feedback loop where the rules get more specific and edge cases get handled. It's like test-driven development, but for agent behavior.
+The idea is that over time, this creates a feedback loop where the rules get more specific and edge cases get handled. It's like test-driven development, but for agent behavior.
 
 ## What's next
 
 I've been running this with **Sonnet 4.5** for the past month. The self-correction loop works well, but I want to test how **Opus 4.5** handles the same ruleset. The hypothesis is that a more capable model will produce better root cause analysis during the update step.
-
-I'll write a follow-up once I have enough data to compare.
 
