@@ -1230,31 +1230,31 @@ h4 {
 }
 
 .post-body.full-content {
-  font-size: 1.05rem;
-  line-height: 1.6;
+  font-size: 0.92rem;
+  line-height: 1.5;
   border-top: none;
   margin-top: 0;
   padding-top: 0;
 }
 
 .post-body.full-content p {
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.85rem;
 }
 
 .post-body.full-content h2 {
-  font-size: 1.8rem;
-  margin-top: 2.5rem;
-  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  margin-top: 1.8rem;
+  margin-bottom: 0.6rem;
 }
 
 .post-body.full-content h3 {
-  font-size: 1.4rem;
-  margin-top: 2rem;
-  margin-bottom: 0.8rem;
+  font-size: 1.2rem;
+  margin-top: 1.4rem;
+  margin-bottom: 0.5rem;
 }
 
 .post-footer {
-  margin-top: 4rem;
+  margin-top: 2.5rem;
   padding-top: 1rem;
   padding-bottom: 0;
   margin-bottom: -0.4rem;
@@ -1894,7 +1894,7 @@ h4 {
 
 /* Post body code block override - when in .post-body */
 .post-body .code-block {
-  margin: 1.5rem 0;
+  margin: 1rem 0;
 }
 
 .post-body .code-block pre {
