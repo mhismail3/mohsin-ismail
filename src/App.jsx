@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './Home';
+import BlogPage from './BlogPage';
 import PostPage from './PostPage';
 import AboutPage from './AboutPage';
 import PortfolioPage from './PortfolioPage';
@@ -34,10 +35,11 @@ function App() {
     <Router>
       <div className="app">
         <Routes>
+          <Route path="/" element={<Home />} />
           <Route
-            path="/"
+            path="/blog"
             element={
-              <Home
+              <BlogPage
                 selectedTags={selectedTags}
                 setSelectedTags={setSelectedTags}
                 page={page}

@@ -59,3 +59,4 @@ Updated `.post-body .code-block`:
 - Proportionally smaller headings maintain visual hierarchy without excessive whitespace
 - Overall more compact layout better suited for technical blog posts with code
 
+

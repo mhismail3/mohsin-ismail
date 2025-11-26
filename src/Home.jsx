@@ -1,135 +1,81 @@
-import React, { useEffect, useMemo } from 'react';
-import posts, { uniqueTags } from './posts';
+import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import posts from './posts';
+import portfolioProjects from './portfolioProjects';
 import Header from './components/Header';
 import AboutPanel from './components/AboutPanel';
 import PostCard from './components/PostCard';
 
-const POSTS_PER_PAGE = 10;
+const RECENT_POSTS_COUNT = 3;
 
-const TagCloud = ({ tags, selectedTags, onToggle, onClear }) => (
-  <div className="tag-cloud">
-    {tags.map((tag) => (
-      <button
-        key={tag}
-        type="button"
-        className={`pill ${selectedTags.includes(tag) ? 'active' : ''}`}
-        onClick={() => onToggle(tag)}
-      >
-        #{tag}
-      </button>
-    ))}
-    {selectedTags.length > 0 && onClear && (
-      <button type="button" className="pill reset" onClick={onClear}>
-        Clear tags
-      </button>
-    )}
-  </div>
-);
-
-const Pagination = ({ page, totalPages, onPrev, onNext }) => (
-  <div className="pagination">
-    <button type="button" className="btn outline small" onClick={onPrev} disabled={page === 1}>
-      Previous
-    </button>
-    <span className="muted">
-      Page {page} of {totalPages}
-    </span>
-    <button
-      type="button"
-      className="btn outline small"
-      onClick={onNext}
-      disabled={page >= totalPages}
-    >
-      Next
-    </button>
-  </div>
-);
-
-function Home({ selectedTags, setSelectedTags, page, setPage }) {
+function Home() {
   useEffect(() => {
     document.title = 'Mohsin Ismail';
   }, []);
 
-  const filteredPosts = useMemo(
-    () =>
-      selectedTags.length
-        ? posts.filter((post) => selectedTags.every((tag) => post.tags.includes(tag)))
-        : posts,
-    [selectedTags],
-  );
-
-  const totalPages = Math.max(1, Math.ceil(filteredPosts.length / POSTS_PER_PAGE));
-  const startIndex = (page - 1) * POSTS_PER_PAGE;
-  const visiblePosts = filteredPosts.slice(startIndex, startIndex + POSTS_PER_PAGE);
-  const displayLabel = 'Mohsin Ismail';
-
-  const handlePrev = () => setPage((value) => Math.max(1, value - 1));
-  const handleNext = () => setPage((value) => Math.min(totalPages, value + 1));
-  const handleTagToggle = (tag) =>
-    setSelectedTags((current) =>
-      current.includes(tag) ? current.filter((item) => item !== tag) : [...current, tag],
-    );
-  const resetTags = () => setSelectedTags([]);
+  // Get the most recent portfolio project
+  const featuredProject = portfolioProjects[0];
+  
+  // Get the latest posts (already sorted by date in posts.js)
+  const recentPosts = posts.slice(0, RECENT_POSTS_COUNT);
 
   return (
     <div className="frame">
-      <Header label={displayLabel} onLogoClick={resetTags} />
+      <Header label="Mohsin Ismail" />
 
-      <section className="panel posts-panel">
+      {/* Recent Posts Section */}
+      <section className="panel posts-panel recent-posts-panel">
         <div className="panel-head">
           <div>
-            <div className="eyebrow">Posts</div>
+            <div className="eyebrow">Recent Posts</div>
           </div>
-          <div className="active-tags">
-            {selectedTags.length > 0 && (
-              <>
-                <div className="tag-cloud">
-                  {selectedTags.map((tag) => (
-                    <button
-                      key={tag}
-                      type="button"
-                      className="pill active small"
-                      onClick={() => handleTagToggle(tag)}
-                    >
-                      #{tag}
-                    </button>
-                  ))}
-                </div>
-                <button type="button" className="btn outline small" onClick={resetTags}>
-                  Clear tags
-                </button>
-              </>
-            )}
-          </div>
+          <Link to="/blog" className="see-all-link">
+            View all posts &rarr;
+          </Link>
         </div>
 
         <div className="post-list">
-          {visiblePosts.map((post) => (
-            <PostCard key={post.slug} post={post} onTagClick={handleTagToggle} selectedTags={selectedTags} />
+          {recentPosts.map((post) => (
+            <PostCard 
+              key={post.slug} 
+              post={post} 
+              onTagClick={() => {}} 
+              selectedTags={[]} 
+            />
           ))}
-          {visiblePosts.length === 0 && (
+          {recentPosts.length === 0 && (
             <div className="empty-state">
-              <p>No posts match these tags yet.</p>
+              <p>No posts yet. Check back soon!</p>
             </div>
           )}
         </div>
-
-        <Pagination page={page} totalPages={totalPages} onPrev={handlePrev} onNext={handleNext} />
       </section>
 
-      <section className="panel hero">
-        <div className="eyebrow">Filter by Tag</div>
-        {uniqueTags.length > 0 && (
-          <div className="filter-row">
-            <TagCloud
-              tags={uniqueTags}
-              selectedTags={selectedTags}
-              onToggle={handleTagToggle}
-              onClear={resetTags}
-            />
+      {/* Featured Project Section */}
+      {featuredProject && (
+        <section className="panel featured-project-panel">
+          <div className="panel-head">
+            <div>
+              <div className="eyebrow">Latest Project</div>
+            </div>
+            <Link to="/portfolio" className="see-all-link">
+              View all projects &rarr;
+            </Link>
           </div>
-        )}
-      </section>
+          <Link to={`/portfolio/${featuredProject.slug}`} className="featured-project-card">
+            <div className="featured-project-media">
+              <img
+                src={featuredProject.image}
+                alt={featuredProject.title}
+                loading="eager"
+              />
+              <div className="project-pill">
+                <span className="pill-label">{featuredProject.title}</span>
+              </div>
+            </div>
+          </Link>
+        </section>
+      )}
 
       <AboutPanel />
     </div>

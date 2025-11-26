@@ -29,3 +29,4 @@ Added CSS rule to disable pointer events on images within post card TL;DR sectio
 - `pointer-events: none` prevents all mouse/touch interaction including clicks
 - `cursor: default` ensures no pointer/zoom cursor appears on hover
 
+

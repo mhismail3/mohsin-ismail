@@ -3,14 +3,15 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import logoMark from '../assets/mohsin.png';
 
 const NAV_LINKS = [
+  { label: 'Blog', path: '/blog' },
   { label: 'Portfolio', path: '/portfolio' },
   { label: 'About', path: '/about' },
 ];
 
 // Duration for the longest close animation (matches CSS)
-// Mobile: 0.24s transform + 50ms stagger = ~290ms
-// Desktop: 0.22s transform + 45ms stagger = ~265ms
-const CLOSE_ANIMATION_DURATION = 300;
+// Mobile: 0.24s transform + 80ms stagger = ~320ms
+// Desktop: 0.22s transform + 80ms stagger = ~300ms
+const CLOSE_ANIMATION_DURATION = 350;
 
 const Header = ({ label, onLogoClick }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -82,7 +83,8 @@ const Header = ({ label, onLogoClick }) => {
   const handleHome = () => {
     if (onLogoClick) {
       onLogoClick();
-    } else if (location.pathname !== '/') {
+    }
+    if (location.pathname !== '/') {
       navigate('/');
     }
     closeMenu();

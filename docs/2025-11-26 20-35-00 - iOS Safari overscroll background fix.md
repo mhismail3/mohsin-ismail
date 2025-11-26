@@ -41,3 +41,4 @@ body {
 ## Rationale
 
 The previous gradient with radial overlays couldn't be reliably extended into iOS Safari's overscroll areas. A solid color provides a seamless experience while maintaining the warm, clean aesthetic.
+

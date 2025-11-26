@@ -103,3 +103,4 @@ The idea is that over time, this creates a feedback loop where the rules get mor
 
 I've been running this with **Sonnet 4.5** for the past month. The self-correction loop works well, but I want to test how **Opus 4.5** handles the same ruleset. The hypothesis is that a more capable model will produce better root cause analysis during the update step.
 
+

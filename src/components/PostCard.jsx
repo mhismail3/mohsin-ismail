@@ -68,13 +68,15 @@ const PostCard = ({ post, onTagClick, selectedTags = [] }) => {
         </button>
       </div>
 
-      {expanded && post.tldr && (
-        <div
-          className="post-body"
-          dangerouslySetInnerHTML={{
-            __html: post.tldr,
-          }}
-        />
+      {post.tldr && (
+        <div className="post-body-wrapper">
+          <div
+            className="post-body"
+            dangerouslySetInnerHTML={{
+              __html: post.tldr,
+            }}
+          />
+        </div>
       )}
     </article>
   );

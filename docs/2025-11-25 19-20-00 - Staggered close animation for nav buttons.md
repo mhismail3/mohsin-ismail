@@ -37,3 +37,4 @@ Implemented a proper closing animation sequence:
 - `src/index.css` - Added `.closing` CSS rules with reversed stagger
 
 
+

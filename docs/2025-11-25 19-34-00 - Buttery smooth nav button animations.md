@@ -67,3 +67,4 @@ Removed competing transitions from the menu container - it now stays perfectly s
 5. **Proper timing** - Opacity leads transform so buttons don't "pop" in
 6. **Different open/close directions** - Open tilts one way, close tilts opposite
 
+
