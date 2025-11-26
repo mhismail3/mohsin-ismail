@@ -28,3 +28,4 @@ The date frontmatter now uses ISO 8601 format with timezone offset (`2025-11-25T
 - `src/utils.js` - Updated formatDate function
 - `posts/2025-11-25-agent-rules.md` - New post (created)
 - `posts/2025-11-15-tactile-ui-field-notes.md` - Removed
+

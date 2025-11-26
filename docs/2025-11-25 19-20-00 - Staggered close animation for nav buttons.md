@@ -36,3 +36,4 @@ Implemented a proper closing animation sequence:
 - `src/components/Header.jsx` - Added closing state management
 - `src/index.css` - Added `.closing` CSS rules with reversed stagger
 
+

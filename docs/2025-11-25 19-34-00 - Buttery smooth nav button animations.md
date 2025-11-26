@@ -66,3 +66,4 @@ Removed competing transitions from the menu container - it now stays perfectly s
 4. **Shadow animates** - The retro shadow grows/shrinks with the button
 5. **Proper timing** - Opacity leads transform so buttons don't "pop" in
 6. **Different open/close directions** - Open tilts one way, close tilts opposite
+

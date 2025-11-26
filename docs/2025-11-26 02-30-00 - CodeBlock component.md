@@ -47,3 +47,4 @@ import CodeBlock from './components/CodeBlock';
 
 ## Demo Location
 The component is demonstrated in the "Field notes on tactile UI" post at `/#/posts/2025-11-15-field-notes` with a sample React hook implementation.
+

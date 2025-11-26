@@ -60,3 +60,4 @@ To add a new project:
 2. Add images: `cover.jpg` + `gallery-*.{jpg,png}`
 3. Add entry to `portfolioProjects.js` with markdown description
 
+

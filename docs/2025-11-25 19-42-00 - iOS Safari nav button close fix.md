@@ -66,3 +66,4 @@ Test on iOS Safari by:
 2. Tap the "..." button to show nav
 3. Tap the up arrow to hide nav
 4. Buttons should now animate out properly
+

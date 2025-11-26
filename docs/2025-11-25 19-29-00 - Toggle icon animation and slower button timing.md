@@ -35,3 +35,4 @@ Also increased `CLOSE_ANIMATION_DURATION` constant from 180ms → 220ms to match
 - `src/components/Header.jsx` - Restructured toggle button with both icons
 - `src/index.css` - Added `.toggle-icon-wrap` and `.toggle-icon` styles, updated button timing
 
+

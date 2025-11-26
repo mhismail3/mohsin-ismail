@@ -37,3 +37,4 @@ const url = `${window.location.origin}/#/posts/${post.slug}`;
 ## Rationale
 
 HashRouter uses the URL hash (`#`) to manage client-side routing, which is necessary for GitHub Pages hosting where server-side routing isn't available. All internal links must include the `/#` prefix for the router to properly handle them.
+

@@ -32,3 +32,4 @@ Reduced the height of the code block header component to save vertical space.
 ## Result
 
 The code block header is now more compact, saving approximately 30-40% vertical space while maintaining readability and the retro aesthetic.
+
