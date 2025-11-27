@@ -59,16 +59,18 @@ const PostCard = ({ post, onTagClick, selectedTags = [] }) => {
         ))}
       </div>
 
-      <div className="post-actions">
-        <Button
-          variant="outline"
-          size="small"
-          className="tldr-toggle"
-          onClick={() => setExpanded((open) => !open)}
-        >
-          {expanded ? 'hide' : 'tl;dr'}
-        </Button>
-      </div>
+      {post.tldr && (
+        <div className="post-actions">
+          <Button
+            variant="outline"
+            size="small"
+            className="tldr-toggle"
+            onClick={() => setExpanded((open) => !open)}
+          >
+            {expanded ? 'hide' : 'tl;dr'}
+          </Button>
+        </div>
+      )}
 
       {post.tldr && (
         <div className="post-body-wrapper">
