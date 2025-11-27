@@ -93,6 +93,11 @@
   margin: var(--space-md) 0;
 }
 
+/* Remove bottom margin when tag-row is the last element (no tl;dr) */
+.post-card > .tag-row:last-child {
+  margin-bottom: 0;
+}
+
 /* ─────────────────────────────────────────────────────────────────────────────
    POST ACTIONS
    ───────────────────────────────────────────────────────────────────────────── */
@@ -107,46 +112,29 @@
    ───────────────────────────────────────────────────────────────────────────── */
 
 .post-body-wrapper {
-  display: grid;
-  grid-template-rows: 0fr;
-  margin-top: 0;
   overflow: hidden;
+  max-height: 0;
+  margin-top: 0;
+  opacity: 0;
   pointer-events: none;
-  transition: grid-template-rows 0.35s var(--ease-snap),
-              margin-top 0.35s var(--ease-snap);
+  transition: max-height 0.3s ease-out,
+              margin-top 0.3s ease-out,
+              opacity 0.2s ease;
 }
 
 .post-card.expanded .post-body-wrapper {
-  grid-template-rows: 1fr;
+  max-height: 800px;
   margin-top: var(--space-base);
+  opacity: 1;
   pointer-events: auto;
+  transition: max-height 0.4s ease-in,
+              margin-top 0.3s ease-out,
+              opacity 0.3s ease 0.1s;
 }
 
 .post-body-wrapper > .post-body {
-  min-height: 0;
-  overflow: hidden;
-  opacity: 0;
-  transform: translateY(-8px);
-  transition: opacity 0.25s ease,
-              transform var(--duration-slow) ease,
-              padding-top 0.35s var(--ease-snap),
-              border-top-width 0.35s var(--ease-snap);
   border-top: 1px dashed var(--line);
   padding-top: var(--space-base);
-}
-
-.post-card.expanded .post-body-wrapper > .post-body {
-  opacity: 1;
-  transform: translateY(0);
-  transition: opacity var(--duration-slow) ease var(--duration-fast), 
-              transform 0.35s ease 0.05s,
-              padding-top 0.35s var(--ease-snap),
-              border-top-width 0.35s var(--ease-snap);
-}
-
-.post-card:not(.expanded) .post-body-wrapper > .post-body {
-  border-top-width: 0;
-  padding-top: 0;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
