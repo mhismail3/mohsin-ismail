@@ -127,7 +127,10 @@
   overflow: hidden;
   opacity: 0;
   transform: translateY(-8px);
-  transition: opacity 0.25s ease, transform var(--duration-slow) ease;
+  transition: opacity 0.25s ease,
+              transform var(--duration-slow) ease,
+              padding-top 0.35s var(--ease-snap),
+              border-top-width 0.35s var(--ease-snap);
   border-top: 1px dashed var(--line);
   padding-top: var(--space-base);
 }
@@ -136,11 +139,13 @@
   opacity: 1;
   transform: translateY(0);
   transition: opacity var(--duration-slow) ease var(--duration-fast), 
-              transform 0.35s ease 0.05s;
+              transform 0.35s ease 0.05s,
+              padding-top 0.35s var(--ease-snap),
+              border-top-width 0.35s var(--ease-snap);
 }
 
 .post-card:not(.expanded) .post-body-wrapper > .post-body {
-  border-top: 0;
+  border-top-width: 0;
   padding-top: 0;
 }
 
