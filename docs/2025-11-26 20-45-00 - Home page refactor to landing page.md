@@ -71,3 +71,4 @@ The home page now serves as a "sample" of the entire website, giving visitors an
 
 This creates a more engaging first impression compared to jumping straight into a blog listing.
 
+

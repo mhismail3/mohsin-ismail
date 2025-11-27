@@ -30,3 +30,4 @@ Added CSS rule to disable pointer events on images within post card TL;DR sectio
 - `cursor: default` ensures no pointer/zoom cursor appears on hover
 
 
+

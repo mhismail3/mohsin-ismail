@@ -183,3 +183,4 @@ const Icon = ({ name, size = 16, className = '', ...props }) => {
 };
 
 export default Icon;
+

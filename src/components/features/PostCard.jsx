@@ -85,3 +85,4 @@ const PostCard = ({ post, onTagClick, selectedTags = [] }) => {
 };
 
 export default PostCard;
+
