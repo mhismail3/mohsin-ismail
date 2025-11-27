@@ -24,3 +24,4 @@ const usePageTitle = (title, { scrollToTop = true, scrollBehavior = 'smooth' } =
 export default usePageTitle;
 
 
+
