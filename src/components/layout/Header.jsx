@@ -17,6 +17,7 @@ const Header = ({ label, onLogoClick }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const closeTimeoutRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -28,6 +29,17 @@ const Header = ({ label, onLogoClick }) => {
         clearTimeout(closeTimeoutRef.current);
       }
     };
+  }, []);
+
+  // Track scroll position for elevated shadow effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    
+    handleScroll(); // Check initial state
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const closeMenu = useCallback(() => {
@@ -113,7 +125,7 @@ const Header = ({ label, onLogoClick }) => {
     }
   };
 
-  const headerClass = `top-bar ${isOpen && !isMobile ? 'expanded' : ''} ${isMobile ? '' : 'flyout'}`;
+  const headerClass = `top-bar ${isScrolled ? 'scrolled' : ''} ${isOpen && !isMobile ? 'expanded' : ''} ${isMobile ? '' : 'flyout'}`;
   const menuClass = `top-menu ${isOpen ? 'visible' : ''} ${isClosing ? 'closing' : ''} ${isMobile ? 'mobile' : 'desktop'}`;
 
   return (
