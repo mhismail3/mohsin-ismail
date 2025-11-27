@@ -55,3 +55,4 @@ const Lightbox = ({ src, alt = 'Full size view', onClose }) => {
 
 export default Lightbox;
 
+

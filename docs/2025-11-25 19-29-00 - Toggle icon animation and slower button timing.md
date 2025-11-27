@@ -38,3 +38,4 @@ Also increased `CLOSE_ANIMATION_DURATION` constant from 180ms → 220ms to match
 
 
 
+

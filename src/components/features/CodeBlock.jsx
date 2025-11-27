@@ -108,3 +108,4 @@ const CodeBlock = ({ code, language = 'javascript', maxLines = 10 }) => {
 
 export default CodeBlock;
 
+
