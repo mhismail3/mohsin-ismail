@@ -33,11 +33,7 @@ function Home() {
 
         <div className="post-list">
           {recentPosts.map((post) => (
-            <PostCard 
-              key={post.slug} 
-              post={post} 
-              disableTagClick
-            />
+            <PostCard key={post.slug} post={post} />
           ))}
           {recentPosts.length === 0 && (
             <div className="empty-state">

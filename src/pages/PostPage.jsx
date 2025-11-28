@@ -141,7 +141,11 @@ const PostPage = () => {
           <h1 className="post-title">{post.title}</h1>
           <div className="tag-row">
             {post.tags.map((tag) => (
-              <Pill key={tag} size="small" variant="disabled" as="span">
+              <Pill
+                key={tag}
+                size="small"
+                onClick={() => navigate(`/blog?tag=${encodeURIComponent(tag)}`)}
+              >
                 #{tag}
               </Pill>
             ))}

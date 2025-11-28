@@ -79,17 +79,6 @@
   background: var(--bg-white);
 }
 
-/* Non-interactive span pills (no click behavior) */
-span.pill {
-  cursor: default;
-}
-
-span.pill:hover {
-  transform: none;
-  box-shadow: 2px 2px 0px rgba(31, 26, 20, 0.15);
-  background: var(--bg-white);
-}
-
 /* ─────────────────────────────────────────────────────────────────────────────
    ICON BUTTON VARIANT
    ───────────────────────────────────────────────────────────────────────────── */

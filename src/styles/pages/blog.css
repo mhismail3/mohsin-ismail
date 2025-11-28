@@ -100,8 +100,8 @@
 
 .post-footer {
   margin-top: 2.5rem;
-  padding-top: 1.5rem;
-  padding-bottom: 0;
+  padding-top: 1.25rem;
+  padding-bottom: 1.25rem;
   margin-bottom: -0.4rem;
   border-top: 1px solid var(--line);
 }
@@ -189,18 +189,8 @@
    ───────────────────────────────────────────────────────────────────────────── */
 
 @media (max-width: 480px) {
-  .post-nav {
-    flex-direction: column;
-    gap: var(--space-md);
-  }
-  
   .post-nav-link {
-    max-width: 100%;
-  }
-  
-  .post-nav-next {
-    align-items: flex-start;
-    text-align: left;
+    max-width: 50%;
   }
 }
 

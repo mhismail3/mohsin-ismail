@@ -1,13 +1,24 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { formatDate } from '../../utils/formatDate';
 import { Icon } from '../ui';
 import Pill from '../ui/Pill';
 import Button from '../ui/Button';
 
-const PostCard = ({ post, onTagClick, selectedTags = [], disableTagClick = false }) => {
+const PostCard = ({ post, onTagClick, selectedTags = [] }) => {
   const [expanded, setExpanded] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const navigate = useNavigate();
+
+  const handleTagClick = (tag) => {
+    if (onTagClick) {
+      // In-page filtering (BlogPage)
+      onTagClick(tag);
+    } else {
+      // Navigate to blog with tag filter
+      navigate(`/blog?tag=${encodeURIComponent(tag)}`);
+    }
+  };
 
   const handleCopyLink = async (e) => {
     e.stopPropagation();
@@ -52,8 +63,7 @@ const PostCard = ({ post, onTagClick, selectedTags = [], disableTagClick = false
             key={tag}
             size="small"
             active={selectedTags.includes(tag)}
-            as={disableTagClick ? 'span' : 'button'}
-            onClick={disableTagClick ? undefined : () => onTagClick(tag)}
+            onClick={() => handleTagClick(tag)}
           >
             #{tag}
           </Pill>

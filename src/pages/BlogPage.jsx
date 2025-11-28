@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { usePageTitle } from '../hooks';
 import { posts, uniqueTags } from '../data';
 import { Header } from '../components/layout';
@@ -8,7 +9,18 @@ import { Button } from '../components/ui';
 const POSTS_PER_PAGE = 10;
 
 function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
+  const [searchParams, setSearchParams] = useSearchParams();
   usePageTitle('Blog - Mohsin Ismail');
+
+  // Initialize selected tags from URL search params on mount
+  useEffect(() => {
+    const tagFromUrl = searchParams.get('tag');
+    if (tagFromUrl && uniqueTags.includes(tagFromUrl)) {
+      setSelectedTags([tagFromUrl]);
+      // Clear the URL param after applying
+      setSearchParams({}, { replace: true });
+    }
+  }, []);
 
   const filteredPosts = useMemo(
     () =>
