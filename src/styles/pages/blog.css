@@ -100,10 +100,76 @@
 
 .post-footer {
   margin-top: 2.5rem;
-  padding-top: 1rem;
+  padding-top: 1.5rem;
   padding-bottom: 0;
   margin-bottom: -0.4rem;
   border-top: 1px solid var(--line);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   POST NAVIGATION (Previous/Next)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.post-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-lg);
+}
+
+.post-nav-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  max-width: 45%;
+  transition: transform var(--duration-normal) ease;
+}
+
+.post-nav-prev {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.post-nav-next {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.post-nav-link:hover {
+  transform: translateY(-2px);
+}
+
+.post-nav-prev:hover {
+  transform: translateX(-4px);
+}
+
+.post-nav-next:hover {
+  transform: translateX(4px);
+}
+
+.post-nav-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--muted);
+  transition: color var(--duration-normal) ease;
+}
+
+.post-nav-title {
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-style: italic;
+  font-weight: 500;
+  color: var(--muted);
+  line-height: 1.4;
+  transition: color var(--duration-normal) ease;
+}
+
+.post-nav-link:hover .post-nav-label,
+.post-nav-link:hover .post-nav-title {
+  color: var(--aero);
+}
+
+.post-nav-spacer {
+  flex: 1;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -121,6 +187,22 @@
 /* ─────────────────────────────────────────────────────────────────────────────
    RESPONSIVE - SMALL MOBILE
    ───────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 480px) {
+  .post-nav {
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+  
+  .post-nav-link {
+    max-width: 100%;
+  }
+  
+  .post-nav-next {
+    align-items: flex-start;
+    text-align: left;
+  }
+}
 
 @media (max-width: 380px) {
   .pagination {

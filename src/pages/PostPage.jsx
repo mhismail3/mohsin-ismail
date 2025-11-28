@@ -98,8 +98,15 @@ const PostContent = ({ html, codeBlocks, onImageClick }) => {
 const PostPage = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const post = posts.find((p) => p.slug === slug);
+  const postIndex = posts.findIndex((p) => p.slug === slug);
+  const post = postIndex !== -1 ? posts[postIndex] : null;
   const [selectedImage, setSelectedImage] = useState(null);
+
+  // Posts are sorted newest first, so:
+  // - "Previous" (older) = index + 1
+  // - "Next" (newer) = index - 1
+  const prevPost = postIndex !== -1 && postIndex < posts.length - 1 ? posts[postIndex + 1] : null;
+  const nextPost = postIndex !== -1 && postIndex > 0 ? posts[postIndex - 1] : null;
 
   usePageTitle(
     post ? `${post.title} - Mohsin Ismail` : 'Post Not Found - Mohsin Ismail',
@@ -148,9 +155,24 @@ const PostPage = () => {
         />
 
         <div className="post-footer">
-          <Link to="/" className="back-link">
-            ← All Posts
-          </Link>
+          <nav className="post-nav">
+            {prevPost ? (
+              <Link to={`/posts/${prevPost.slug}`} className="post-nav-link post-nav-prev">
+                <span className="post-nav-label">← Previous Post</span>
+                <span className="post-nav-title">{prevPost.title}</span>
+              </Link>
+            ) : (
+              <div className="post-nav-spacer" />
+            )}
+            {nextPost ? (
+              <Link to={`/posts/${nextPost.slug}`} className="post-nav-link post-nav-next">
+                <span className="post-nav-label">Next Post →</span>
+                <span className="post-nav-title">{nextPost.title}</span>
+              </Link>
+            ) : (
+              <div className="post-nav-spacer" />
+            )}
+          </nav>
         </div>
       </article>
 

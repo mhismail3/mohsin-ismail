@@ -36,8 +36,7 @@ function Home() {
             <PostCard 
               key={post.slug} 
               post={post} 
-              onTagClick={() => {}} 
-              selectedTags={[]} 
+              disableTagClick
             />
           ))}
           {recentPosts.length === 0 && (

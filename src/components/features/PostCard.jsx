@@ -5,7 +5,7 @@ import { Icon } from '../ui';
 import Pill from '../ui/Pill';
 import Button from '../ui/Button';
 
-const PostCard = ({ post, onTagClick, selectedTags = [] }) => {
+const PostCard = ({ post, onTagClick, selectedTags = [], disableTagClick = false }) => {
   const [expanded, setExpanded] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
@@ -52,7 +52,8 @@ const PostCard = ({ post, onTagClick, selectedTags = [] }) => {
             key={tag}
             size="small"
             active={selectedTags.includes(tag)}
-            onClick={() => onTagClick(tag)}
+            as={disableTagClick ? 'span' : 'button'}
+            onClick={disableTagClick ? undefined : () => onTagClick(tag)}
           >
             #{tag}
           </Pill>
