@@ -2,7 +2,7 @@
 title: "Argo (2012) Review"
 date: "2025-11-26T23:15:00-08:00"
 tags:
-  - movie review
+  - movie reviews
 summary: "Quick thoughts."
 ---
 

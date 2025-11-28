@@ -30,6 +30,17 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
     [selectedTags],
   );
 
+  // Compute tag counts (how many posts each tag appears in)
+  const tagCounts = useMemo(() => {
+    const counts = {};
+    posts.forEach((post) => {
+      post.tags.forEach((tag) => {
+        counts[tag] = (counts[tag] || 0) + 1;
+      });
+    });
+    return counts;
+  }, []);
+
   const totalPages = Math.max(1, Math.ceil(filteredPosts.length / POSTS_PER_PAGE));
   const startIndex = (page - 1) * POSTS_PER_PAGE;
   const visiblePosts = filteredPosts.slice(startIndex, startIndex + POSTS_PER_PAGE);
@@ -91,6 +102,7 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
               selectedTags={selectedTags}
               onToggle={handleTagToggle}
               onClear={resetTags}
+              tagCounts={tagCounts}
             />
           </div>
         )}
