@@ -7,7 +7,7 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
-  padding: 0.38rem 0.68rem 0.28rem 0.68rem;
+  padding: 0.38rem 0.68rem 0.20rem 0.68rem;
   border: var(--border-retro);
   border-radius: var(--radius-sm);
   background: var(--bg-white);
