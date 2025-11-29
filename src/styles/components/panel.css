@@ -67,7 +67,7 @@
 .post-list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-base);
+  gap: 0;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

@@ -4,12 +4,39 @@
    ============================================================================= */
 
 .post-card {
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius-sm);
-  padding: 1rem 1.1rem;
-  background: var(--bg-card);
-  box-shadow: 0 10px 24px rgba(31, 26, 20, 0.08);
   position: relative;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   DECORATIVE SEPARATOR
+   Diamond ornament with dashed line between posts
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.post-card + .post-card {
+  margin-top: var(--space-3xl);
+  padding-top: var(--space-3xl);
+}
+
+.post-card + .post-card::before {
+  content: '◆';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.6rem;
+  color: var(--pine);
+  background: var(--panel-bg);
+  padding: 0 0.75rem;
+  z-index: 1;
+}
+
+.post-card + .post-card::after {
+  content: '';
+  position: absolute;
+  top: 0.35rem;
+  left: 0;
+  right: 0;
+  border-top: 1px dashed var(--line);
 }
 
 .post-card h3 {
