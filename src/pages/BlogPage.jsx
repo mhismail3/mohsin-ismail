@@ -90,8 +90,9 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
           )}
         </div>
 
-        <Pagination page={page} totalPages={totalPages} onPrev={handlePrev} onNext={handleNext} />
       </section>
+
+      <Pagination page={page} totalPages={totalPages} onPrev={handlePrev} onNext={handleNext} />
 
       <section className="panel hero">
         <div className="eyebrow">Filter by Tag</div>

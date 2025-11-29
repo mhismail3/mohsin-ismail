@@ -38,7 +38,7 @@
   justify-content: center;
   flex-wrap: wrap;
   gap: var(--space-md);
-  margin-top: var(--space-sm);
+  margin-top: 4px;
 }
 
 .pagination .btn {

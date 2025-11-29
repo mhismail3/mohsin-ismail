@@ -108,10 +108,15 @@
   border-radius: var(--radius-full);
   border: 1.5px solid var(--ink);
   background: var(--cream);
-  box-shadow: var(--shadow-retro-lg);
+  /* No shadow in header - clean flat look */
+  box-shadow: none;
   display: grid;
   place-items: center;
   overflow: hidden;
+  /* Smooth transitions for shadow and transform */
+  transition: 
+    box-shadow var(--collapse-duration, 0.3s) var(--collapse-ease, ease),
+    transform 0.15s ease;
 }
 
 .brand-mark img {
@@ -471,5 +476,222 @@
   }
 }
 
+/* =============================================================================
+   SCROLL COLLAPSE ANIMATION
+   Simple fade - icon stays pinned, everything else fades together
+   ============================================================================= */
+
+/* Unified transition timing for smooth, synchronized animation */
+.top-bar {
+  --collapse-duration: 0.3s;
+  --collapse-ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Elements that fade out during collapse - all use same timing */
+.top-bar .brand-name,
+.top-bar .menu-toggle {
+  transition: opacity var(--collapse-duration) var(--collapse-ease);
+}
+
+/* Container visual properties that fade */
+.top-bar {
+  transition: 
+    background var(--collapse-duration) var(--collapse-ease),
+    border-color var(--collapse-duration) var(--collapse-ease),
+    box-shadow var(--collapse-duration) var(--collapse-ease),
+    backdrop-filter var(--collapse-duration) var(--collapse-ease),
+    -webkit-backdrop-filter var(--collapse-duration) var(--collapse-ease);
+}
+
+/* Collapsed state - container stays in place, visuals fade */
+/* Use higher specificity to override .expanded and .flyout.expanded styles */
+.top-bar.collapsed,
+.top-bar.collapsed.expanded,
+.top-bar.collapsed.flyout.expanded {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* Hide text and button together with simple opacity fade */
+.top-bar.collapsed .brand-name,
+.top-bar.collapsed .menu-toggle {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Note: Collapsed menu with .from-collapsed class handles its own pointer-events
+   and button opacity - see MENU FROM COLLAPSED STATE section below */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   BRAND MARK - COLLAPSED STATE
+   Icon lifts off page with blurred shadow, interactive press states
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Collapsed state - icon gains floating shadow (lift-off effect) */
+.top-bar.collapsed .brand-mark-inner {
+  box-shadow: 0px 4px 4px rgba(31, 26, 20, 0.60);
+}
+
+.top-bar.collapsed .brand-mark.clickable {
+  cursor: pointer;
+}
+
+/* Desktop hover - light depression */
+@media (hover: hover) {
+  .top-bar.collapsed .brand:hover .brand-mark-inner {
+    transform: translateY(2px);
+    box-shadow: 
+      0 5px 16px rgba(31, 26, 20, 0.2),
+      0 2px 4px rgba(31, 26, 20, 0.12);
+  }
+}
+
+/* Active/pressed state - deeper depression */
+.top-bar.collapsed .brand:active .brand-mark-inner {
+  transform: translateY(4px);
+  box-shadow: 
+    0 2px 8px rgba(31, 26, 20, 0.15),
+    0 1px 2px rgba(31, 26, 20, 0.1);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MENU FROM COLLAPSED STATE
+   Replicates mobile menu animation exactly, but left-aligned with icon
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Override desktop menu position when collapsed - use mobile-style dropdown */
+.top-bar.collapsed .top-menu.from-collapsed {
+  /* Position below the icon, left edge aligned with brand mark */
+  /* left value must match .top-bar padding-left to align with content */
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 14px; /* matches .top-bar padding on mobile */
+  right: auto;
+  
+  /* Match mobile menu styling - transparent background */
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  min-width: auto;
+  gap: var(--space-sm);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  
+  /* Left-aligned */
+  align-items: flex-start;
+  transform: none;
+  opacity: 1;
+  transition: none;
+  
+  /* Container always visible, buttons handle their own opacity */
+  pointer-events: none;
+}
+
+.top-bar.collapsed .top-menu.from-collapsed.visible {
+  pointer-events: auto;
+}
+
+.top-bar.collapsed .top-menu.from-collapsed.closing {
+  pointer-events: none;
+}
+
+.top-bar.collapsed .top-menu.from-collapsed .top-menu-content {
+  flex-direction: column;
+  width: auto;
+  gap: var(--space-sm);
+  align-items: flex-start;
+}
+
+/* Button animations - exactly like mobile menu but left-aligned and smaller */
+.top-bar.collapsed .top-menu.from-collapsed .btn {
+  min-width: auto;
+  /* Asymmetric padding to align text properly - less bottom padding */
+  padding: 0.38rem 0.7rem 0.28rem 0.7rem;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  opacity: 0;
+  -webkit-transform: translateY(-12px) scale(0.88) rotate(-2deg);
+  transform: translateY(-12px) scale(0.88) rotate(-2deg);
+  -webkit-transform-origin: left center;
+  transform-origin: left center;
+  box-shadow: 1px 1px 0px var(--ink);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transition: opacity 0.28s var(--ease-out),
+                      -webkit-transform var(--duration-slower) var(--ease-bounce),
+                      box-shadow 0.32s var(--ease-bounce);
+  transition: opacity 0.28s var(--ease-out),
+              transform var(--duration-slower) var(--ease-bounce),
+              box-shadow 0.32s var(--ease-bounce);
+  -webkit-transition-delay: var(--btn-stagger, 0ms);
+  transition-delay: var(--btn-stagger, 0ms);
+}
+
+.top-bar.collapsed .top-menu.from-collapsed.visible .btn {
+  opacity: 1;
+  -webkit-transform: translateY(0) scale(1) rotate(0deg);
+  transform: translateY(0) scale(1) rotate(0deg);
+  box-shadow: 2px 2px 0px var(--ink);
+}
+
+/* Staggered animation timing */
+.top-bar.collapsed .top-menu.from-collapsed .btn:nth-child(1) { --btn-stagger: 20ms; }
+.top-bar.collapsed .top-menu.from-collapsed .btn:nth-child(2) { --btn-stagger: 70ms; }
+.top-bar.collapsed .top-menu.from-collapsed .btn:nth-child(3) { --btn-stagger: 120ms; }
+.top-bar.collapsed .top-menu.from-collapsed .btn:nth-child(4) { --btn-stagger: 170ms; }
+
+/* Closing animation */
+.top-bar.collapsed .top-menu.from-collapsed.visible.closing .btn {
+  opacity: 0;
+  -webkit-transform: translateY(-14px) scale(0.85) rotate(3deg);
+  transform: translateY(-14px) scale(0.85) rotate(3deg);
+  box-shadow: 0px 0px 0px var(--ink);
+  -webkit-transition: opacity 0.18s cubic-bezier(0.4, 0, 1, 1),
+                      -webkit-transform 0.24s var(--ease-snap),
+                      box-shadow 0.18s ease-out;
+  transition: opacity 0.18s cubic-bezier(0.4, 0, 1, 1),
+              transform 0.24s var(--ease-snap),
+              box-shadow 0.18s ease-out;
+  -webkit-transition-delay: var(--btn-stagger-close, 0ms);
+  transition-delay: var(--btn-stagger-close, 0ms);
+}
+
+.top-bar.collapsed .top-menu.from-collapsed.visible.closing .btn:nth-child(1) { --btn-stagger-close: 90ms; }
+.top-bar.collapsed .top-menu.from-collapsed.visible.closing .btn:nth-child(2) { --btn-stagger-close: 60ms; }
+.top-bar.collapsed .top-menu.from-collapsed.visible.closing .btn:nth-child(3) { --btn-stagger-close: 30ms; }
+.top-bar.collapsed .top-menu.from-collapsed.visible.closing .btn:nth-child(4) { --btn-stagger-close: 0ms; }
+
+/* Home link - same style as other buttons */
+.top-bar.collapsed .top-menu.from-collapsed .btn.home-link {
+  /* Matches other buttons exactly - no special styling */
+  background: var(--bg-white);
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+/* Active state for collapsed menu buttons (including home) */
+.top-bar.collapsed .top-menu.from-collapsed .btn.active {
+  background: #e0f2f1;
+  border-color: var(--pine);
+  color: var(--pine);
+}
+
+/* Responsive left positioning to match header padding at each breakpoint */
+@media (min-width: 840px) {
+  .top-bar.collapsed .top-menu.from-collapsed {
+    left: 18px; /* matches .top-bar padding on desktop */
+  }
+}
+
+@media (max-width: 380px) {
+  .top-bar.collapsed .top-menu.from-collapsed {
+    left: 12px; /* matches .top-bar padding on very small screens */
+  }
+}
 
 

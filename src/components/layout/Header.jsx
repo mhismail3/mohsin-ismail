@@ -13,34 +13,48 @@ const NAV_LINKS = [
 // Desktop: 0.22s transform + 80ms stagger = ~300ms
 const CLOSE_ANIMATION_DURATION = 350;
 
+// Scroll thresholds for snap-point behavior
+const COLLAPSE_THRESHOLD = 80;  // Collapse when scrolled past this
+const EXPAND_THRESHOLD = 40;    // Expand back when scrolled above this
+
 const Header = ({ label, onLogoClick }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  
   const closeTimeoutRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Cleanup timeout on unmount
+  // Cleanup timeouts on unmount
   useEffect(() => {
     return () => {
-      if (closeTimeoutRef.current) {
-        clearTimeout(closeTimeoutRef.current);
-      }
+      if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
     };
   }, []);
 
-  // Track scroll position for elevated shadow effect
+  // Simple scroll-based collapse with snap points
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      const scrollY = window.scrollY;
+      
+      // Basic scrolled state for shadow
+      setIsScrolled(scrollY > 10);
+      
+      // Collapse/expand with hysteresis to prevent jitter
+      if (!isCollapsed && scrollY >= COLLAPSE_THRESHOLD) {
+        setIsCollapsed(true);
+      } else if (isCollapsed && scrollY <= EXPAND_THRESHOLD) {
+        setIsCollapsed(false);
+      }
     };
     
     handleScroll(); // Check initial state
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isCollapsed]);
 
   const closeMenu = useCallback(() => {
     if (!isOpen || isClosing) return;
@@ -104,6 +118,10 @@ const Header = ({ label, onLogoClick }) => {
   };
 
   const handleNav = (path) => {
+    if (path === '/') {
+      handleHome();
+      return;
+    }
     if (location.pathname !== path) {
       navigate(path);
     }
@@ -125,14 +143,52 @@ const Header = ({ label, onLogoClick }) => {
     }
   };
 
-  const headerClass = `top-bar ${isScrolled ? 'scrolled' : ''} ${isOpen && !isMobile ? 'expanded' : ''} ${isMobile ? '' : 'flyout'}`;
-  const menuClass = `top-menu ${isOpen ? 'visible' : ''} ${isClosing ? 'closing' : ''} ${isMobile ? 'mobile' : 'desktop'}`;
+  // Handle brand click - either go home (when expanded) or toggle menu (when collapsed)
+  const handleBrandClick = (e) => {
+    if (isCollapsed) {
+      e.preventDefault();
+      toggleMenu();
+    } else {
+      handleHome();
+    }
+  };
+
+  // Build nav links - add Home option when collapsed
+  const navLinks = isCollapsed
+    ? [{ label: 'Home', path: '/' }, ...NAV_LINKS]
+    : NAV_LINKS;
+
+  const headerClass = [
+    'top-bar',
+    isScrolled ? 'scrolled' : '',
+    isOpen && !isMobile ? 'expanded' : '',
+    isMobile ? '' : 'flyout',
+    isCollapsed ? 'collapsed' : '',
+  ].filter(Boolean).join(' ');
+  
+  const menuClass = [
+    'top-menu',
+    isOpen ? 'visible' : '',
+    isClosing ? 'closing' : '',
+    isMobile ? 'mobile' : 'desktop',
+    isCollapsed ? 'from-collapsed' : '',
+  ].filter(Boolean).join(' ');
+  
+  const brandMarkClass = [
+    'brand-mark',
+    isCollapsed ? 'clickable' : '',
+  ].filter(Boolean).join(' ');
 
   return (
     <header className={headerClass}>
       <div className="top-bar-row">
-        <button className="brand" type="button" onClick={handleHome} aria-label="Go to home">
-          <span className="brand-mark">
+        <button 
+          className="brand" 
+          type="button" 
+          onClick={handleBrandClick} 
+          aria-label={isCollapsed ? 'Open navigation menu' : 'Go to home'}
+        >
+          <span className={brandMarkClass}>
             <span className="brand-mark-inner">
               <img src={logoMark} alt="Mohsin Ismail logo" />
             </span>
@@ -169,11 +225,11 @@ const Header = ({ label, onLogoClick }) => {
         aria-hidden={!isOpen}
       >
         <div className="top-menu-content">
-          {NAV_LINKS.map((link) => (
+          {navLinks.map((link) => (
             <button
               key={link.path}
               type="button"
-              className={`btn outline small ${location.pathname === link.path ? 'active' : ''}`}
+              className={`btn outline small ${location.pathname === link.path ? 'active' : ''} ${link.path === '/' ? 'home-link' : ''}`}
               onClick={() => handleNav(link.path)}
             >
               {link.label}
