@@ -1,16 +1,30 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { contactLinks } from './AboutContent';
 
 const AboutPanel = () => (
-  <section id="about" className="panel about-panel">
+  <section id="about" className="panel about-panel about-panel-compact">
     <div className="panel-head">
-      <div className="eyebrow">About Me</div>
+      <div className="eyebrow">Get in Touch</div>
       <Link to="/about" className="see-all-link">
-        Read More &rarr;
+        More about me &rarr;
       </Link>
     </div>
     <div className="about-body">
-      <p>Details-focused developer with a passion for AI and the future of software development.</p>
+      <div className="contact-links contact-links-compact">
+        {contactLinks.map((link) => (
+          <a
+            key={link.label}
+            className="contact-icon-btn"
+            href={link.href}
+            aria-label={link.label}
+            target={link.external ? '_blank' : undefined}
+            rel={link.external ? 'noreferrer' : undefined}
+          >
+            {link.icon}
+          </a>
+        ))}
+      </div>
     </div>
   </section>
 );

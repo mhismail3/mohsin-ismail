@@ -158,6 +158,26 @@ const Header = ({ label, onLogoClick }) => {
     ? [{ label: 'Home', path: '/' }, ...NAV_LINKS]
     : NAV_LINKS;
 
+  // Determine if a nav link should be active
+  // - Home: exact match on '/'
+  // - Blog: '/blog' or any '/posts/*' route
+  // - Portfolio: '/portfolio' or any '/portfolio/*' route (project details)
+  // - About: exact match on '/about'
+  const isLinkActive = (linkPath) => {
+    const currentPath = location.pathname;
+    
+    if (linkPath === '/') {
+      return currentPath === '/';
+    }
+    if (linkPath === '/blog') {
+      return currentPath === '/blog' || currentPath.startsWith('/posts/');
+    }
+    if (linkPath === '/portfolio') {
+      return currentPath.startsWith('/portfolio');
+    }
+    return currentPath === linkPath;
+  };
+
   const headerClass = [
     'top-bar',
     isScrolled ? 'scrolled' : '',
@@ -229,7 +249,7 @@ const Header = ({ label, onLogoClick }) => {
             <button
               key={link.path}
               type="button"
-              className={`btn outline small ${location.pathname === link.path ? 'active' : ''} ${link.path === '/' ? 'home-link' : ''}`}
+              className={`btn outline small ${isLinkActive(link.path) ? 'active' : ''} ${link.path === '/' ? 'home-link' : ''}`}
               onClick={() => handleNav(link.path)}
             >
               {link.label}

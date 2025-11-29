@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { usePageTitle } from '../hooks';
 import { posts, uniqueTags } from '../data';
 import { Header } from '../components/layout';
-import { PostCard, Pagination, TagCloud } from '../components/features';
+import { PostCard, Pagination, TagCloud, AboutPanel } from '../components/features';
 import { Button } from '../components/ui';
 
 const POSTS_PER_PAGE = 10;
@@ -108,6 +108,8 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
           </div>
         )}
       </section>
+
+      <AboutPanel />
     </div>
   );
 }

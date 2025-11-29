@@ -4,7 +4,7 @@ export { default as Lightbox } from './Lightbox';
 export { default as Pagination } from './Pagination';
 export { default as TagCloud } from './TagCloud';
 export { default as AboutPanel } from './AboutPanel';
-export { default as AboutContent } from './AboutContent';
+export { default as AboutContent, contactLinks } from './AboutContent';
 export { default as PostCard } from './PostCard';
 export { default as CodeBlock } from './CodeBlock';
 

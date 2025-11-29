@@ -147,8 +147,8 @@
 }
 
 .contact-icon {
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   fill: var(--bg-white);
   stroke: var(--ink);
   stroke-width: 1.5px;
@@ -156,6 +156,38 @@
   stroke-linecap: round;
   paint-order: stroke fill;
   overflow: visible;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   COMPACT ABOUT PANEL (Used on other pages)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.about-panel-compact .about-body {
+  margin-top: 0.25rem;
+}
+
+.contact-links-compact {
+  justify-content: flex-start;
+}
+
+/* Softer, more muted styling for compact panel icons */
+.contact-links-compact .contact-icon-btn {
+  filter: drop-shadow(2px 2px 0px rgba(62, 52, 42, 0.9));
+}
+
+.contact-links-compact .contact-icon-btn:hover {
+  filter: drop-shadow(1px 1px 0px rgba(62, 52, 42, 0.9));
+}
+
+.contact-links-compact .contact-icon-btn:active {
+  filter: drop-shadow(0px 0px 0px rgba(62, 52, 42, 0.9));
+}
+
+.contact-links-compact .contact-icon {
+  width: 24px;
+  height: 24px;
+  stroke: rgba(91, 82, 73, 0.85);
+  stroke-width: 1.3px;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

@@ -4,11 +4,12 @@ import Lightbox from './Lightbox';
 
 const contactLinks = [
   {
-    href: 'mailto:mhismail3@gmail.com',
-    label: 'Email',
+    href: 'https://x.com/mohsin__ismail',
+    label: 'X',
+    external: true,
     icon: (
-      <svg className="contact-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z" />
+      <svg className="contact-icon" viewBox="-2 -2 28 28" aria-hidden="true" focusable="false">
+        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
       </svg>
     ),
   },
@@ -114,6 +115,7 @@ const AboutContent = () => {
   );
 };
 
+export { contactLinks };
 export default AboutContent;
 
 
