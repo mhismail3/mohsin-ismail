@@ -532,7 +532,7 @@
 
 /* Collapsed state - icon gains floating shadow (lift-off effect) */
 .top-bar.collapsed .brand-mark-inner {
-  box-shadow: 0px 4px 4px rgba(31, 26, 20, 0.60);
+  box-shadow: 0px 5px 5px rgba(31, 26, 20, 0.60);
 }
 
 .top-bar.collapsed .brand-mark.clickable {
@@ -543,18 +543,14 @@
 @media (hover: hover) {
   .top-bar.collapsed .brand:hover .brand-mark-inner {
     transform: translateY(2px);
-    box-shadow: 
-      0 5px 16px rgba(31, 26, 20, 0.2),
-      0 2px 4px rgba(31, 26, 20, 0.12);
+    box-shadow: 0px 3px 3px rgba(31, 26, 20, 0.70);
   }
 }
 
 /* Active/pressed state - deeper depression */
 .top-bar.collapsed .brand:active .brand-mark-inner {
   transform: translateY(4px);
-  box-shadow: 
-    0 2px 8px rgba(31, 26, 20, 0.15),
-    0 1px 2px rgba(31, 26, 20, 0.1);
+  box-shadow: 0px 1px 1px rgba(31, 26, 20, 0.90);
   transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
 
@@ -607,12 +603,12 @@
   align-items: flex-start;
 }
 
-/* Button animations - exactly like mobile menu but left-aligned and smaller */
+/* Button animations - exactly like mobile menu but left-aligned */
 .top-bar.collapsed .top-menu.from-collapsed .btn {
   min-width: auto;
-  /* Asymmetric padding to align text properly - less bottom padding */
-  padding: 0.38rem 0.7rem 0.28rem 0.7rem;
-  font-size: var(--text-sm);
+  /* Match .btn.small padding for consistent sizing */
+  padding: 0.45rem 0.9rem 0.35rem 0.9rem;
+  font-size: var(--text-base);
   font-weight: 600;
   opacity: 0;
   -webkit-transform: translateY(-12px) scale(0.88) rotate(-2deg);
