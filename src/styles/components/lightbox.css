@@ -7,7 +7,7 @@
   position: fixed;
   inset: 0;
   z-index: var(--z-modal);
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(248, 243, 232, 0.92);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   display: grid;
@@ -22,7 +22,7 @@
   max-height: 90vh;
   border: 2px solid var(--ink);
   border-radius: var(--radius-sm);
-  background: var(--bg-white);
+  background: var(--cream);
   padding: var(--space-sm);
   box-shadow: 8px 8px 0px var(--ink);
   animation: lightbox-popIn var(--duration-slow) var(--ease-bounce);
