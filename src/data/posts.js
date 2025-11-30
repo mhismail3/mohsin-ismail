@@ -36,9 +36,15 @@ const stripMarkdown = (text = '') =>
     .replace(/\s+/g, ' ')
     .trim();
 
+/**
+ * Build an excerpt from post content for 4-line preview.
+ * ~80 chars per line × 4 lines = ~320 chars, using 400 for safety.
+ * Always built from actual content, never frontmatter summary.
+ */
 const buildExcerpt = (content = '') => {
   const cleaned = stripMarkdown(content);
-  return cleaned.length > 180 ? `${cleaned.slice(0, 180)}…` : cleaned;
+  // Return enough text for 4 lines with some buffer
+  return cleaned.slice(0, 400);
 };
 
 /**
@@ -75,11 +81,6 @@ const posts = Object.entries(rawPosts).map(([path, raw]) => {
   
   // Parse markdown (code blocks are now placeholders)
   const html = DOMPurify.sanitize(marked.parse(processedContent), sanitizeConfig);
-  
-  // Parse tldr field if present (it's markdown too)
-  const tldrHtml = data.tldr 
-    ? DOMPurify.sanitize(marked.parse(data.tldr), sanitizeConfig)
-    : null;
 
   return {
     slug,
@@ -87,8 +88,7 @@ const posts = Object.entries(rawPosts).map(([path, raw]) => {
     date: data.date || new Date().toISOString(),
     dateValue: parseDate(data.date),
     tags: Array.isArray(data.tags) ? data.tags : [],
-    summary: data.summary || buildExcerpt(content),
-    tldr: tldrHtml,
+    excerpt: buildExcerpt(content),
     content: html,
     codeBlocks,
   };

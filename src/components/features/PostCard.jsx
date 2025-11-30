@@ -3,10 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { formatDate } from '../../utils/formatDate';
 import { Icon } from '../ui';
 import Pill from '../ui/Pill';
-import Button from '../ui/Button';
 
 const PostCard = ({ post, onTagClick, selectedTags = [] }) => {
-  const [expanded, setExpanded] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const navigate = useNavigate();
 
@@ -34,7 +32,7 @@ const PostCard = ({ post, onTagClick, selectedTags = [] }) => {
   };
 
   return (
-    <article className={`post-card ${expanded ? 'expanded' : ''}`}>
+    <article className="post-card">
       <div className="post-head">
         <div className="post-meta">
           <div className="eyebrow">{formatDate(post.date)}</div>
@@ -54,7 +52,7 @@ const PostCard = ({ post, onTagClick, selectedTags = [] }) => {
           </Pill>
           {showToast && <div className="toast">Copied link</div>}
         </div>
-        <p className="muted post-summary">{post.summary}</p>
+        <p className="post-excerpt">{post.excerpt}</p>
       </div>
 
       <div className="tag-row">
@@ -69,30 +67,6 @@ const PostCard = ({ post, onTagClick, selectedTags = [] }) => {
           </Pill>
         ))}
       </div>
-
-      {post.tldr && (
-        <div className="post-actions">
-          <Button
-            variant="outline"
-            size="small"
-            className="tldr-toggle"
-            onClick={() => setExpanded((open) => !open)}
-          >
-            {expanded ? 'hide' : 'tl;dr'}
-          </Button>
-        </div>
-      )}
-
-      {post.tldr && (
-        <div className="post-body-wrapper">
-          <div
-            className="post-body"
-            dangerouslySetInnerHTML={{
-              __html: post.tldr,
-            }}
-          />
-        </div>
-      )}
     </article>
   );
 };

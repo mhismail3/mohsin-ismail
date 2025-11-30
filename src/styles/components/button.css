@@ -88,13 +88,6 @@
    SPECIAL VARIANTS
    ───────────────────────────────────────────────────────────────────────────── */
 
-/* TL;DR toggle button */
-.btn.tldr-toggle {
-  height: 24px;
-  width: 60px;
-  padding: 0.2rem 0 0;
-}
-
 /* Active state for nav buttons */
 .btn.active {
   background: #e0f2f1;
