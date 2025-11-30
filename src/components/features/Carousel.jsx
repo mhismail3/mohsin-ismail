@@ -1,5 +1,5 @@
 import React from 'react';
-import { useCarousel, useIsTouch } from '../../hooks';
+import { useCarousel } from '../../hooks';
 
 /**
  * Shared carousel component for horizontal image galleries.
@@ -7,7 +7,6 @@ import { useCarousel, useIsTouch } from '../../hooks';
  * @param {Object} props
  * @param {Array<string>} props.images - Array of image URLs
  * @param {Function} props.onImageClick - Callback when image is clicked (receives image URL)
- * @param {string} props.hint - Custom hint text (overrides default)
  * @param {string} props.altPrefix - Alt text prefix for images (default: 'Image')
  * @param {Function} props.renderBadge - Optional render function for badges (receives image URL, index)
  * @param {string} props.className - Additional CSS classes for container
@@ -15,30 +14,19 @@ import { useCarousel, useIsTouch } from '../../hooks';
 const Carousel = ({
   images = [],
   onImageClick,
-  hint,
   altPrefix = 'Image',
   renderBadge,
   className = '',
 }) => {
-  const isTouch = useIsTouch();
-  
   const {
     trackRef,
     setItemRef,
     activeIndex,
     handleScroll,
-    handleMouseMove,
-    handleMouseLeave,
-  } = useCarousel({ items: images, isTouch });
-
-  const defaultHint = isTouch ? 'Scroll to view more' : 'Hover sides to scroll';
+  } = useCarousel({ items: images });
 
   return (
-    <div
-      className={`carousel-container ${className}`}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-    >
+    <div className={`carousel-container ${className}`}>
       <div className="carousel-track" ref={trackRef} onScroll={handleScroll}>
         {images.map((img, idx) => (
           <button
@@ -57,7 +45,6 @@ const Carousel = ({
           </button>
         ))}
       </div>
-      <div className="carousel-hint">{hint || defaultHint}</div>
     </div>
   );
 };

@@ -253,6 +253,22 @@
   color: var(--pine);
 }
 
+/* Flyout menu button hover state */
+@media (hover: hover) {
+  .top-menu.visible .btn:hover {
+    transform: translateY(2px) scale(0.98);
+    box-shadow: 1px 1px 0px var(--ink);
+    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
+  }
+}
+
+/* Flyout menu button active/pressed state */
+.top-menu.visible .btn:active {
+  transform: translateY(4px) scale(0.96);
+  box-shadow: 0px 0px 0px var(--ink);
+  transition: transform 0.06s ease-out, box-shadow 0.06s ease-out;
+}
+
 /* ─────────────────────────────────────────────────────────────────────────────
    DESKTOP NAV
    ───────────────────────────────────────────────────────────────────────────── */
@@ -318,6 +334,22 @@
 .top-menu.desktop .btn:nth-child(1) { --btn-stagger: 30ms; }
 .top-menu.desktop .btn:nth-child(2) { --btn-stagger: 75ms; }
 .top-menu.desktop .btn:nth-child(3) { --btn-stagger: 120ms; }
+
+/* Desktop menu button hover state */
+@media (hover: hover) {
+  .top-menu.desktop.visible .btn:hover {
+    transform: translateY(2px) scale(0.98);
+    box-shadow: 1px 1px 0px var(--ink);
+    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
+  }
+}
+
+/* Desktop menu button active/pressed state */
+.top-menu.desktop.visible .btn:active {
+  transform: translateY(4px) scale(0.96);
+  box-shadow: 0px 0px 0px var(--ink);
+  transition: transform 0.06s ease-out, box-shadow 0.06s ease-out;
+}
 
 /* Desktop closing animation */
 .top-menu.desktop.visible.closing .btn {
@@ -400,6 +432,22 @@
 .top-menu.mobile .btn:nth-child(1) { --btn-stagger: 20ms; }
 .top-menu.mobile .btn:nth-child(2) { --btn-stagger: 70ms; }
 .top-menu.mobile .btn:nth-child(3) { --btn-stagger: 120ms; }
+
+/* Mobile menu button hover state */
+@media (hover: hover) {
+  .top-menu.mobile.visible .btn:hover {
+    transform: translateY(2px) scale(0.98);
+    box-shadow: 1px 1px 0px var(--ink);
+    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
+  }
+}
+
+/* Mobile menu button active/pressed state */
+.top-menu.mobile.visible .btn:active {
+  transform: translateY(4px) scale(0.96);
+  box-shadow: 0px 0px 0px var(--ink);
+  transition: transform 0.06s ease-out, box-shadow 0.06s ease-out;
+}
 
 /* Mobile closing animation */
 .top-menu.mobile.visible.closing .btn {
@@ -640,6 +688,22 @@
 .top-bar.collapsed .top-menu.from-collapsed .btn:nth-child(2) { --btn-stagger: 70ms; }
 .top-bar.collapsed .top-menu.from-collapsed .btn:nth-child(3) { --btn-stagger: 120ms; }
 .top-bar.collapsed .top-menu.from-collapsed .btn:nth-child(4) { --btn-stagger: 170ms; }
+
+/* Collapsed menu button hover state */
+@media (hover: hover) {
+  .top-bar.collapsed .top-menu.from-collapsed.visible .btn:hover {
+    transform: translateY(2px) scale(0.98);
+    box-shadow: 1px 1px 0px var(--ink);
+    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
+  }
+}
+
+/* Collapsed menu button active/pressed state */
+.top-bar.collapsed .top-menu.from-collapsed.visible .btn:active {
+  transform: translateY(4px) scale(0.96);
+  box-shadow: 0px 0px 0px var(--ink);
+  transition: transform 0.06s ease-out, box-shadow 0.06s ease-out;
+}
 
 /* Closing animation */
 .top-bar.collapsed .top-menu.from-collapsed.visible.closing .btn {

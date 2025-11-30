@@ -1,7 +1,10 @@
 import React, { useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 
 /**
  * Lightbox modal component for full-screen image viewing.
+ * Uses a portal to render at document.body level, ensuring proper
+ * viewport centering regardless of scroll position or page length.
  * 
  * @param {Object} props
  * @param {string} props.src - Image source URL
@@ -31,7 +34,8 @@ const Lightbox = ({ src, alt = 'Full size view', onClose }) => {
 
   if (!src) return null;
 
-  return (
+  // Use portal to render at body level for reliable viewport positioning
+  return createPortal(
     <div
       className="lightbox-overlay"
       onClick={onClose}
@@ -49,7 +53,8 @@ const Lightbox = ({ src, alt = 'Full size view', onClose }) => {
           ×
         </button>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

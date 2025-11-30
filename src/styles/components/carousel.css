@@ -61,7 +61,14 @@
 
 .carousel-item.is-active {
   transform: translateY(-8px) scale(1.01);
-  box-shadow: 4px 6px 0px var(--ink);
+  box-shadow: 4px 6px 3px var(--ink);
+}
+
+/* Press/click depression effect */
+.carousel-item:active {
+  transform: translateY(2px) scale(0.98);
+  box-shadow: 1px 2px 0px var(--ink);
+  transition: transform 0.09s ease-out, box-shadow 0.09s ease-out;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -84,16 +91,8 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   CAROUSEL HINT
+   ABOUT PAGE CAROUSEL
    ───────────────────────────────────────────────────────────────────────────── */
-
-.carousel-hint {
-  text-align: center;
-  font-size: 0.8rem;
-  color: var(--muted);
-  margin-top: var(--space-sm);
-  opacity: 0.6;
-}
 
 .carousel-caption {
   text-align: center;
@@ -102,10 +101,6 @@
   color: var(--muted);
   margin: 0;
 }
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   ABOUT PAGE CAROUSEL
-   ───────────────────────────────────────────────────────────────────────────── */
 
 .about-carousel {
   margin-top: 0.75rem;

@@ -1,57 +1,64 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 /**
  * Custom hook for carousel scroll behavior and active item tracking.
- * Handles mouse-driven auto-scroll on desktop and active item detection.
  * 
  * @param {Object} options - Configuration options
  * @param {Array} options.items - Array of items to display in carousel
- * @param {boolean} options.isTouch - Whether device is touch-enabled
- * @returns {Object} - { trackRef, itemRefs, activeIndex, handleScroll, handleMouseMove, handleMouseLeave }
+ * @returns {Object} - { trackRef, setItemRef, activeIndex, handleScroll }
  */
-const useCarousel = ({ items = [], isTouch = false } = {}) => {
+const useCarousel = ({ items = [] } = {}) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const trackRef = useRef(null);
   const itemRefs = useRef([]);
-  const requestRef = useRef(null);
   const activeRafRef = useRef(null);
-  const mouseXRef = useRef(0);
-  const isHoveringRef = useRef(false);
 
-  // Reset refs when items change
-  useEffect(() => {
-    itemRefs.current = [];
-    setActiveIndex(0);
-  }, [items]);
-
-  // Calculate which item is closest to center
+  // Calculate which item is closest to center, with edge case handling
   const updateActiveItem = useCallback(() => {
     const track = trackRef.current;
     if (!track || !items.length) return;
 
-    const centerX = track.scrollLeft + track.clientWidth / 2;
+    const { scrollLeft, clientWidth, scrollWidth } = track;
+    const edgeThreshold = 5; // pixels of tolerance for edge detection
+
+    // Edge case: scrolled all the way to the left
+    if (scrollLeft <= edgeThreshold) {
+      setActiveIndex((prev) => (prev === 0 ? prev : 0));
+      return;
+    }
+
+    // Edge case: scrolled all the way to the right
+    if (scrollLeft + clientWidth >= scrollWidth - edgeThreshold) {
+      const lastIndex = items.length - 1;
+      setActiveIndex((prev) => (prev === lastIndex ? prev : lastIndex));
+      return;
+    }
+
+    // Normal case: find item closest to center
+    const centerX = scrollLeft + clientWidth / 2;
 
     let closestIndex = 0;
     let smallestDistance = Number.POSITIVE_INFINITY;
 
-    itemRefs.current.forEach((node, idx) => {
-      if (!node) return;
+    // Use bounded loop to avoid stale refs from previous item arrays
+    for (let idx = 0; idx < items.length; idx++) {
+      const node = itemRefs.current[idx];
+      if (!node) continue;
       const itemCenter = node.offsetLeft + node.offsetWidth / 2;
       const distance = Math.abs(itemCenter - centerX);
       if (distance < smallestDistance) {
         smallestDistance = distance;
         closestIndex = idx;
       }
-    });
+    }
 
     setActiveIndex((prev) => (prev === closestIndex ? prev : closestIndex));
   }, [items.length]);
 
-  // Initial active item calculation
-  useEffect(() => {
-    const id = requestAnimationFrame(updateActiveItem);
-    return () => cancelAnimationFrame(id);
-  }, [updateActiveItem, items.length]);
+  // Initial/updated active item calculation - useLayoutEffect for synchronous DOM measurement
+  useLayoutEffect(() => {
+    updateActiveItem();
+  }, [updateActiveItem]);
 
   // Handle scroll events with RAF throttling
   const handleScroll = useCallback(() => {
@@ -75,49 +82,6 @@ const useCarousel = ({ items = [], isTouch = false } = {}) => {
     };
   }, [updateActiveItem]);
 
-  // Animation loop for mouse-driven scrolling
-  const animate = useCallback(() => {
-    if (isTouch || !trackRef.current || !isHoveringRef.current) {
-      requestRef.current = requestAnimationFrame(animate);
-      return;
-    }
-
-    const container = trackRef.current;
-    const { left, width } = container.getBoundingClientRect();
-    const centerX = left + width / 2;
-
-    // Calculate distance from center (-1 to 1)
-    const delta = (mouseXRef.current - centerX) / (width / 2);
-
-    // Apply deadzone in the middle
-    if (Math.abs(delta) > 0.1) {
-      const speed = delta * 8;
-      container.scrollLeft += speed;
-    }
-
-    requestRef.current = requestAnimationFrame(animate);
-  }, [isTouch]);
-
-  // Start animation loop
-  useEffect(() => {
-    if (!isTouch) {
-      requestRef.current = requestAnimationFrame(animate);
-    }
-    return () => {
-      if (requestRef.current) cancelAnimationFrame(requestRef.current);
-    };
-  }, [isTouch, animate]);
-
-  // Mouse handlers
-  const handleMouseMove = useCallback((e) => {
-    mouseXRef.current = e.clientX;
-    isHoveringRef.current = true;
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    isHoveringRef.current = false;
-  }, []);
-
   // Create ref callback for items
   const setItemRef = useCallback((index) => (el) => {
     itemRefs.current[index] = el;
@@ -129,8 +93,6 @@ const useCarousel = ({ items = [], isTouch = false } = {}) => {
     setItemRef,
     activeIndex,
     handleScroll,
-    handleMouseMove,
-    handleMouseLeave,
   };
 };
 

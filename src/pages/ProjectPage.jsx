@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { usePageTitle, useIsTouch } from '../hooks';
+import { usePageTitle } from '../hooks';
 import { portfolioProjects } from '../data';
 import { Header } from '../components/layout';
 import { AboutPanel, Carousel, Lightbox } from '../components/features';
@@ -10,7 +10,6 @@ const ProjectPage = () => {
   const { slug } = useParams();
   const project = portfolioProjects.find((p) => p.slug === slug);
   const [selectedImage, setSelectedImage] = useState(null);
-  const isTouch = useIsTouch();
 
   usePageTitle(
     project ? `${project.title} - Mohsin Ismail` : 'Project Not Found - Mohsin Ismail'
