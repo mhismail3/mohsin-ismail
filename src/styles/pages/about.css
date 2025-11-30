@@ -166,6 +166,17 @@
   margin-top: 0.25rem;
 }
 
+/* When panel-head is the only child (no about-body), remove extra spacing */
+.about-panel-compact .panel-head:only-child {
+  margin-bottom: 0;
+}
+
+.about-panel-compact .panel-head:only-child .eyebrow {
+  margin-bottom: 0;
+  line-height: 1;
+  transform: translateY(2px);
+}
+
 .contact-links-compact {
   justify-content: flex-start;
 }

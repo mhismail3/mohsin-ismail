@@ -51,7 +51,7 @@ function Home() {
               <div className="eyebrow">Latest Project</div>
             </div>
             <Link to="/portfolio" className="see-all-link">
-              View all projects &rarr;
+              See other projects &rarr;
             </Link>
           </div>
           <Link to={`/portfolio/${featuredProject.slug}`} className="featured-project-card">

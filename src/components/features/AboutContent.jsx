@@ -93,24 +93,6 @@ const AboutContent = () => {
         alt="About detail"
         onClose={() => setSelectedImage(null)}
       />
-
-      <div className="contact-section">
-        <h3>Get in touch</h3>
-        <div className="contact-links">
-          {contactLinks.map((link) => (
-            <a
-              key={link.label}
-              className="contact-icon-btn"
-              href={link.href}
-              aria-label={link.label}
-              target={link.external ? '_blank' : undefined}
-              rel={link.external ? 'noreferrer' : undefined}
-            >
-              {link.icon}
-            </a>
-          ))}
-        </div>
-      </div>
     </>
   );
 };
