@@ -303,6 +303,44 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   INLINE LINKS
+   Markdown links styled with retro underline and hover effects
+   Uses text-decoration for proper multi-line support
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.post-body a {
+  color: var(--aero);
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  transition: color var(--duration-normal) ease,
+              text-decoration-color var(--duration-normal) ease,
+              text-decoration-thickness var(--duration-normal) ease;
+}
+
+.post-body a:hover {
+  color: var(--pine);
+  text-decoration-color: var(--pine);
+  text-decoration-thickness: 2px;
+}
+
+/* Active/pressed state */
+.post-body a:active {
+  color: var(--clay);
+  text-decoration-color: var(--clay);
+}
+
+/* Focus state for keyboard navigation */
+.post-body a:focus-visible {
+  outline: 2px dashed var(--clay);
+  outline-offset: 3px;
+  border-radius: 2px;
+  text-decoration-color: var(--pine);
+  text-decoration-thickness: 2px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    RESPONSIVE
    ───────────────────────────────────────────────────────────────────────────── */
 

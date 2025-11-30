@@ -23,8 +23,11 @@ const Header = ({ label, onLogoClick }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  // Track which nav button is being touch-pressed (by path)
+  const [touchPressedPath, setTouchPressedPath] = useState(null);
   
   const closeTimeoutRef = useRef(null);
+  const touchStartRef = useRef(null); // Track touch start position
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -127,6 +130,44 @@ const Header = ({ label, onLogoClick }) => {
     }
     closeMenu();
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Touch handlers for nav buttons - navigate only on touch release (like desktop click)
+  const handleNavTouchStart = (e, path) => {
+    // Store the path being pressed and initial touch position
+    setTouchPressedPath(path);
+    const touch = e.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY, target: e.currentTarget };
+  };
+
+  const handleNavTouchMove = (e) => {
+    // Cancel if finger moves too far from start position (allows scrolling)
+    if (!touchStartRef.current) return;
+    
+    const touch = e.touches[0];
+    const dx = Math.abs(touch.clientX - touchStartRef.current.x);
+    const dy = Math.abs(touch.clientY - touchStartRef.current.y);
+    
+    // If moved more than 10px, cancel the press
+    if (dx > 10 || dy > 10) {
+      setTouchPressedPath(null);
+      touchStartRef.current = null;
+    }
+  };
+
+  const handleNavTouchEnd = (e, path) => {
+    // Only navigate if this button is still being pressed
+    if (touchPressedPath === path) {
+      e.preventDefault(); // Prevent click event from also firing
+      handleNav(path);
+    }
+    setTouchPressedPath(null);
+    touchStartRef.current = null;
+  };
+
+  const handleNavTouchCancel = () => {
+    setTouchPressedPath(null);
+    touchStartRef.current = null;
   };
 
   const toggleMenu = () => {
@@ -249,8 +290,12 @@ const Header = ({ label, onLogoClick }) => {
             <button
               key={link.path}
               type="button"
-              className={`btn outline small ${isLinkActive(link.path) ? 'active' : ''} ${link.path === '/' ? 'home-link' : ''}`}
+              className={`btn outline small ${isLinkActive(link.path) ? 'active' : ''} ${link.path === '/' ? 'home-link' : ''} ${touchPressedPath === link.path ? 'touch-pressed' : ''}`}
               onClick={() => handleNav(link.path)}
+              onTouchStart={(e) => handleNavTouchStart(e, link.path)}
+              onTouchMove={handleNavTouchMove}
+              onTouchEnd={(e) => handleNavTouchEnd(e, link.path)}
+              onTouchCancel={handleNavTouchCancel}
             >
               {link.label}
             </button>
