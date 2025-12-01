@@ -111,8 +111,10 @@ a {
   text-decoration: none;
 }
 
-a:hover {
-  color: var(--pine);
+@media (hover: hover) {
+  a:hover {
+    color: var(--pine);
+  }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

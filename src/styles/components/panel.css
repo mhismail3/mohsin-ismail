@@ -108,9 +108,11 @@
   flex-shrink: 0;
 }
 
-.see-all-link:hover {
-  color: var(--aero);
-  transform: translateX(4px);
+@media (hover: hover) {
+  .see-all-link:hover {
+    color: var(--aero);
+    transform: translateX(4px);
+  }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

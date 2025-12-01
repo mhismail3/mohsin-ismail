@@ -85,9 +85,11 @@
   color: #000000;
 }
 
-.lightbox-close:hover {
-  transform: translate(-1px, -1px);
-  box-shadow: 3px 3px 0px var(--retro-shadow-color);
+@media (hover: hover) {
+  .lightbox-close:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0px var(--retro-shadow-color);
+  }
 }
 
 .lightbox-close:active {

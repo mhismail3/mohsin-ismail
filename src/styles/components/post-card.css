@@ -165,8 +165,10 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
   transition: color var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
-.post-title-link:hover {
-  color: var(--pine);
+@media (hover: hover) {
+  .post-title-link:hover {
+    color: var(--pine);
+  }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -447,10 +449,12 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
               text-decoration-thickness var(--duration-normal) ease;
 }
 
-.post-body a:hover {
-  color: var(--pine);
-  text-decoration-color: var(--pine);
-  text-decoration-thickness: 2px;
+@media (hover: hover) {
+  .post-body a:hover {
+    color: var(--pine);
+    text-decoration-color: var(--pine);
+    text-decoration-thickness: 2px;
+  }
 }
 
 /* Active/pressed state */

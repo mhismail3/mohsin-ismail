@@ -158,10 +158,17 @@
   color: var(--ink);
 }
 
-.github-card:hover {
-  transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0px var(--retro-shadow-color);
-  color: var(--ink);
+@media (hover: hover) {
+  .github-card:hover {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0px var(--retro-shadow-color);
+    color: var(--ink);
+  }
+
+  .github-card:hover .github-arrow {
+    color: var(--pine);
+    transform: translateX(2px) translateY(-2px);
+  }
 }
 
 .github-icon {
@@ -202,11 +209,6 @@
   color: var(--color-text-muted);
   transition: transform var(--duration-normal) ease, 
               color var(--theme-transition-duration) var(--theme-transition-ease);
-}
-
-.github-card:hover .github-arrow {
-  color: var(--pine);
-  transform: translateX(2px) translateY(-2px);
 }
 
 

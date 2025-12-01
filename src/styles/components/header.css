@@ -103,10 +103,12 @@
               color var(--duration-fast) ease;
 }
 
-.theme-toggle:hover {
-  transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0px var(--retro-shadow-color);
-  color: var(--pine);
+@media (hover: hover) {
+  .theme-toggle:hover {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0px var(--retro-shadow-color);
+    color: var(--pine);
+  }
 }
 
 .theme-toggle:active {
@@ -186,8 +188,10 @@
   transition: color var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
-.brand:hover {
-  color: var(--pine);
+@media (hover: hover) {
+  .brand:hover {
+    color: var(--pine);
+  }
 }
 
 .brand:focus-visible {

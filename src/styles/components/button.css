@@ -55,21 +55,35 @@
   -webkit-text-fill-color: var(--bg-white);
 }
 
-/* Primary buttons keep white text on hover, just darken background slightly */
-.btn.primary:hover {
-  color: var(--bg-white);
-  -webkit-text-fill-color: var(--bg-white);
-}
-
 /* ─────────────────────────────────────────────────────────────────────────────
    INTERACTIVE STATES
+   
+   Hover states wrapped in @media (hover: hover) to prevent "sticky hover" on
+   touch devices. On iOS Safari, tapping triggers :hover which stays until you
+   tap elsewhere - this media query ensures hover only applies on devices with
+   actual hover capability (mouse/trackpad).
    ───────────────────────────────────────────────────────────────────────────── */
 
-.btn:hover {
-  transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0px var(--retro-shadow-color);
-  color: var(--pine);
-  -webkit-text-fill-color: var(--pine);
+@media (hover: hover) {
+  .btn:hover {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0px var(--retro-shadow-color);
+    color: var(--pine);
+    -webkit-text-fill-color: var(--pine);
+  }
+
+  /* Primary buttons keep white text on hover */
+  .btn.primary:hover {
+    color: var(--bg-white);
+    -webkit-text-fill-color: var(--bg-white);
+  }
+
+  .btn:disabled:hover {
+    transform: none;
+    box-shadow: none;
+    color: var(--ink);
+    -webkit-text-fill-color: var(--ink);
+  }
 }
 
 .btn:active {
@@ -81,13 +95,6 @@
   opacity: 0.5;
   cursor: not-allowed;
   box-shadow: none;
-}
-
-.btn:disabled:hover {
-  transform: none;
-  box-shadow: none;
-  color: var(--ink);
-  -webkit-text-fill-color: var(--ink);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

@@ -61,10 +61,12 @@
               text-decoration-thickness var(--duration-normal) ease;
 }
 
-.about-body a:hover {
-  color: var(--pine);
-  text-decoration-color: var(--pine);
-  text-decoration-thickness: 2px;
+@media (hover: hover) {
+  .about-body a:hover {
+    color: var(--pine);
+    text-decoration-color: var(--pine);
+    text-decoration-thickness: 2px;
+  }
 }
 
 .about-body a:active {
@@ -201,10 +203,12 @@
               color var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
-.contact-icon-btn:hover {
-  transform: translate(1px, 1px);
-  filter: drop-shadow(1.5px 1.5px 0px var(--ink));
-  color: var(--bg-white);
+@media (hover: hover) {
+  .contact-icon-btn:hover {
+    transform: translate(1px, 1px);
+    filter: drop-shadow(1.5px 1.5px 0px var(--ink));
+    color: var(--bg-white);
+  }
 }
 
 .contact-icon-btn:active {
@@ -261,8 +265,10 @@
   filter: drop-shadow(2px 2px 0px var(--shadow-color-muted));
 }
 
-.contact-links-compact .contact-icon-btn:hover {
-  filter: drop-shadow(1px 1px 0px var(--shadow-color-muted));
+@media (hover: hover) {
+  .contact-links-compact .contact-icon-btn:hover {
+    filter: drop-shadow(1px 1px 0px var(--shadow-color-muted));
+  }
 }
 
 .contact-links-compact .contact-icon-btn:active {
@@ -308,8 +314,10 @@
   filter: drop-shadow(2.5px 2.5px 0px rgba(0, 0, 0, 0.85));
 }
 
-[data-theme="dark"] .contact-icon-btn:hover {
-  filter: drop-shadow(1.5px 1.5px 0px rgba(0, 0, 0, 0.85));
+@media (hover: hover) {
+  [data-theme="dark"] .contact-icon-btn:hover {
+    filter: drop-shadow(1.5px 1.5px 0px rgba(0, 0, 0, 0.85));
+  }
 }
 
 [data-theme="dark"] .contact-icon-btn:active {
@@ -326,8 +334,10 @@
   filter: drop-shadow(2px 2px 0px rgba(0, 0, 0, 0.7));
 }
 
-[data-theme="dark"] .contact-links-compact .contact-icon-btn:hover {
-  filter: drop-shadow(1px 1px 0px rgba(0, 0, 0, 0.7));
+@media (hover: hover) {
+  [data-theme="dark"] .contact-links-compact .contact-icon-btn:hover {
+    filter: drop-shadow(1px 1px 0px rgba(0, 0, 0, 0.7));
+  }
 }
 
 [data-theme="dark"] .contact-links-compact .contact-icon-btn:active {
