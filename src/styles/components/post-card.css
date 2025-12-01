@@ -97,9 +97,20 @@
   position: relative;
 }
 
-/* Gradual horizontal fade covering last 50% of the 4th line
-   ONLY shown when content actually overflows (has-overflow class)
-   Note: CSS gradients can't be transitioned, so we use opacity to crossfade */
+/* ─────────────────────────────────────────────────────────────────────────────
+   EXCERPT FADE OVERLAY - Dual-layer crossfade technique
+   
+   CSS gradients can't be transitioned because the color values inside them
+   change instantly when CSS variables update. To achieve smooth theme
+   transitions, we use TWO gradient layers with HARDCODED colors:
+   - ::before = Light theme gradient (always present, fades out in dark mode)
+   - ::after  = Dark theme gradient (always present, fades in when dark mode)
+   
+   This creates a crossfade effect during theme transitions.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Shared positioning for both fade layers */
+.post-excerpt.has-overflow::before,
 .post-excerpt.has-overflow::after {
   content: '';
   position: absolute;
@@ -107,16 +118,38 @@
   right: 0;
   width: 50%;
   height: calc(var(--leading-normal) * 1em);
-  background: linear-gradient(
-    to right,
-    transparent 0%,
-    var(--color-fade-start) 0%,
-    var(--color-fade-end) 100%
-  );
   pointer-events: none;
   z-index: 1;
-  /* Fade out/in during theme transition since gradients can't be transitioned directly */
   transition: opacity var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+/* Light theme gradient layer - hardcoded panel-bg color (#fffefb) */
+.post-excerpt.has-overflow::before {
+  background: linear-gradient(
+    to right,
+    rgba(255, 254, 251, 0) 0%,
+    #fffefb 100%
+  );
+  opacity: 1;
+}
+
+/* Dark theme gradient layer - hardcoded dark panel-bg color (#252219) */
+.post-excerpt.has-overflow::after {
+  background: linear-gradient(
+    to right,
+    rgba(37, 34, 25, 0) 0%,
+    #252219 100%
+  );
+  opacity: 0;
+}
+
+/* In dark mode: fade out light layer, fade in dark layer */
+[data-theme="dark"] .post-excerpt.has-overflow::before {
+  opacity: 0;
+}
+
+[data-theme="dark"] .post-excerpt.has-overflow::after {
+  opacity: 1;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

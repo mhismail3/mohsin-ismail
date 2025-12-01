@@ -15,15 +15,47 @@
 
 /* ─────────────────────────────────────────────────────────────────────────────
    GLOBAL THEME TRANSITIONS
-   Ensures all color-related properties animate smoothly during theme changes.
-   Applied universally so no element "flashes" when toggling light/dark mode.
+   
+   Ensures visual properties animate smoothly during theme changes.
+   
+   IMPORTANT: We intentionally EXCLUDE `color` from this global rule.
+   
+   Why? iOS Safari struggles when thousands of text elements all try to 
+   animate their color simultaneously - it throttles/batches them, causing
+   text to appear to transition much slower than backgrounds.
+   
+   The fix: Let text color change instantly (it's not jarring), and only
+   add explicit color transitions to interactive elements (buttons, links)
+   that actually benefit from the smooth animation.
+   
+   This dramatically improves iOS Safari performance while maintaining
+   smooth transitions where they matter most.
    ───────────────────────────────────────────────────────────────────────────── */
 
 *,
 *::before,
 *::after {
-  transition-property: background-color, border-color, color, fill, stroke, 
-                       box-shadow, filter, outline-color, text-decoration-color;
+  transition-property: background-color, border-color, box-shadow, 
+                       filter, outline-color;
+  transition-duration: var(--theme-transition-duration, 0.2s);
+  transition-timing-function: var(--theme-transition-ease, ease);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   INTERACTIVE ELEMENTS - Smooth color transitions
+   
+   These elements benefit from animated color transitions during theme change
+   and hover/focus states. Limited count = no iOS Safari performance issues.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+a,
+button,
+.pill,
+.btn,
+[role="button"] {
+  transition-property: background-color, border-color, box-shadow, 
+                       filter, outline-color, color, fill, stroke,
+                       text-decoration-color, transform;
   transition-duration: var(--theme-transition-duration, 0.2s);
   transition-timing-function: var(--theme-transition-ease, ease);
 }
@@ -46,8 +78,8 @@ body {
   background: var(--color-bg);
   color: var(--color-text);
   line-height: var(--leading-relaxed);
-  transition: background-color var(--duration-normal) ease,
-              color var(--duration-normal) ease;
+  /* Only transition background - text color changes instantly for iOS performance */
+  transition: background-color var(--duration-normal) ease;
 }
 
 #root {
