@@ -23,8 +23,8 @@
               box-shadow var(--theme-transition-duration) var(--theme-transition-ease), 
               background-color var(--theme-transition-duration) var(--theme-transition-ease),
               border-color var(--theme-transition-duration) var(--theme-transition-ease),
-              color var(--duration-fast) ease,
-              -webkit-text-fill-color var(--duration-fast) ease;
+              color var(--duration-slow) var(--ease-out),
+              -webkit-text-fill-color var(--duration-slow) var(--ease-out);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

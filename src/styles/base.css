@@ -69,7 +69,7 @@ button,
 [role="button"] {
   transition-property: background-color, border-color, box-shadow, 
                        filter, outline-color, color, fill, stroke,
-                       text-decoration-color, transform;
+                       text-decoration-color, transform, -webkit-text-fill-color;
   transition-duration: var(--theme-transition-duration, 0.2s);
   transition-timing-function: var(--theme-transition-ease, ease);
 }

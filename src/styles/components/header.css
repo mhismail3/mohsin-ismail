@@ -366,7 +366,7 @@
     box-shadow: 1px 1px 0px var(--retro-shadow-color);
     color: var(--pine);
     -webkit-text-fill-color: var(--pine);
-    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, color 0.12s ease-out, -webkit-text-fill-color 0.12s ease-out;
+    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, color var(--duration-slow) var(--ease-out), -webkit-text-fill-color var(--duration-slow) var(--ease-out);
   }
 }
 
@@ -465,7 +465,7 @@
     box-shadow: 1px 1px 0px var(--retro-shadow-color);
     color: var(--pine);
     -webkit-text-fill-color: var(--pine);
-    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, color 0.12s ease-out, -webkit-text-fill-color 0.12s ease-out;
+    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, color var(--duration-slow) var(--ease-out), -webkit-text-fill-color var(--duration-slow) var(--ease-out);
   }
 }
 
@@ -569,7 +569,7 @@
     box-shadow: 1px 1px 0px var(--retro-shadow-color);
     color: var(--pine);
     -webkit-text-fill-color: var(--pine);
-    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, color 0.12s ease-out, -webkit-text-fill-color 0.12s ease-out;
+    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, color var(--duration-slow) var(--ease-out), -webkit-text-fill-color var(--duration-slow) var(--ease-out);
   }
 }
 
@@ -850,7 +850,7 @@
     box-shadow: 1px 1px 0px var(--retro-shadow-color);
     color: var(--pine);
     -webkit-text-fill-color: var(--pine);
-    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, color 0.12s ease-out, -webkit-text-fill-color 0.12s ease-out;
+    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, color var(--duration-slow) var(--ease-out), -webkit-text-fill-color var(--duration-slow) var(--ease-out);
   }
 }
 
