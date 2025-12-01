@@ -27,6 +27,8 @@ const Header = ({ label, onLogoClick }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   // Track which nav button is being touch-pressed (by path)
   const [touchPressedPath, setTouchPressedPath] = useState(null);
+  // Remember the collapsed state when menu was opened (for smooth close animations)
+  const [openedWhileCollapsed, setOpenedWhileCollapsed] = useState(false);
   
   const closeTimeoutRef = useRef(null);
   const touchStartRef = useRef(null); // Track touch start position
@@ -183,6 +185,9 @@ const Header = ({ label, onLogoClick }) => {
         closeTimeoutRef.current = null;
       }
       setIsClosing(false);
+      // Remember the collapsed state when opening - this determines menu position
+      // throughout the open/close cycle, avoiding position jumps during scroll
+      setOpenedWhileCollapsed(isCollapsed);
       setIsOpen(true);
     }
   };
@@ -235,7 +240,9 @@ const Header = ({ label, onLogoClick }) => {
     isOpen ? 'visible' : '',
     isClosing ? 'closing' : '',
     isMobile ? 'mobile' : 'desktop',
-    isCollapsed ? 'from-collapsed' : '',
+    // Use the remembered state from when menu was opened, not current state
+    // This prevents the menu from jumping position if header collapses during close animation
+    openedWhileCollapsed ? 'from-collapsed' : '',
   ].filter(Boolean).join(' ');
   
   const brandMarkClass = [
