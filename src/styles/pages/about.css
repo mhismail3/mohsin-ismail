@@ -38,7 +38,46 @@
 }
 
 .about-body p {
-  margin: 0;
+  margin: 0 0 1rem 0;
+}
+
+.about-body p:last-child {
+  margin-bottom: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ABOUT BODY LINKS
+   Markdown links styled with retro underline and hover effects (matches post-body)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.about-body a {
+  color: var(--aero);
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  transition: color var(--theme-transition-duration) var(--theme-transition-ease),
+              text-decoration-color var(--theme-transition-duration) var(--theme-transition-ease),
+              text-decoration-thickness var(--duration-normal) ease;
+}
+
+.about-body a:hover {
+  color: var(--pine);
+  text-decoration-color: var(--pine);
+  text-decoration-thickness: 2px;
+}
+
+.about-body a:active {
+  color: var(--clay);
+  text-decoration-color: var(--clay);
+}
+
+.about-body a:focus-visible {
+  outline: 2px dashed var(--clay);
+  outline-offset: 3px;
+  border-radius: 2px;
+  text-decoration-color: var(--pine);
+  text-decoration-thickness: 2px;
 }
 
 .about-panel h2 {

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Carousel from './Carousel';
 import Lightbox from './Lightbox';
+import aboutContent from '../../data/about';
 
 const contactLinks = [
   {
@@ -39,48 +40,22 @@ const contactLinks = [
   },
 ];
 
-const aboutPhotos = [
-  '/about/gallery-1.JPG',
-  '/about/gallery-2.jpeg',
-  '/about/gallery-3.JPG',
-  '/about/gallery-4.jpeg',
-  '/about/gallery-5.JPG',
-];
-
 const AboutContent = () => {
   const [selectedImage, setSelectedImage] = useState(null);
 
   return (
     <>
       <div className="eyebrow about-eyebrow">About Me</div>
-      <p>
-        I&apos;ve been interested in technology and software development for over 10 years, and I&apos;ve
-        been doing it professionally for the last six and a half. I currently work at Amazon on the
-        Devices &amp; Services Privacy Engineering team. Recently, my team and I have been supporting{' '}
-        <a
-          href="https://www.linkedin.com/posts/mariadelourdeszollo_bee-is-joining-amazon-and-we-couldnt-be-activity-7353453923795378176-zEbR?utm_source=share&utm_medium=member_desktop&rcm=ACoAABayTsIBe2EfZX_vl21PXh5k8rQUW-MHyCA"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Amazon&apos;s acquisition of Bee
-        </a>
-        .
-      </p>
-      <p>
-        My key strength is my attention to detail. I&apos;m a perfectionist, and I can obsess over the
-        tiniest things. But I also love figuring out systems and boring details and helping everyone be
-        more efficient.
-      </p>
-      <p>
-        Lately, I&apos;m all-in on AI and figuring out what the future of all of this (especially as a
-        developer) will be.
-      </p>
+      <div
+        className="about-body"
+        dangerouslySetInnerHTML={{ __html: aboutContent.content }}
+      />
 
       {/* Photo Gallery Section */}
       <div className="photo-gallery-section">
         <p className="carousel-caption">❤️</p>
         <Carousel
-          images={aboutPhotos}
+          images={aboutContent.gallery}
           onImageClick={setSelectedImage}
           altPrefix="About photo"
           className="about-carousel"
@@ -99,6 +74,3 @@ const AboutContent = () => {
 
 export { contactLinks };
 export default AboutContent;
-
-
-

@@ -6,13 +6,6 @@ tags:
   - agents
   - prompt engineering
   - context engineering
-summary: "A copy of the AGENT.md file I'm currently using to configure my coding agents."
-tldr: |
-  I maintain an AGENT.md file that focuses on three things:
-
-  1. **Self-improvement**: If the agent makes a mistake, it should automatically fix the issue AND update the rule so that it doesn't happen again
-  2. **Context management**: At >50% context usage, suggest starting fresh with a summary - after this point, the agent often loses track anyways
-  3. **Auto-Documentation**: The agent should automatically write a timestamped file summarizing the work done, so there's an automatic chronological history of what was done
 ---
 
 I've been refining my default agent rules file for agentic coding tools over the past few months. Right now, the core idea I'm testing is: agents should improve their own operating instructions when they fail, not just fix the immediate problem.
