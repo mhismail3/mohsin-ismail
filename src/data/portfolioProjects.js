@@ -44,8 +44,20 @@ const portfolioProjects = Object.entries(rawProjects).map(([path, raw]) => {
   // Build image paths from the /projects/{slug}/ directory (served from public)
   const basePath = `/projects/${slug}`;
   const cover = data.cover ? `${basePath}/${data.cover}` : null;
+  
+  // Gallery items can be either strings or objects with { src, caption }
+  // Normalize to consistent format while preserving backward compatibility
   const gallery = Array.isArray(data.gallery) 
-    ? data.gallery.map((img) => `${basePath}/${img}`)
+    ? data.gallery.map((item) => {
+        if (typeof item === 'string') {
+          return `${basePath}/${item}`;
+        }
+        // Object format: { src: 'filename.png', caption: 'optional caption' }
+        return {
+          src: `${basePath}/${item.src}`,
+          caption: item.caption,
+        };
+      })
     : [];
 
   return {

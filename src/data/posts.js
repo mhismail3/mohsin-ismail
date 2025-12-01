@@ -22,7 +22,7 @@ const rawPosts = import.meta.glob('../../public/posts/*.md', {
 });
 
 const sanitizeConfig = {
-  ADD_TAGS: ['iframe', 'div'],
+  ADD_TAGS: ['iframe', 'div', 'figure', 'figcaption'],
   ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'loading', 'src', 'title', 'data-code', 'data-language', 'data-codeblock'],
 };
 

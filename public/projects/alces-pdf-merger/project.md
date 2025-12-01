@@ -17,7 +17,8 @@ cover: cover.jpg
 gallery:
   - gallery-1.png
   - gallery-2.png
-  - gallery-3.gif
+  - src: gallery-3.gif
+    caption: "Enjoyed working on the little details"
   - gallery-4.png
   - gallery-5.png
 ---

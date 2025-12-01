@@ -326,6 +326,41 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   FIGURE & FIGCAPTION
+   Semantic container for images with optional captions in post content.
+   Use <figure><img src="..."><figcaption>Caption</figcaption></figure> in markdown.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.post-body figure {
+  margin: 1.25rem 0;
+  padding: 0;
+  text-align: center;
+}
+
+.post-body figure img {
+  /* Inherit all img styles, but allow figure to control margins */
+  margin-bottom: 0;
+}
+
+.post-body figcaption {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  font-style: italic;
+  line-height: 1.4;
+  color: var(--color-text-muted);
+  transition: color var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+/* Full-width figures in full content mode */
+.post-body.full-content figure {
+  margin: 1.5rem 0;
+}
+
+.post-body.full-content figure img {
+  max-width: 100%;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    INLINE LINKS
    Markdown links styled with retro underline and hover effects
    Uses text-decoration for proper multi-line support

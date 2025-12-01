@@ -28,6 +28,19 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   CAROUSEL ITEM WRAPPER
+   Contains the clickable item and optional caption
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.carousel-item-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-self: flex-start; /* Align to top so captions don't shift image position */
+  flex: 0 0 auto;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    CAROUSEL ITEM
    ───────────────────────────────────────────────────────────────────────────── */
 
@@ -93,6 +106,23 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   CAROUSEL ITEM CAPTION
+   Optional caption that appears below individual carousel images
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.carousel-item-caption {
+  margin: 0.5rem 0 0;
+  padding: 0 0.25rem;
+  font-size: 0.8rem;
+  font-style: italic;
+  line-height: 1.3;
+  color: var(--color-text-muted);
+  text-align: center;
+  max-width: 280px;
+  transition: color var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    ABOUT PAGE CAROUSEL
    ───────────────────────────────────────────────────────────────────────────── */
 
@@ -121,6 +151,11 @@
   .carousel-container {
     mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
     -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+  }
+
+  .carousel-item-caption {
+    font-size: 0.75rem;
+    max-width: 200px;
   }
 }
 
