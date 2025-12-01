@@ -218,5 +218,46 @@
   }
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   DARK MODE - SOCIAL ICONS
+   Slightly thicker strokes and softer shadows for better visibility
+   ───────────────────────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .contact-icon {
+  fill: var(--ink);
+  stroke: none;
+  stroke-width: 0;
+}
+
+[data-theme="dark"] .contact-icon-btn {
+  filter: drop-shadow(2.5px 2.5px 0px rgba(0, 0, 0, 0.85));
+}
+
+[data-theme="dark"] .contact-icon-btn:hover {
+  filter: drop-shadow(1.5px 1.5px 0px rgba(0, 0, 0, 0.85));
+}
+
+[data-theme="dark"] .contact-icon-btn:active {
+  filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.85));
+}
+
+[data-theme="dark"] .contact-links-compact .contact-icon {
+  fill: var(--color-text-muted);
+  stroke: none;
+  stroke-width: 0;
+}
+
+[data-theme="dark"] .contact-links-compact .contact-icon-btn {
+  filter: drop-shadow(2px 2px 0px rgba(0, 0, 0, 0.7));
+}
+
+[data-theme="dark"] .contact-links-compact .contact-icon-btn:hover {
+  filter: drop-shadow(1px 1px 0px rgba(0, 0, 0, 0.7));
+}
+
+[data-theme="dark"] .contact-links-compact .contact-icon-btn:active {
+  filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.7));
+}
+
 
 
