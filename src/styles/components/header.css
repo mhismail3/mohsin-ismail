@@ -899,4 +899,71 @@
   }
 }
 
+/* =============================================================================
+   WIDE DESKTOP - PHOTO SLIDES TO LEFT WHITESPACE
+   When there's enough whitespace beside the content column, the profile photo
+   slides out to the left margin area when the header collapses.
+   
+   Breakpoint calculation:
+   - Content: 860px max-width
+   - Header constraints: 28px left + 28px right = 56px
+   - Photo (48px) + comfortable margin: ~72px minimum whitespace each side
+   - Total needed: 860 + 56 + 144 = 1060px (rounded up to 1100px)
+   
+   Positioning:
+   - Photo: Right edge positioned 30px from content column's left edge
+   - Menu: Button right edges aligned with photo's right edge
+   
+   Transform calculation:
+   - Photo original position: content_left + 18px (header padding)
+   - Target position: content_left - 30px - 48px = content_left - 78px
+   - Offset needed: 18px + 78px = 96px to the left
+   ============================================================================= */
+
+@media (min-width: 1100px) {
+  /* Faster fade for text so it's gone before photo slides */
+  .top-bar .brand-name,
+  .top-bar .menu-toggle {
+    transition: opacity 0.12s ease-out,
+                background-color var(--theme-transition-duration) var(--theme-transition-ease),
+                border-color var(--theme-transition-duration) var(--theme-transition-ease),
+                box-shadow var(--theme-transition-duration) var(--theme-transition-ease),
+                color var(--theme-transition-duration) var(--theme-transition-ease);
+  }
+  
+  /* Add transform transition to brand with a slight delay so fade completes first */
+  .top-bar .brand {
+    transition: 
+      color var(--theme-transition-duration) var(--theme-transition-ease),
+      transform var(--collapse-duration) var(--collapse-ease) 0.08s;
+  }
+  
+  /* Photo slides left: right edge is 30px from content column's left edge */
+  .top-bar.collapsed .brand {
+    transform: translateX(-86px);
+  }
+  
+  /* 
+   * Menu positioning: right edge aligns with photo's right edge.
+   * Using right positioning instead of transform so button right edges align.
+   * right: calc(100% + 30px) places menu right edge 30px left of header's left edge,
+   * which matches the photo's right edge position.
+   */
+  .top-bar.collapsed .top-menu.from-collapsed {
+    transform: none;
+    left: auto;
+    right: calc(100% + 20px);
+  }
+  
+  /* Right-align menu buttons so their right edges align with photo's right edge */
+  .top-bar.collapsed .top-menu.from-collapsed .top-menu-content {
+    align-items: flex-end;
+  }
+  
+  /* Ensure non-collapsed state has identity transform for smooth transition back */
+  .top-bar:not(.collapsed) .brand {
+    transform: translateX(0);
+  }
+}
+
 
