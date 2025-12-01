@@ -19,6 +19,7 @@
 @import './components/code-block.css';
 @import './components/toast.css';
 @import './components/post-card.css';
+@import './components/progressive-image.css';
 
 /* Page-specific styles */
 @import './pages/blog.css';

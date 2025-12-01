@@ -1,10 +1,12 @@
 import React, { useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import { ProgressiveImage } from '../ui';
 
 /**
  * Lightbox modal component for full-screen image viewing.
  * Uses a portal to render at document.body level, ensuring proper
  * viewport centering regardless of scroll position or page length.
+ * Features progressive loading with blur-up effect for large images.
  * 
  * @param {Object} props
  * @param {string} props.src - Image source URL
@@ -44,7 +46,11 @@ const Lightbox = ({ src, alt = 'Full size view', onClose }) => {
       aria-label="Image lightbox"
     >
       <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
-        <img src={src} alt={alt} />
+        <ProgressiveImage 
+          src={src} 
+          alt={alt}
+          eager={true}
+        />
         <button
           className="lightbox-close"
           onClick={onClose}
@@ -59,6 +65,3 @@ const Lightbox = ({ src, alt = 'Full size view', onClose }) => {
 };
 
 export default Lightbox;
-
-
-
