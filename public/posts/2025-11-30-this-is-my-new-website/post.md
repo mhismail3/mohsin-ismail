@@ -3,8 +3,8 @@ title: "This is my New website"
 date: "2025-11-30T22:09:00-08:00"
 tags:
   - ai
-  - opus 4.5
   - design
+  - opus 4.5
   - gemini 3
   - gpt 5.1
 ---

@@ -2,10 +2,11 @@
 title: "My current AGENT.md rules"
 date: "2025-11-25T19:55:00-08:00"
 tags:
-  - ai
-  - agents
   - prompt engineering
   - context engineering
+  - AGENT.md
+  - opus 4.5
+  - sonnet 4.5
 ---
 
 I've been refining my default agent rules file for agentic coding tools over the past few months. Right now, the core idea I'm testing is: agents should improve their own operating instructions when they fail, not just fix the immediate problem.
