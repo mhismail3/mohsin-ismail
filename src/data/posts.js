@@ -38,13 +38,15 @@ const stripMarkdown = (text = '') =>
 
 /**
  * Build an excerpt from post content for 4-line preview.
- * ~80 chars per line × 4 lines = ~320 chars, using 400 for safety.
- * Always built from actual content, never frontmatter summary.
+ * CSS constrains display to 4 lines via max-height - we provide MORE text
+ * than needed so the 4th line is always fully filled when content exists.
+ * ~120 chars per line × 4 lines = ~480 chars minimum; using 800 to ensure
+ * the CSS constraint (not character limit) determines the cutoff point.
  */
 const buildExcerpt = (content = '') => {
   const cleaned = stripMarkdown(content);
-  // Return enough text for 4 lines with some buffer
-  return cleaned.slice(0, 400);
+  // Provide generous text so CSS max-height becomes the limiting factor
+  return cleaned.slice(0, 800);
 };
 
 /**

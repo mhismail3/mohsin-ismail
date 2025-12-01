@@ -78,7 +78,8 @@
 
 /* ─────────────────────────────────────────────────────────────────────────────
    POST EXCERPT
-   4-line preview of post content with gradual fade on the 4th line
+   Shows up to 4 full lines of content. Only shows gradient fade when content
+   actually exceeds 4 lines (detected via JS, applies .has-overflow class).
    ───────────────────────────────────────────────────────────────────────────── */
 
 .post-excerpt {
@@ -86,9 +87,9 @@
   margin: 0;
   font-size: var(--text-base);
   line-height: var(--leading-normal);
-  color: var(--muted);
+  color: var(--color-text-muted);
   
-  /* 4-line height limit with overflow hidden (no ellipsis) */
+  /* 4-line height limit with overflow hidden */
   max-height: calc(4 * var(--leading-normal) * 1em);
   overflow: hidden;
   
@@ -96,19 +97,20 @@
   position: relative;
 }
 
-/* Gradual horizontal fade covering the last 40% of the 4th line */
-.post-excerpt::after {
+/* Gradual horizontal fade covering last 50% of the 4th line
+   ONLY shown when content actually overflows (has-overflow class) */
+.post-excerpt.has-overflow::after {
   content: '';
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 40%;
+  width: 50%;
   height: calc(var(--leading-normal) * 1em);
   background: linear-gradient(
     to right,
     transparent 0%,
-    rgba(255, 254, 251, 0.7) 65%,
-    #fffefb 100%
+    var(--color-fade-start) 50%,
+    var(--color-fade-end) 100%
   );
   pointer-events: none;
   z-index: 1;
@@ -190,10 +192,10 @@
 }
 
 .post-body pre {
-  background: #111827;
-  color: #e5e7eb;
+  background: var(--color-code-bg);
+  color: var(--color-code-text);
   padding: var(--space-base);
-  border-radius: var(--radius-base);
+  border-radius: var(--radius-sm);
   overflow: auto;
 }
 
@@ -205,19 +207,19 @@
 @media (hover: hover) and (pointer: fine) {
   .post-body img:hover {
     transform: translateY(-4px);
-    box-shadow: 4px 12px 8px rgba(31, 26, 20, 0.70);
+    box-shadow: 4px 12px 8px var(--shadow-color-strong);
   }
 
   .post-body img:active {
     transform: translateY(-1px);
-    box-shadow: 4px 5px 2px rgba(31, 26, 20, 0.15);
+    box-shadow: 4px 5px 2px var(--shadow-color);
   }
 }
 
 /* Touch hover */
 .post-body img.touch-hover {
   transform: translateY(-4px);
-  box-shadow: 12px 16px 14px rgba(31, 26, 20, 0.58);
+  box-shadow: 12px 16px 14px var(--shadow-color-medium);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -257,7 +259,7 @@
   margin: 1.25rem 0;
   padding: 0 0 0 1.25rem;
   border-left: 3px solid var(--pine);
-  color: var(--muted);
+  color: var(--color-text-muted);
   transition: transform var(--duration-normal) var(--ease-out),
               border-color var(--duration-normal) ease;
 }

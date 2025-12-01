@@ -16,11 +16,14 @@
   line-height: 1.0;
   background: var(--bg-white);
   color: var(--ink);
+  -webkit-text-fill-color: var(--ink);
   box-shadow: var(--shadow-retro-sm);
   cursor: pointer;
   transition: transform var(--duration-fast) ease, 
               box-shadow var(--duration-fast) ease, 
-              background-color var(--duration-fast) ease;
+              background-color var(--duration-fast) ease,
+              color var(--duration-fast) ease,
+              -webkit-text-fill-color var(--duration-fast) ease;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -41,13 +44,20 @@
 }
 
 .btn.ghost {
-  background: rgba(31, 26, 20, 0.04);
+  background: var(--color-ghost-bg);
   border: 2px solid transparent;
 }
 
 .btn.primary {
   background: var(--aero);
   color: var(--bg-white);
+  -webkit-text-fill-color: var(--bg-white);
+}
+
+/* Primary buttons keep white text on hover, just darken background slightly */
+.btn.primary:hover {
+  color: var(--bg-white);
+  -webkit-text-fill-color: var(--bg-white);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -56,7 +66,9 @@
 
 .btn:hover {
   transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0px var(--ink);
+  box-shadow: 1px 1px 0px var(--retro-shadow-color);
+  color: var(--pine);
+  -webkit-text-fill-color: var(--pine);
 }
 
 .btn:active {
@@ -73,6 +85,8 @@
 .btn:disabled:hover {
   transform: none;
   box-shadow: none;
+  color: var(--ink);
+  -webkit-text-fill-color: var(--ink);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -90,9 +104,10 @@
 
 /* Active state for nav buttons */
 .btn.active {
-  background: #e0f2f1;
+  background: var(--color-surface-active);
   border-color: var(--pine);
   color: var(--pine);
+  -webkit-text-fill-color: var(--pine);
 }
 
 

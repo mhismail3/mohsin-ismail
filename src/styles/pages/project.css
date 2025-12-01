@@ -96,7 +96,7 @@
 
 .project-description code {
   font-size: 0.88em;
-  background: rgba(31, 26, 20, 0.06);
+  background: var(--color-ghost-bg);
   padding: 0.15em 0.4em;
   border-radius: 4px;
 }
@@ -122,7 +122,7 @@
 
 .github-card:hover {
   transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0px var(--ink);
+  box-shadow: 1px 1px 0px var(--retro-shadow-color);
   color: var(--ink);
 }
 
@@ -150,7 +150,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: var(--tracking-wide);
-  color: var(--muted);
+  color: var(--color-text-muted);
 }
 
 .github-url {
@@ -161,7 +161,7 @@
 
 .github-arrow {
   margin-left: var(--space-base);
-  color: var(--muted);
+  color: var(--color-text-muted);
   transition: transform var(--duration-normal) ease, color var(--duration-normal) ease;
 }
 

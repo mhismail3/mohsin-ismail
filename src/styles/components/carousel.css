@@ -61,13 +61,13 @@
 
 .carousel-item.is-active {
   transform: translateY(-8px) scale(1.01);
-  box-shadow: 4px 6px 3px var(--ink);
+  box-shadow: 4px 6px 3px var(--retro-shadow-color);
 }
 
 /* Press/click depression effect */
 .carousel-item:active {
   transform: translateY(2px) scale(0.98);
-  box-shadow: 1px 2px 0px var(--ink);
+  box-shadow: 1px 2px 0px var(--retro-shadow-color);
   transition: transform 0.09s ease-out, box-shadow 0.09s ease-out;
 }
 
@@ -79,7 +79,7 @@
   position: absolute;
   top: 10px;
   right: 10px;
-  background: #eaeaea;
+  background: var(--color-badge);
   color: var(--ink);
   font-size: 0.64rem;
   font-weight: 900;
@@ -98,7 +98,7 @@
   text-align: center;
   font-size: 0.9rem;
   font-style: italic;
-  color: var(--muted);
+  color: var(--color-text-muted);
   margin: 0;
 }
 

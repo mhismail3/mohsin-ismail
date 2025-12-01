@@ -15,21 +15,22 @@
   max-width: var(--max-width-content);
   margin: 0 auto;
   padding: 12px 14px;
-  background: rgba(255, 255, 255, 0.82);
-  border: 1px solid var(--line);
+  background: var(--color-surface-glass);
+  border: 1px solid var(--color-border);
   border-radius: 18px;
   box-shadow: var(--shadow-soft);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   z-index: var(--z-fixed);
-  transition: padding var(--duration-normal) ease, box-shadow var(--duration-normal) ease;
+  transition: padding var(--duration-normal) ease, box-shadow var(--duration-normal) ease,
+              background-color var(--duration-normal) ease, border-color var(--duration-normal) ease;
   overflow-anchor: none;
 }
 
 .top-bar.scrolled {
   box-shadow: 
-    0 8px 32px rgba(31, 26, 20, 0.12),
-    0 2px 8px rgba(31, 26, 20, 0.06);
+    0 8px 32px var(--shadow-color),
+    0 2px 8px var(--shadow-color);
 }
 
 /* Spacer to push content below fixed header */
@@ -38,7 +39,7 @@
 }
 
 .top-bar.expanded {
-  box-shadow: 0 16px 42px rgba(31, 26, 20, 0.12);
+  box-shadow: 0 16px 42px var(--shadow-color);
 }
 
 .top-bar.flyout.expanded {
@@ -65,6 +66,101 @@
 
 .top-bar-row > * {
   pointer-events: auto;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   HEADER ACTIONS (theme toggle + menu toggle)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   THEME TOGGLE
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: var(--border-retro);
+  border-radius: var(--radius-full);
+  background: var(--bg-white);
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: var(--shadow-retro-sm);
+  transition: transform var(--duration-fast) ease, 
+              box-shadow var(--duration-fast) ease,
+              background-color var(--duration-normal) ease,
+              color var(--duration-fast) ease;
+}
+
+.theme-toggle:hover {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px var(--retro-shadow-color);
+  color: var(--pine);
+}
+
+.theme-toggle:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px dashed var(--clay);
+  outline-offset: 4px;
+}
+
+.theme-toggle-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+}
+
+.theme-icon {
+  position: absolute;
+  opacity: 0;
+  transform: scale(0.5) rotate(-90deg);
+  transition: opacity var(--duration-normal) ease-out,
+              transform var(--duration-slow) var(--ease-snap);
+}
+
+.theme-icon.visible {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+  transition: opacity var(--duration-normal) ease-out,
+              transform var(--duration-slower) var(--ease-bounce);
+}
+
+.theme-icon.sun {
+  transform: scale(0.5) rotate(90deg);
+}
+
+.theme-icon.sun.visible {
+  transform: scale(1) rotate(0deg);
+}
+
+.theme-icon.moon {
+  transform: scale(0.5) rotate(-90deg);
+}
+
+.theme-icon.moon.visible {
+  transform: scale(1) rotate(0deg);
+}
+
+/* Hide theme toggle when collapsed (to keep it clean) */
+.top-bar.collapsed .theme-toggle {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--collapse-duration) var(--collapse-ease);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -106,8 +202,8 @@
   width: 48px;
   height: 48px;
   border-radius: var(--radius-full);
-  border: 1.5px solid var(--ink);
-  background: var(--cream);
+  border: 1.5px solid var(--retro-border-color);
+  background: var(--color-bg);
   /* No shadow in header - clean flat look */
   box-shadow: none;
   display: grid;
@@ -116,7 +212,8 @@
   /* Smooth transitions for shadow and transform */
   transition: 
     box-shadow var(--collapse-duration, 0.3s) var(--collapse-ease, ease),
-    transform 0.15s ease;
+    transform 0.15s ease,
+    background-color var(--duration-normal) ease;
 }
 
 .brand-mark img {
@@ -136,7 +233,7 @@
 }
 
 .menu-toggle.active {
-  background: #f2f7f4;
+  background: var(--color-surface-muted);
 }
 
 /* Toggle icon animation */
@@ -152,6 +249,7 @@
 .toggle-icon {
   position: absolute;
   opacity: 0;
+  fill: currentColor;
   -webkit-transform: scale(0.5) rotate(-90deg);
   transform: scale(0.5) rotate(-90deg);
   -webkit-transition: opacity var(--duration-normal) ease-out,
@@ -217,10 +315,10 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid var(--line);
+  background: var(--color-surface-glass-solid);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  box-shadow: 0 12px 30px rgba(31, 26, 20, 0.15);
+  box-shadow: 0 12px 30px var(--shadow-color);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   padding: var(--space-sm);
@@ -248,7 +346,7 @@
 }
 
 .top-menu .btn.active {
-  background: #e0f2f1;
+  background: var(--color-surface-active);
   border-color: var(--pine);
   color: var(--pine);
 }
@@ -257,8 +355,10 @@
 @media (hover: hover) {
   .top-menu.visible .btn:hover {
     transform: translateY(2px) scale(0.98);
-    box-shadow: 1px 1px 0px var(--ink);
-    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
+    box-shadow: 1px 1px 0px var(--retro-shadow-color);
+    color: var(--pine);
+    -webkit-text-fill-color: var(--pine);
+    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, color 0.12s ease-out, -webkit-text-fill-color 0.12s ease-out;
   }
 }
 
@@ -266,33 +366,39 @@
 .top-menu.visible .btn:active,
 .top-menu.visible .btn.touch-pressed {
   transform: translateY(4px) scale(0.96);
-  box-shadow: 0px 0px 0px var(--ink);
+  box-shadow: 0px 0px 0px var(--retro-shadow-color);
   transition: transform 0.06s ease-out, box-shadow 0.06s ease-out;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   DESKTOP NAV
+   DESKTOP NAV (Dropdown flyout - matches mobile style)
    ───────────────────────────────────────────────────────────────────────────── */
 
 .top-menu.desktop {
+  /* Dropdown positioning below the menu toggle (matches mobile) */
   position: absolute;
-  top: 50%;
-  right: 90px;
-  flex-direction: row;
-  background: none;
+  top: calc(100% - 5px);
+  right: 14px;
+  
+  /* Transparent background with shadowed buttons (like mobile) */
+  background: transparent;
   border: none;
-  border-radius: 0;
   box-shadow: none;
+  padding: 0;
+  min-width: auto;
+  gap: var(--space-md);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  padding: 0;
-  gap: var(--space-sm);
-  min-width: 0;
-  z-index: var(--z-base);
-  transform: translateY(-50%);
+  
+  /* Vertical column, right-aligned */
+  flex-direction: column;
+  align-items: flex-end;
+  transform: none;
   opacity: 1;
-  pointer-events: none;
   transition: none;
+  
+  /* Container always visible, buttons handle their own opacity */
+  pointer-events: none;
 }
 
 .top-menu.desktop.visible {
@@ -304,44 +410,54 @@
 }
 
 .top-menu.desktop .top-menu-content {
-  flex-direction: row;
-  gap: var(--space-sm);
+  flex-direction: column;
   width: auto;
+  gap: var(--space-md);
+  align-items: flex-end;
 }
 
-/* Desktop nav button animations */
+/* Desktop nav button animations (same as mobile but right-aligned) */
 .top-menu.desktop .btn {
+  min-width: auto;
+  padding-left: 0.9rem;
+  padding-right: 0.9rem;
   opacity: 0;
-  -webkit-transform: translateX(-16px) scale(0.88) rotate(-3deg);
-  transform: translateX(-16px) scale(0.88) rotate(-3deg);
-  -webkit-transform-origin: left center;
-  transform-origin: left center;
+  -webkit-transform: translateY(-12px) scale(0.88) rotate(-2deg);
+  transform: translateY(-12px) scale(0.88) rotate(-2deg);
+  -webkit-transform-origin: right center;
+  transform-origin: right center;
+  box-shadow: 1px 1px 0px var(--retro-shadow-color);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  -webkit-transition: opacity var(--duration-slow) var(--ease-out),
-                      -webkit-transform 0.42s var(--ease-bounce);
-  transition: opacity var(--duration-slow) var(--ease-out),
-              transform 0.42s var(--ease-bounce);
+  -webkit-transition: opacity 0.28s var(--ease-out),
+                      -webkit-transform var(--duration-slower) var(--ease-bounce),
+                      box-shadow 0.32s var(--ease-bounce);
+  transition: opacity 0.28s var(--ease-out),
+              transform var(--duration-slower) var(--ease-bounce),
+              box-shadow 0.32s var(--ease-bounce);
   -webkit-transition-delay: var(--btn-stagger, 0ms);
   transition-delay: var(--btn-stagger, 0ms);
 }
 
 .top-menu.desktop.visible .btn {
   opacity: 1;
-  -webkit-transform: translateX(0) scale(1) rotate(0deg);
-  transform: translateX(0) scale(1) rotate(0deg);
+  -webkit-transform: translateY(0) scale(1) rotate(0deg);
+  transform: translateY(0) scale(1) rotate(0deg);
+  box-shadow: 3px 3px 0px var(--retro-shadow-color);
 }
 
-.top-menu.desktop .btn:nth-child(1) { --btn-stagger: 30ms; }
-.top-menu.desktop .btn:nth-child(2) { --btn-stagger: 75ms; }
+.top-menu.desktop .btn:nth-child(1) { --btn-stagger: 20ms; }
+.top-menu.desktop .btn:nth-child(2) { --btn-stagger: 70ms; }
 .top-menu.desktop .btn:nth-child(3) { --btn-stagger: 120ms; }
 
 /* Desktop menu button hover state */
 @media (hover: hover) {
   .top-menu.desktop.visible .btn:hover {
     transform: translateY(2px) scale(0.98);
-    box-shadow: 1px 1px 0px var(--ink);
-    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
+    box-shadow: 1px 1px 0px var(--retro-shadow-color);
+    color: var(--pine);
+    -webkit-text-fill-color: var(--pine);
+    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, color 0.12s ease-out, -webkit-text-fill-color 0.12s ease-out;
   }
 }
 
@@ -349,19 +465,22 @@
 .top-menu.desktop.visible .btn:active,
 .top-menu.desktop.visible .btn.touch-pressed {
   transform: translateY(4px) scale(0.96);
-  box-shadow: 0px 0px 0px var(--ink);
+  box-shadow: 0px 0px 0px var(--retro-shadow-color);
   transition: transform 0.06s ease-out, box-shadow 0.06s ease-out;
 }
 
-/* Desktop closing animation */
+/* Desktop closing animation (same as mobile) */
 .top-menu.desktop.visible.closing .btn {
   opacity: 0;
-  -webkit-transform: translateX(18px) scale(0.85) rotate(4deg);
-  transform: translateX(18px) scale(0.85) rotate(4deg);
-  -webkit-transition: opacity 0.16s cubic-bezier(0.4, 0, 1, 1),
-                      -webkit-transform var(--duration-normal) var(--ease-snap);
-  transition: opacity 0.16s cubic-bezier(0.4, 0, 1, 1),
-              transform var(--duration-normal) var(--ease-snap);
+  -webkit-transform: translateY(-14px) scale(0.85) rotate(3deg);
+  transform: translateY(-14px) scale(0.85) rotate(3deg);
+  box-shadow: 0px 0px 0px var(--retro-shadow-color);
+  -webkit-transition: opacity 0.18s cubic-bezier(0.4, 0, 1, 1),
+                      -webkit-transform 0.24s var(--ease-snap),
+                      box-shadow 0.18s ease-out;
+  transition: opacity 0.18s cubic-bezier(0.4, 0, 1, 1),
+              transform 0.24s var(--ease-snap),
+              box-shadow 0.18s ease-out;
   -webkit-transition-delay: var(--btn-stagger-close, 0ms);
   transition-delay: var(--btn-stagger-close, 0ms);
 }
@@ -411,7 +530,7 @@
   transform: translateY(-12px) scale(0.88) rotate(-2deg);
   -webkit-transform-origin: right center;
   transform-origin: right center;
-  box-shadow: 1px 1px 0px var(--ink);
+  box-shadow: 1px 1px 0px var(--retro-shadow-color);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   -webkit-transition: opacity 0.28s var(--ease-out),
@@ -428,7 +547,7 @@
   opacity: 1;
   -webkit-transform: translateY(0) scale(1) rotate(0deg);
   transform: translateY(0) scale(1) rotate(0deg);
-  box-shadow: 3px 3px 0px var(--ink);
+  box-shadow: 3px 3px 0px var(--retro-shadow-color);
 }
 
 .top-menu.mobile .btn:nth-child(1) { --btn-stagger: 20ms; }
@@ -439,8 +558,10 @@
 @media (hover: hover) {
   .top-menu.mobile.visible .btn:hover {
     transform: translateY(2px) scale(0.98);
-    box-shadow: 1px 1px 0px var(--ink);
-    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
+    box-shadow: 1px 1px 0px var(--retro-shadow-color);
+    color: var(--pine);
+    -webkit-text-fill-color: var(--pine);
+    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, color 0.12s ease-out, -webkit-text-fill-color 0.12s ease-out;
   }
 }
 
@@ -448,7 +569,7 @@
 .top-menu.mobile.visible .btn:active,
 .top-menu.mobile.visible .btn.touch-pressed {
   transform: translateY(4px) scale(0.96);
-  box-shadow: 0px 0px 0px var(--ink);
+  box-shadow: 0px 0px 0px var(--retro-shadow-color);
   transition: transform 0.06s ease-out, box-shadow 0.06s ease-out;
 }
 
@@ -457,7 +578,7 @@
   opacity: 0;
   -webkit-transform: translateY(-14px) scale(0.85) rotate(3deg);
   transform: translateY(-14px) scale(0.85) rotate(3deg);
-  box-shadow: 0px 0px 0px var(--ink);
+  box-shadow: 0px 0px 0px var(--retro-shadow-color);
   -webkit-transition: opacity 0.18s cubic-bezier(0.4, 0, 1, 1),
                       -webkit-transform 0.24s var(--ease-snap),
                       box-shadow 0.18s ease-out;
@@ -486,6 +607,11 @@
   
   .top-bar + * {
     margin-top: var(--header-height-desktop);
+  }
+  
+  /* Desktop dropdown menu - match header padding */
+  .top-menu.desktop {
+    right: 18px;
   }
 }
 
@@ -583,7 +709,7 @@
 
 /* Collapsed state - icon gains floating shadow (lift-off effect) */
 .top-bar.collapsed .brand-mark-inner {
-  box-shadow: 0px 5px 5px rgba(31, 26, 20, 0.60);
+  box-shadow: 0px 5px 5px var(--shadow-color-medium);
 }
 
 .top-bar.collapsed .brand-mark.clickable {
@@ -594,14 +720,14 @@
 @media (hover: hover) {
   .top-bar.collapsed .brand:hover .brand-mark-inner {
     transform: translateY(2px);
-    box-shadow: 0px 3px 3px rgba(31, 26, 20, 0.70);
+    box-shadow: 0px 3px 3px var(--shadow-color-strong);
   }
 }
 
 /* Active/pressed state - deeper depression */
 .top-bar.collapsed .brand:active .brand-mark-inner {
   transform: translateY(4px);
-  box-shadow: 0px 1px 1px rgba(31, 26, 20, 0.90);
+  box-shadow: 0px 1px 1px var(--shadow-color-strong);
   transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
 
@@ -666,7 +792,7 @@
   transform: translateY(-12px) scale(0.88) rotate(-2deg);
   -webkit-transform-origin: left center;
   transform-origin: left center;
-  box-shadow: 1px 1px 0px var(--ink);
+  box-shadow: 1px 1px 0px var(--retro-shadow-color);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   -webkit-transition: opacity 0.28s var(--ease-out),
@@ -683,7 +809,7 @@
   opacity: 1;
   -webkit-transform: translateY(0) scale(1) rotate(0deg);
   transform: translateY(0) scale(1) rotate(0deg);
-  box-shadow: 2px 2px 0px var(--ink);
+  box-shadow: 2px 2px 0px var(--retro-shadow-color);
 }
 
 /* Staggered animation timing */
@@ -696,8 +822,10 @@
 @media (hover: hover) {
   .top-bar.collapsed .top-menu.from-collapsed.visible .btn:hover {
     transform: translateY(2px) scale(0.98);
-    box-shadow: 1px 1px 0px var(--ink);
-    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
+    box-shadow: 1px 1px 0px var(--retro-shadow-color);
+    color: var(--pine);
+    -webkit-text-fill-color: var(--pine);
+    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, color 0.12s ease-out, -webkit-text-fill-color 0.12s ease-out;
   }
 }
 
@@ -705,7 +833,7 @@
 .top-bar.collapsed .top-menu.from-collapsed.visible .btn:active,
 .top-bar.collapsed .top-menu.from-collapsed.visible .btn.touch-pressed {
   transform: translateY(4px) scale(0.96);
-  box-shadow: 0px 0px 0px var(--ink);
+  box-shadow: 0px 0px 0px var(--retro-shadow-color);
   transition: transform 0.06s ease-out, box-shadow 0.06s ease-out;
 }
 
@@ -714,7 +842,7 @@
   opacity: 0;
   -webkit-transform: translateY(-14px) scale(0.85) rotate(3deg);
   transform: translateY(-14px) scale(0.85) rotate(3deg);
-  box-shadow: 0px 0px 0px var(--ink);
+  box-shadow: 0px 0px 0px var(--retro-shadow-color);
   -webkit-transition: opacity 0.18s cubic-bezier(0.4, 0, 1, 1),
                       -webkit-transform 0.24s var(--ease-snap),
                       box-shadow 0.18s ease-out;
@@ -734,13 +862,13 @@
 .top-bar.collapsed .top-menu.from-collapsed .btn.home-link {
   /* Matches other buttons exactly - no special styling */
   background: var(--bg-white);
-  border-color: var(--ink);
+  border-color: var(--retro-border-color);
   color: var(--ink);
 }
 
 /* Active state for collapsed menu buttons (including home) */
 .top-bar.collapsed .top-menu.from-collapsed .btn.active {
-  background: #e0f2f1;
+  background: var(--color-surface-active);
   border-color: var(--pine);
   color: var(--pine);
 }

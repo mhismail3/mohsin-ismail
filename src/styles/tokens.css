@@ -8,19 +8,73 @@
   color-scheme: light;
 
   /* ─────────────────────────────────────────────────────────────────────────────
-     COLORS
+     BASE PALETTE
+     Raw color values - use semantic tokens below for actual styling
      ───────────────────────────────────────────────────────────────────────────── */
   
-  /* Primary palette */
+  /* Light theme base colors */
   --cream: #f8f3e8;
   --ink: #1f1a14;
   --line: #e2d7c8;
   --muted: #5b5249;
   
-  /* Accent colors */
+  /* Accent colors (shared between themes) */
   --aero: #2c8f7a;
   --pine: #0f7363;
   --clay: #c45b37;
+
+  /* ─────────────────────────────────────────────────────────────────────────────
+     SEMANTIC COLOR TOKENS
+     Theme-aware colors - these change based on light/dark mode
+     ───────────────────────────────────────────────────────────────────────────── */
+  
+  /* Core colors */
+  --color-bg: var(--cream);
+  --color-text: var(--ink);
+  --color-text-muted: var(--muted);
+  --color-border: var(--line);
+  
+  /* Surface colors */
+  --color-surface: #fffefb;
+  --color-surface-elevated: #fdfbf7;
+  --color-surface-glass: rgba(255, 255, 255, 0.82);
+  --color-surface-glass-solid: rgba(255, 255, 255, 0.96);
+  
+  /* Interactive state colors */
+  --color-surface-active: #e0f2f1;
+  --color-surface-hover: #fdfbf7;
+  --color-surface-warning: #fbe9e7;
+  --color-surface-success: #e8f5e9;
+  --color-surface-muted: #f2f7f4;
+  
+  /* Code block colors */
+  --color-code-bg: #111827;
+  --color-code-text: #e5e7eb;
+  --color-code-header: #faf8f5;
+  --color-code-hover: #f5f0e8;
+  
+  /* Misc UI colors */
+  --color-selection: #dfeeea;
+  --color-overlay: rgba(248, 243, 232, 0.92);
+  --color-badge: #eaeaea;
+  --color-panel-border-inner: rgba(31, 26, 20, 0.04);
+  
+  /* Fade colors for text truncation - must match panel-bg (#fffefb) exactly */
+  --color-fade-start: rgba(255, 254, 251, 0);
+  --color-fade-end: #fffefb;
+  
+  /* Shadow colors */
+  --shadow-color: rgba(31, 26, 20, 0.15);
+  --shadow-color-medium: rgba(31, 26, 20, 0.6);
+  --shadow-color-strong: rgba(31, 26, 20, 0.7);
+  --shadow-color-muted: rgba(62, 52, 42, 0.9);
+  
+  /* Project pill glass effect */
+  --color-pill-glass-bg: rgba(255, 255, 255, 0.65);
+  --color-pill-glass-border: rgba(255, 255, 255, 0.2);
+  
+  /* Ghost button */
+  --color-ghost-bg: rgba(31, 26, 20, 0.04);
 
   /* ─────────────────────────────────────────────────────────────────────────────
      SHADOWS & BORDERS
@@ -31,9 +85,22 @@
   --shadow-retro-lg: 5px 5px 0px var(--ink);
   --shadow-soft: 0 12px 30px rgba(31, 26, 20, 0.08);
   --shadow-soft-lg: 0 20px 50px rgba(31, 26, 20, 0.08);
-  --shadow-hover: 5px 11px 10px rgba(31, 26, 20, 0.7);
+  --shadow-hover: 5px 11px 10px var(--shadow-color-strong);
   
   --border-retro: 1.5px solid var(--ink);
+  
+  /* Retro accent colors for shadows/borders - stays dark in both themes */
+  --retro-shadow-color: var(--ink);
+  --retro-border-color: var(--ink);
+
+  /* ─────────────────────────────────────────────────────────────────────────────
+     PANEL BACKGROUNDS
+     Solid colors only - no gradients for consistency
+     ───────────────────────────────────────────────────────────────────────────── */
+  
+  --panel-bg: #fffefb;
+  --bg-card: var(--color-surface);
+  --bg-white: #ffffff;
 
   /* ─────────────────────────────────────────────────────────────────────────────
      RADII
@@ -93,14 +160,6 @@
   --tracking-wider: 0.16em;
 
   /* ─────────────────────────────────────────────────────────────────────────────
-     BACKGROUNDS
-     ───────────────────────────────────────────────────────────────────────────── */
-  
-  --panel-bg: linear-gradient(120deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.94));
-  --bg-card: #fffefb;
-  --bg-white: #ffffff;
-
-  /* ─────────────────────────────────────────────────────────────────────────────
      TRANSITIONS
      ───────────────────────────────────────────────────────────────────────────── */
   
@@ -138,6 +197,87 @@
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+}
+
+/* =============================================================================
+   DARK THEME
+   Override semantic tokens for dark mode
+   ============================================================================= */
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  
+  /* Core colors */
+  --color-bg: #1a1814;
+  --color-text: #f0ebe3;
+  --color-text-muted: #a39e96;
+  --color-border: #3d3730;
+  
+  /* Surface colors */
+  --color-surface: #252219;
+  --color-surface-elevated: #2d2a24;
+  --color-surface-glass: rgba(37, 34, 25, 0.92);
+  --color-surface-glass-solid: rgba(45, 42, 36, 0.96);
+  
+  /* Interactive state colors */
+  --color-surface-active: #1a3330;
+  --color-surface-hover: #2d2a24;
+  --color-surface-warning: #3d2a24;
+  --color-surface-success: #1a3324;
+  --color-surface-muted: #2a2d2b;
+  
+  /* Code block colors (inverted - light on dark in light mode becomes dark on light) */
+  --color-code-bg: #0d0f12;
+  --color-code-text: #e5e7eb;
+  --color-code-header: #1e1c18;
+  --color-code-hover: #2a2720;
+  
+  /* Misc UI colors */
+  --color-selection: #1a3330;
+  --color-overlay: rgba(26, 24, 20, 0.94);
+  --color-badge: #3d3a35;
+  --color-panel-border-inner: rgba(255, 255, 255, 0.04);
+  
+  /* Fade colors for text truncation - must match panel-bg (#252219) exactly */
+  --color-fade-start: rgba(37, 34, 25, 0);
+  --color-fade-end: #252219;
+  
+  /* Shadow colors - darker shadows for dark mode */
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --shadow-color-medium: rgba(0, 0, 0, 0.5);
+  --shadow-color-strong: rgba(0, 0, 0, 0.6);
+  --shadow-color-muted: rgba(0, 0, 0, 0.4);
+  
+  /* Project pill glass effect */
+  --color-pill-glass-bg: rgba(45, 42, 36, 0.75);
+  --color-pill-glass-border: rgba(255, 255, 255, 0.1);
+  
+  /* Ghost button */
+  --color-ghost-bg: rgba(255, 255, 255, 0.06);
+  
+  /* Shadows - adjusted for dark mode */
+  --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.25);
+  --shadow-soft-lg: 0 20px 50px rgba(0, 0, 0, 0.3);
+  --shadow-hover: 5px 11px 10px rgba(0, 0, 0, 0.5);
+  
+  /* Panel background for dark mode - solid color, matches color-surface */
+  --panel-bg: #252219;
+  --bg-card: var(--color-surface);
+  --bg-white: #252219;
+  
+  /* Override base palette for components using them directly */
+  --cream: #1a1814;
+  --ink: #f0ebe3;
+  --line: #3d3730;
+  --muted: #a39e96;
+  
+  /* Retro borders & shadows - dark grey instead of white in dark mode */
+  --retro-shadow-color: #0f0d0a;
+  --retro-border-color: #3d3730;
+  --shadow-retro: 4px 4px 0px var(--retro-shadow-color);
+  --shadow-retro-sm: 2px 2px 0px var(--retro-shadow-color);
+  --shadow-retro-lg: 5px 5px 0px var(--retro-shadow-color);
+  --border-retro: 1.5px solid var(--retro-border-color);
 }
 
 

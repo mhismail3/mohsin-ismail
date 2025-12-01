@@ -5,6 +5,7 @@ tags:
   - ai
   - agents
   - prompt engineering
+  - context engineering
 summary: "A copy of the AGENT.md file I'm currently using to configure my coding agents."
 tldr: |
   I maintain an AGENT.md file that focuses on three things:

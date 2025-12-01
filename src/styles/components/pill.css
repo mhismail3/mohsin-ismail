@@ -11,7 +11,7 @@
   border: var(--border-retro);
   border-radius: var(--radius-sm);
   background: var(--bg-white);
-  box-shadow: 2px 2px 0px rgba(31, 26, 20, 0.15);
+  box-shadow: 2px 2px 0px var(--shadow-color);
   font-weight: 600;
   font-size: 0.82rem;
   line-height: 1.0;
@@ -20,7 +20,9 @@
   cursor: pointer;
   transition: transform var(--duration-fast) ease, 
               box-shadow var(--duration-fast) ease, 
-              background-color var(--duration-fast) ease;
+              background-color var(--duration-fast) ease,
+              color var(--duration-fast) ease,
+              -webkit-text-fill-color var(--duration-fast) ease;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -38,8 +40,10 @@
 
 .pill:hover {
   transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0px rgba(31, 26, 20, 0.2);
-  background: #fdfbf7;
+  box-shadow: 1px 1px 0px var(--shadow-color);
+  background: var(--color-surface-hover);
+  color: var(--pine);
+  -webkit-text-fill-color: var(--pine);
 }
 
 .pill:active {
@@ -53,7 +57,7 @@
 
 /* Active/selected state */
 .pill.active {
-  background: #e0f2f1;
+  background: var(--color-surface-active);
   border-color: var(--pine);
   color: var(--pine);
   -webkit-text-fill-color: var(--pine);
@@ -61,7 +65,7 @@
 
 /* Reset/clear button */
 .pill.reset {
-  background: #fbe9e7;
+  background: var(--color-surface-warning);
   border-color: var(--clay);
   color: var(--clay);
 }
@@ -75,8 +79,10 @@
 
 .pill.disabled:hover {
   transform: none;
-  box-shadow: 2px 2px 0px rgba(31, 26, 20, 0.15);
+  box-shadow: 2px 2px 0px var(--shadow-color);
   background: var(--bg-white);
+  color: var(--ink);
+  -webkit-text-fill-color: var(--ink);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -99,8 +105,8 @@
 .pill.icon-btn:hover {
   color: var(--pine);
   background: var(--bg-white);
-  border-color: var(--line);
-  box-shadow: 2px 2px 0px rgba(31, 26, 20, 0.15);
+  border-color: var(--color-border);
+  box-shadow: 2px 2px 0px var(--shadow-color);
   transform: translateY(-1px);
 }
 
@@ -122,7 +128,9 @@
 
 .pill.project-link-pill:hover {
   transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0px var(--ink);
+  box-shadow: 1px 1px 0px var(--retro-shadow-color);
+  color: var(--pine);
+  -webkit-text-fill-color: var(--pine);
 }
 
 .pill.project-link-pill:active {
@@ -144,14 +152,23 @@
    ───────────────────────────────────────────────────────────────────────────── */
 
 .tag-count {
-  color: var(--muted);
+  color: var(--color-text-muted);
   font-weight: 500;
   margin-left: 0.25em;
+  transition: color var(--duration-fast) ease;
+}
+
+.pill:hover .tag-count {
+  color: var(--pine);
 }
 
 .pill.active .tag-count {
   color: var(--pine);
   opacity: 0.7;
+}
+
+.pill.disabled:hover .tag-count {
+  color: var(--color-text-muted);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

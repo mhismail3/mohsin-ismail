@@ -20,7 +20,7 @@
   pointer-events: none;
   text-align: center;
   z-index: var(--z-dropdown);
-  box-shadow: 2px 2px 0 rgba(31, 26, 20, 0.15);
+  box-shadow: 2px 2px 0 var(--shadow-color);
   animation:
     toast-pop var(--duration-slower) var(--ease-bounce) forwards,
     toast-fade 0.32s ease forwards 1.5s;

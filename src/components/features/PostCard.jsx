@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { formatDate } from '../../utils/formatDate';
 import { Icon } from '../ui';
@@ -6,7 +6,30 @@ import Pill from '../ui/Pill';
 
 const PostCard = ({ post, onTagClick, selectedTags = [] }) => {
   const [showToast, setShowToast] = useState(false);
+  const [isOverflowing, setIsOverflowing] = useState(false);
+  const excerptRef = useRef(null);
   const navigate = useNavigate();
+
+  // Detect if excerpt content overflows (needs truncation)
+  useEffect(() => {
+    const checkOverflow = () => {
+      const el = excerptRef.current;
+      if (el) {
+        // scrollHeight > clientHeight means content is taller than visible area
+        setIsOverflowing(el.scrollHeight > el.clientHeight + 1); // +1 for rounding tolerance
+      }
+    };
+
+    checkOverflow();
+
+    // Re-check on window resize (font size, container width changes affect line wrapping)
+    const resizeObserver = new ResizeObserver(checkOverflow);
+    if (excerptRef.current) {
+      resizeObserver.observe(excerptRef.current);
+    }
+
+    return () => resizeObserver.disconnect();
+  }, [post.excerpt]);
 
   const handleTagClick = (tag) => {
     if (onTagClick) {
@@ -52,7 +75,12 @@ const PostCard = ({ post, onTagClick, selectedTags = [] }) => {
           </Pill>
           {showToast && <div className="toast">Copied link</div>}
         </div>
-        <p className="post-excerpt">{post.excerpt}</p>
+        <p 
+          ref={excerptRef}
+          className={`post-excerpt${isOverflowing ? ' has-overflow' : ''}`}
+        >
+          {post.excerpt}
+        </p>
       </div>
 
       <div className="tag-row">

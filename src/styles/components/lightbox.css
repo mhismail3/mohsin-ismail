@@ -7,7 +7,7 @@
   position: fixed;
   inset: 0;
   z-index: var(--z-modal);
-  background: rgba(248, 243, 232, 0.92);
+  background: var(--color-overlay);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   display: grid;
@@ -20,11 +20,11 @@
   position: relative;
   max-width: 90vw;
   max-height: 90vh;
-  border: 2px solid var(--ink);
+  border: 2px solid var(--retro-border-color);
   border-radius: var(--radius-sm);
-  background: var(--cream);
+  background: var(--color-bg);
   padding: var(--space-sm);
-  box-shadow: 8px 8px 0px var(--ink);
+  box-shadow: 8px 8px 0px var(--retro-shadow-color);
   animation: lightbox-popIn var(--duration-slow) var(--ease-bounce);
 }
 
@@ -48,7 +48,7 @@
   border-radius: 50%;
   background: var(--clay);
   color: var(--bg-white);
-  border: 2px solid var(--ink);
+  border: 2px solid var(--retro-border-color);
   font-size: 1.2rem;
   line-height: 1;
   display: grid;

@@ -23,8 +23,8 @@
   justify-content: space-between;
   gap: var(--space-md);
   padding: 6px 10px;
-  background: #faf8f5;
-  border-bottom: 1px solid var(--line);
+  background: var(--color-code-header);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .code-block-lang {
@@ -36,7 +36,7 @@
   background: var(--bg-white);
   border-radius: var(--radius-sm);
   border: var(--border-retro);
-  box-shadow: 1px 1px 0px rgba(31, 26, 20, 0.15);
+  box-shadow: 1px 1px 0px var(--shadow-color);
   line-height: 1.0;
 }
 
@@ -48,7 +48,7 @@
 
 .code-block-lines {
   font-size: var(--text-xs);
-  color: var(--muted);
+  color: var(--color-text-muted);
   font-weight: 500;
 }
 
@@ -65,20 +65,23 @@
   font-weight: 600;
   font-family: var(--font-body);
   color: var(--ink);
+  -webkit-text-fill-color: var(--ink);
   background: var(--bg-white);
   border: var(--border-retro);
   border-radius: 4px;
   cursor: pointer;
-  transition: background 0.15s ease, transform var(--duration-fast) ease, box-shadow var(--duration-fast) ease;
-  box-shadow: 1px 1px 0px var(--ink);
+  transition: background 0.15s ease, transform var(--duration-fast) ease, box-shadow var(--duration-fast) ease, color var(--duration-fast) ease, -webkit-text-fill-color var(--duration-fast) ease;
+  box-shadow: 1px 1px 0px var(--retro-shadow-color);
   min-width: 64px;
   justify-content: center;
 }
 
 .code-block-copy:hover {
-  background: #fdfbf7;
+  background: var(--color-surface-hover);
   transform: translate(1px, 1px);
-  box-shadow: 0px 0px 0px var(--ink);
+  box-shadow: 0px 0px 0px var(--retro-shadow-color);
+  color: var(--pine);
+  -webkit-text-fill-color: var(--pine);
 }
 
 .code-block-copy:active {
@@ -97,7 +100,7 @@
 }
 
 .code-block-copy.copied {
-  background: #e8f5e9;
+  background: var(--color-surface-success);
   border-color: var(--pine);
   color: var(--pine);
 }
@@ -181,15 +184,15 @@
   font-weight: 600;
   font-family: var(--font-body);
   color: var(--ink);
-  background: #faf8f5;
+  background: var(--color-code-header);
   border: none;
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--color-border);
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease;
 }
 
 .code-block-expand:hover {
-  background: #f5f0e8;
+  background: var(--color-code-hover);
   color: var(--pine);
 }
 

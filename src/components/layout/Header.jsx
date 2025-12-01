@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useTheme } from '../../hooks';
+import { Icon } from '../ui';
 import logoMark from '../../assets/mohsin.png';
 
 const NAV_LINKS = [
@@ -30,6 +32,7 @@ const Header = ({ label, onLogoClick }) => {
   const touchStartRef = useRef(null); // Track touch start position
   const navigate = useNavigate();
   const location = useLocation();
+  const { isDark, toggleTheme } = useTheme();
 
   // Cleanup timeouts on unmount
   useEffect(() => {
@@ -256,30 +259,37 @@ const Header = ({ label, onLogoClick }) => {
           </span>
           <span className="brand-name">{label}</span>
         </button>
-        <button
-          type="button"
-          className={`btn outline small menu-toggle ${isOpen ? 'active' : ''}`}
-          aria-expanded={isOpen}
-          aria-label={isOpen ? 'Hide navigation' : 'Show navigation'}
-          onClick={toggleMenu}
-        >
-          <span className="toggle-icon-wrap">
-            <svg className={`icon toggle-icon ellipsis ${!isOpen ? 'visible' : ''}`} viewBox="0 0 32 10" aria-hidden="true" focusable="false">
-              <circle cx="6" cy="5" r="2.1" />
-              <circle cx="16" cy="5" r="2.1" />
-              <circle cx="26" cy="5" r="2.1" />
-            </svg>
-            {isMobile ? (
+        <div className="header-actions">
+          <button
+            type="button"
+            className="theme-toggle"
+            onClick={toggleTheme}
+            aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            <span className="theme-toggle-icon-wrap">
+              <Icon name="sun" size={18} className={`theme-icon sun ${!isDark ? 'visible' : ''}`} />
+              <Icon name="moon" size={18} className={`theme-icon moon ${isDark ? 'visible' : ''}`} />
+            </span>
+          </button>
+          <button
+            type="button"
+            className={`btn outline small menu-toggle ${isOpen ? 'active' : ''}`}
+            aria-expanded={isOpen}
+            aria-label={isOpen ? 'Hide navigation' : 'Show navigation'}
+            onClick={toggleMenu}
+          >
+            <span className="toggle-icon-wrap">
+              <svg className={`icon toggle-icon ellipsis ${!isOpen ? 'visible' : ''}`} viewBox="0 0 32 10" aria-hidden="true" focusable="false">
+                <circle cx="6" cy="5" r="2.1" />
+                <circle cx="16" cy="5" r="2.1" />
+                <circle cx="26" cy="5" r="2.1" />
+              </svg>
               <svg className={`icon toggle-icon chevron-up ${isOpen ? 'visible' : ''}`} viewBox="0 0 20 12" aria-hidden="true" focusable="false">
                 <path d="M3 9L10 2l7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </svg>
-            ) : (
-              <svg className={`icon toggle-icon chevron-right ${isOpen ? 'visible' : ''}`} viewBox="0 0 14 16" aria-hidden="true" focusable="false">
-                <path d="M4.5 3L10 8l-5.5 5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-            )}
-          </span>
-        </button>
+            </span>
+          </button>
+        </div>
       </div>
       <div
         className={menuClass}
