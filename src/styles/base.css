@@ -14,6 +14,20 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   DISABLE TRANSITIONS ON INITIAL LOAD
+   
+   Prevents any visual "flash" when the page first loads by disabling all
+   transitions until the theme is fully applied. The .theme-ready class is
+   added by ThemeContext after the initial render is complete.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+html:not(.theme-ready) *,
+html:not(.theme-ready) *::before,
+html:not(.theme-ready) *::after {
+  transition: none !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    GLOBAL THEME TRANSITIONS
    
    Ensures visual properties animate smoothly during theme changes.

@@ -3,6 +3,33 @@
    Core design system variables for consistent styling across the site
    ============================================================================= */
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   ANIMATABLE GRADIENT COLORS (@property)
+   
+   CSS gradients normally can't be transitioned because gradient color values
+   change instantly. By registering these custom properties with @property,
+   we tell the browser they're colors that CAN be animated.
+   
+   This enables smooth gradient transitions during theme changes.
+   
+   Browser support: Chrome 85+, Edge 85+, Safari 15.4+, Firefox 128+
+   Fallback: Colors change instantly (still functional, just not animated)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Gradient fade end color - used for post excerpt and code block fades */
+@property --gradient-fade-end {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #fffefb;
+}
+
+/* Gradient fade start (transparent version) */
+@property --gradient-fade-start {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: rgba(255, 254, 251, 0);
+}
+
 :root {
   /* Color Scheme */
   color-scheme: light;
@@ -62,6 +89,10 @@
   /* Fade colors for text truncation - must match panel-bg (#fffefb) exactly */
   --color-fade-start: rgba(255, 254, 251, 0);
   --color-fade-end: #fffefb;
+  
+  /* Animatable gradient colors (registered with @property above) */
+  --gradient-fade-end: #fffefb;
+  --gradient-fade-start: rgba(255, 254, 251, 0);
   
   /* Shadow colors */
   --shadow-color: rgba(31, 26, 20, 0.15);
@@ -245,6 +276,10 @@
   /* Fade colors for text truncation - must match panel-bg (#252219) exactly */
   --color-fade-start: rgba(37, 34, 25, 0);
   --color-fade-end: #252219;
+  
+  /* Animatable gradient colors (registered with @property at top of file) */
+  --gradient-fade-end: #252219;
+  --gradient-fade-start: rgba(37, 34, 25, 0);
   
   /* Shadow colors - darker shadows for dark mode */
   --shadow-color: rgba(0, 0, 0, 0.3);

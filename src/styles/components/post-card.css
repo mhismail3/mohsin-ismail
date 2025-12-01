@@ -98,19 +98,17 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   EXCERPT FADE OVERLAY - Dual-layer crossfade technique
+   EXCERPT FADE OVERLAY - Animatable gradient using @property
    
-   CSS gradients can't be transitioned because the color values inside them
-   change instantly when CSS variables update. To achieve smooth theme
-   transitions, we use TWO gradient layers with HARDCODED colors:
-   - ::before = Light theme gradient (always present, fades out in dark mode)
-   - ::after  = Dark theme gradient (always present, fades in when dark mode)
+   Uses CSS @property registered custom properties (--gradient-fade-end and 
+   --gradient-fade-start) which can be animated because the browser knows 
+   they're colors. This allows smooth gradient color transitions during 
+   theme changes with a single layer (no dual-layer crossfade needed).
    
-   This creates a crossfade effect during theme transitions.
+   Browser support: Chrome 85+, Edge 85+, Safari 15.4+, Firefox 128+
+   Fallback: Colors change instantly (still functional)
    ───────────────────────────────────────────────────────────────────────────── */
 
-/* Shared positioning for both fade layers */
-.post-excerpt.has-overflow::before,
 .post-excerpt.has-overflow::after {
   content: '';
   position: absolute;
@@ -120,36 +118,19 @@
   height: calc(var(--leading-normal) * 1em);
   pointer-events: none;
   z-index: 1;
-  transition: opacity var(--theme-transition-duration) var(--theme-transition-ease);
-}
-
-/* Light theme gradient layer - hardcoded panel-bg color (#fffefb) */
-.post-excerpt.has-overflow::before {
   background: linear-gradient(
     to right,
-    rgba(255, 254, 251, 0) 0%,
-    #fffefb 100%
+    var(--gradient-fade-start) 0%,
+    var(--gradient-fade-end) 100%
   );
-  opacity: 1;
+  /* Transition the @property registered colors - this actually works! */
+  transition: --gradient-fade-start var(--theme-transition-duration) var(--theme-transition-ease),
+              --gradient-fade-end var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
-/* Dark theme gradient layer - hardcoded dark panel-bg color (#252219) */
-.post-excerpt.has-overflow::after {
-  background: linear-gradient(
-    to right,
-    rgba(37, 34, 25, 0) 0%,
-    #252219 100%
-  );
-  opacity: 0;
-}
-
-/* In dark mode: fade out light layer, fade in dark layer */
-[data-theme="dark"] .post-excerpt.has-overflow::before {
-  opacity: 0;
-}
-
-[data-theme="dark"] .post-excerpt.has-overflow::after {
-  opacity: 1;
+/* Disable gradient transitions on initial page load to prevent flash */
+html:not(.theme-ready) .post-excerpt.has-overflow::after {
+  transition: none;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

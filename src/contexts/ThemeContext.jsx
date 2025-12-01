@@ -48,6 +48,18 @@ export const ThemeProvider = ({ children }) => {
     
     // Persist to localStorage
     localStorage.setItem(THEME_KEY, theme);
+    
+    // Enable transitions after initial theme is applied
+    // This prevents gradient flash on page load
+    if (!root.classList.contains('theme-ready')) {
+      // Use requestAnimationFrame to ensure the theme is fully painted
+      // before enabling transitions
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          root.classList.add('theme-ready');
+        });
+      });
+    }
   }, [theme]);
 
   // Listen for system preference changes

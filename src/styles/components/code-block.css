@@ -161,15 +161,14 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   FADE OVERLAY - Dual-layer crossfade technique
+   FADE OVERLAY - Animatable gradient using @property
    
-   CSS gradients can't be transitioned because the color values inside them
-   change instantly when CSS variables update. To achieve smooth theme
-   transitions, we use TWO gradient layers with HARDCODED colors:
-   - ::before = Light theme gradient (visible in light mode)
-   - ::after  = Dark theme gradient (visible in dark mode)
+   Uses CSS @property registered custom properties (--gradient-fade-end) which 
+   can be animated because the browser knows they're colors. This allows smooth 
+   gradient color transitions during theme changes with a single element.
    
-   This creates a crossfade effect during theme transitions.
+   Browser support: Chrome 85+, Edge 85+, Safari 15.4+, Firefox 128+
+   Fallback: Colors change instantly (still functional)
    ───────────────────────────────────────────────────────────────────────────── */
 
 .code-block-fade {
@@ -179,36 +178,19 @@
   right: 0;
   height: 80px;
   pointer-events: none;
+  background: linear-gradient(
+    to top, 
+    var(--gradient-fade-end) 0%, 
+    var(--gradient-fade-end) 20%, 
+    transparent 100%
+  );
+  /* Transition the @property registered color - this actually works! */
+  transition: --gradient-fade-end var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
-/* Shared positioning for both gradient layers */
-.code-block-fade::before,
-.code-block-fade::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  transition: opacity var(--theme-transition-duration) var(--theme-transition-ease);
-}
-
-/* Light theme gradient - hardcoded color-surface (#fffefb) */
-.code-block-fade::before {
-  background: linear-gradient(to top, #fffefb 0%, #fffefb 20%, transparent 100%);
-  opacity: 1;
-}
-
-/* Dark theme gradient - hardcoded dark color-surface (#252219) */
-.code-block-fade::after {
-  background: linear-gradient(to top, #252219 0%, #252219 20%, transparent 100%);
-  opacity: 0;
-}
-
-/* In dark mode: fade out light layer, fade in dark layer */
-[data-theme="dark"] .code-block-fade::before {
-  opacity: 0;
-}
-
-[data-theme="dark"] .code-block-fade::after {
-  opacity: 1;
+/* Disable gradient transitions on initial page load to prevent flash */
+html:not(.theme-ready) .code-block-fade {
+  transition: none;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
