@@ -55,7 +55,7 @@ const ProjectPage = () => {
       <section className="panel project-detail-panel">
         <div className="project-header">
           <Link to="/portfolio" className="back-link">← Back to Portfolio</Link>
-          <div className="eyebrow">{project.date}{project.status && ` · ${project.status}`}</div>
+          <div className="eyebrow">{project.date}{project.status && <><span className="eyebrow-dot">•</span>{project.status}</>}</div>
           <div className="project-title-row">
             <h1>{project.title}</h1>
             <div className="project-links">
