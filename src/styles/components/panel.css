@@ -12,8 +12,9 @@
   box-shadow: var(--shadow-soft-lg);
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
-  transition: background var(--duration-normal) ease,
-              border-color var(--duration-normal) ease;
+  transition: background-color var(--theme-transition-duration) var(--theme-transition-ease),
+              border-color var(--theme-transition-duration) var(--theme-transition-ease),
+              box-shadow var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
 /* Decorative inner border for all panels */
@@ -102,7 +103,8 @@
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--color-text-muted);
-  transition: color var(--duration-normal) ease, transform var(--duration-normal) ease;
+  transition: color var(--theme-transition-duration) var(--theme-transition-ease), 
+              transform var(--duration-normal) ease;
   flex-shrink: 0;
 }
 

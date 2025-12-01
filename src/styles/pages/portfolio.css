@@ -65,7 +65,10 @@
   display: block;
   width: 100%;
   height: auto;
-  transition: transform 0.32s var(--ease-out), box-shadow 0.32s var(--ease-out);
+  transition: transform 0.32s var(--ease-out), 
+              box-shadow var(--theme-transition-duration) var(--theme-transition-ease),
+              background-color var(--theme-transition-duration) var(--theme-transition-ease),
+              border-color var(--theme-transition-duration) var(--theme-transition-ease);
   isolation: isolate;
   transform: translateZ(0);
 }
@@ -142,7 +145,10 @@
   box-shadow: var(--shadow-retro-sm);
   overflow: hidden;
   width: 100%;
-  transition: transform 0.32s var(--ease-out), box-shadow 0.32s var(--ease-out);
+  transition: transform 0.32s var(--ease-out), 
+              box-shadow var(--theme-transition-duration) var(--theme-transition-ease),
+              background-color var(--theme-transition-duration) var(--theme-transition-ease),
+              border-color var(--theme-transition-duration) var(--theme-transition-ease);
   isolation: isolate;
   transform: translateZ(0);
 }

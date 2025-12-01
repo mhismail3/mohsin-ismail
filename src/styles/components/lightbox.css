@@ -55,7 +55,10 @@
   place-items: center;
   cursor: pointer;
   box-shadow: var(--shadow-retro-sm);
-  transition: transform var(--duration-fast) ease;
+  transition: transform var(--duration-fast) ease,
+              background-color var(--theme-transition-duration) var(--theme-transition-ease),
+              border-color var(--theme-transition-duration) var(--theme-transition-ease),
+              box-shadow var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
 .lightbox-close:hover {

@@ -22,8 +22,10 @@
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   z-index: var(--z-fixed);
-  transition: padding var(--duration-normal) ease, box-shadow var(--duration-normal) ease,
-              background-color var(--duration-normal) ease, border-color var(--duration-normal) ease;
+  transition: padding var(--duration-normal) ease, 
+              box-shadow var(--theme-transition-duration) var(--theme-transition-ease),
+              background-color var(--theme-transition-duration) var(--theme-transition-ease), 
+              border-color var(--theme-transition-duration) var(--theme-transition-ease);
   overflow-anchor: none;
 }
 
@@ -95,8 +97,9 @@
   cursor: pointer;
   box-shadow: var(--shadow-retro-sm);
   transition: transform var(--duration-fast) ease, 
-              box-shadow var(--duration-fast) ease,
-              background-color var(--duration-normal) ease,
+              box-shadow var(--theme-transition-duration) var(--theme-transition-ease),
+              background-color var(--theme-transition-duration) var(--theme-transition-ease),
+              border-color var(--theme-transition-duration) var(--theme-transition-ease),
               color var(--duration-fast) ease;
 }
 
@@ -180,6 +183,7 @@
   font-family: var(--font-display);
   font-size: clamp(1.55rem, 4.5vw, 2.2rem);
   letter-spacing: var(--tracking-tight);
+  transition: color var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
 .brand:hover {
@@ -209,11 +213,12 @@
   display: grid;
   place-items: center;
   overflow: hidden;
-  /* Smooth transitions for shadow and transform */
+  /* Smooth transitions for shadow, transform, and theme colors */
   transition: 
     box-shadow var(--collapse-duration, 0.3s) var(--collapse-ease, ease),
     transform 0.15s ease,
-    background-color var(--duration-normal) ease;
+    background-color var(--theme-transition-duration) var(--theme-transition-ease),
+    border-color var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
 .brand-mark img {
@@ -327,7 +332,10 @@
   transform: translateY(-12px) scale(0.92);
   transform-origin: top right;
   transition: opacity var(--duration-normal) ease, 
-              transform var(--duration-slower) var(--ease-bounce);
+              transform var(--duration-slower) var(--ease-bounce),
+              background-color var(--theme-transition-duration) var(--theme-transition-ease),
+              border-color var(--theme-transition-duration) var(--theme-transition-ease),
+              box-shadow var(--theme-transition-duration) var(--theme-transition-ease);
   z-index: var(--z-sticky);
   min-width: 140px;
 }
@@ -665,15 +673,20 @@
 }
 
 /* Elements that fade out during collapse - all use same timing */
+/* Also includes theme transition properties so colors animate during theme switch */
 .top-bar .brand-name,
 .top-bar .menu-toggle {
-  transition: opacity var(--collapse-duration) var(--collapse-ease);
+  transition: opacity var(--collapse-duration) var(--collapse-ease),
+              background-color var(--theme-transition-duration) var(--theme-transition-ease),
+              border-color var(--theme-transition-duration) var(--theme-transition-ease),
+              box-shadow var(--theme-transition-duration) var(--theme-transition-ease),
+              color var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
-/* Container visual properties that fade */
+/* Container visual properties that fade - includes theme transition properties */
 .top-bar {
   transition: 
-    background var(--collapse-duration) var(--collapse-ease),
+    background-color var(--collapse-duration) var(--collapse-ease),
     border-color var(--collapse-duration) var(--collapse-ease),
     box-shadow var(--collapse-duration) var(--collapse-ease),
     backdrop-filter var(--collapse-duration) var(--collapse-ease),

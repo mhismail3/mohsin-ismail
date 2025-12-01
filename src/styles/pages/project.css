@@ -114,7 +114,11 @@
   border-radius: var(--radius-sm);
   background: var(--bg-white);
   box-shadow: var(--shadow-retro-sm);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.15s ease, 
+              box-shadow var(--theme-transition-duration) var(--theme-transition-ease),
+              background-color var(--theme-transition-duration) var(--theme-transition-ease),
+              border-color var(--theme-transition-duration) var(--theme-transition-ease),
+              color var(--theme-transition-duration) var(--theme-transition-ease);
   width: max-content;
   text-decoration: none;
   color: var(--ink);
@@ -162,7 +166,8 @@
 .github-arrow {
   margin-left: var(--space-base);
   color: var(--color-text-muted);
-  transition: transform var(--duration-normal) ease, color var(--duration-normal) ease;
+  transition: transform var(--duration-normal) ease, 
+              color var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
 .github-card:hover .github-arrow {

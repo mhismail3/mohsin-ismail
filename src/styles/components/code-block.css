@@ -70,7 +70,12 @@
   border: var(--border-retro);
   border-radius: 4px;
   cursor: pointer;
-  transition: background 0.15s ease, transform var(--duration-fast) ease, box-shadow var(--duration-fast) ease, color var(--duration-fast) ease, -webkit-text-fill-color var(--duration-fast) ease;
+  transition: background-color var(--theme-transition-duration) var(--theme-transition-ease), 
+              transform var(--duration-fast) ease, 
+              box-shadow var(--theme-transition-duration) var(--theme-transition-ease), 
+              border-color var(--theme-transition-duration) var(--theme-transition-ease),
+              color var(--duration-fast) ease, 
+              -webkit-text-fill-color var(--duration-fast) ease;
   box-shadow: 1px 1px 0px var(--retro-shadow-color);
   min-width: 64px;
   justify-content: center;
@@ -167,6 +172,8 @@
   height: 80px;
   background: linear-gradient(to top, var(--bg-card) 0%, var(--bg-card) 20%, transparent 100%);
   pointer-events: none;
+  /* Gradients can't be transitioned, but opacity helps smooth the theme switch */
+  transition: opacity var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -188,7 +195,9 @@
   border: none;
   border-top: 1px solid var(--color-border);
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: background-color var(--theme-transition-duration) var(--theme-transition-ease), 
+              border-color var(--theme-transition-duration) var(--theme-transition-ease),
+              color var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
 .code-block-expand:hover {

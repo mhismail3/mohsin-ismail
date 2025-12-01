@@ -14,6 +14,21 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   GLOBAL THEME TRANSITIONS
+   Ensures all color-related properties animate smoothly during theme changes.
+   Applied universally so no element "flashes" when toggling light/dark mode.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, fill, stroke, 
+                       box-shadow, filter, outline-color, text-decoration-color;
+  transition-duration: var(--theme-transition-duration, 0.2s);
+  transition-timing-function: var(--theme-transition-ease, ease);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    ROOT ELEMENTS
    ───────────────────────────────────────────────────────────────────────────── */
 

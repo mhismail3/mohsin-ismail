@@ -171,6 +171,10 @@
   --duration-normal: 0.2s;
   --duration-slow: 0.3s;
   --duration-slower: 0.4s;
+  
+  /* Theme transition - used for light/dark mode color changes */
+  --theme-transition-duration: 0.2s;
+  --theme-transition-ease: ease;
 
   /* ─────────────────────────────────────────────────────────────────────────────
      Z-INDEX SCALE

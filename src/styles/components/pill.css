@@ -19,8 +19,9 @@
   -webkit-text-fill-color: var(--ink);
   cursor: pointer;
   transition: transform var(--duration-fast) ease, 
-              box-shadow var(--duration-fast) ease, 
-              background-color var(--duration-fast) ease,
+              box-shadow var(--theme-transition-duration) var(--theme-transition-ease), 
+              background-color var(--theme-transition-duration) var(--theme-transition-ease),
+              border-color var(--theme-transition-duration) var(--theme-transition-ease),
               color var(--duration-fast) ease,
               -webkit-text-fill-color var(--duration-fast) ease;
 }
@@ -99,7 +100,11 @@
   border-color: transparent;
   background: transparent;
   box-shadow: none;
-  transition: all var(--duration-normal) ease;
+  transition: transform var(--duration-normal) ease,
+              box-shadow var(--theme-transition-duration) var(--theme-transition-ease),
+              background-color var(--theme-transition-duration) var(--theme-transition-ease),
+              border-color var(--theme-transition-duration) var(--theme-transition-ease),
+              color var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
 .pill.icon-btn:hover {
@@ -155,7 +160,7 @@
   color: var(--color-text-muted);
   font-weight: 500;
   margin-left: 0.25em;
-  transition: color var(--duration-fast) ease;
+  transition: color var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
 .pill:hover .tag-count {

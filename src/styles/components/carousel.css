@@ -48,7 +48,9 @@
   justify-content: center;
   transform: translateY(0) scale(1);
   transition: transform 0.42s var(--ease-out), 
-              box-shadow 0.42s var(--ease-out);
+              box-shadow var(--theme-transition-duration) var(--theme-transition-ease),
+              background-color var(--theme-transition-duration) var(--theme-transition-ease),
+              border-color var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
 .carousel-item img {
