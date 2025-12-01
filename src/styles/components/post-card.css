@@ -71,6 +71,13 @@
   letter-spacing: 0.08em;
 }
 
+.eyebrow-dot {
+  color: var(--pine);
+  margin: 0 0.35em;
+  font-size: 1em;
+  vertical-align: middle;
+}
+
 .post-meta h3 {
   margin: 0;
   font-size: var(--text-xl);
@@ -247,7 +254,7 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
    ───────────────────────────────────────────────────────────────────────────── */
 
 .post-body.full-content {
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   line-height: 1.5;
   border-top: none;
   margin-top: 0;
@@ -361,6 +368,69 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   POST IMAGE COMPONENT
+   React component for markdown images with captions.
+   Caption text comes from the markdown alt text: ![caption](image.png)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.post-image {
+  margin: 1.5rem 0;
+  padding: 0;
+  text-align: center;
+}
+
+.post-image img {
+  max-width: 100%;
+  display: block;
+  margin: 0 auto;
+  border: var(--border-retro);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-retro-sm);
+  cursor: pointer;
+  transition: transform var(--duration-slower) ease, 
+              box-shadow var(--theme-transition-duration) var(--theme-transition-ease),
+              background-color var(--theme-transition-duration) var(--theme-transition-ease),
+              border-color var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+/* Desktop hover for PostImage */
+@media (hover: hover) and (pointer: fine) {
+  .post-image img:hover {
+    transform: translateY(-4px);
+    box-shadow: 4px 12px 8px var(--shadow-color-strong);
+  }
+
+  .post-image img:active {
+    transform: translateY(-1px);
+    box-shadow: 4px 5px 2px var(--shadow-color);
+  }
+}
+
+/* Touch hover for PostImage */
+.post-image img.touch-hover {
+  transform: translateY(-4px);
+  box-shadow: 12px 16px 14px var(--shadow-color-medium);
+}
+
+/* Focus state for keyboard navigation */
+.post-image img:focus-visible {
+  outline: 2px dashed var(--clay);
+  outline-offset: 4px;
+}
+
+/* Caption styling */
+.post-image-caption {
+  margin-top: 0.75rem;
+  padding: 0 1rem;
+  font-size: 0.85rem;
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+  transition: color var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    INLINE LINKS
    Markdown links styled with retro underline and hover effects
    Uses text-decoration for proper multi-line support
@@ -396,6 +466,99 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
   border-radius: 2px;
   text-decoration-color: var(--pine);
   text-decoration-thickness: 2px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   INLINE CODE
+   Styled inline code with retro aesthetic - mono font with subtle background
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.post-body code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  color: var(--pine);
+  background: var(--color-ghost-bg);
+  padding: 0.15em 0.45em 0.18em;
+  border-radius: 4px;
+  border: 1px solid var(--line);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+  white-space: nowrap;
+  transition: background-color var(--theme-transition-duration) var(--theme-transition-ease),
+              border-color var(--theme-transition-duration) var(--theme-transition-ease),
+              color var(--theme-transition-duration) var(--theme-transition-ease),
+              box-shadow var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+/* Selection highlight - subtle clay tint */
+.post-body code::selection {
+  background: rgba(196, 91, 55, 0.15);
+  color: var(--clay);
+}
+
+/* Ensure code blocks inside pre don't get inline styling */
+.post-body pre code {
+  font-size: inherit;
+  color: inherit;
+  background: transparent;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  white-space: pre;
+}
+
+/* Code inside links */
+.post-body a code {
+  color: inherit;
+  border-color: currentColor;
+  opacity: 0.9;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   HORIZONTAL RULE / DIVIDER
+   Diamond ornament with single thin lines - mimics post-card separators
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.post-body hr {
+  position: relative;
+  border: none;
+  margin: 1rem 0;
+  height: 1rem;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Diamond ornament in center */
+.post-body hr::before {
+  content: '◆';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.55rem;
+  color: var(--pine);
+  background: var(--panel-bg);
+  padding: 0 0.6rem;
+  z-index: 2;
+  line-height: 1;
+  transition: color var(--theme-transition-duration) var(--theme-transition-ease),
+              background-color var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+/* Single solid line at 50% width, centered */
+.post-body hr::after {
+  content: '';
+  position: absolute;
+  left: 25%;
+  right: 25%;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 0;
+  border-top: 1px solid var(--line);
+  z-index: 1;
+  transition: border-color var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

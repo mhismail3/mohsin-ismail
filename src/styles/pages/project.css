@@ -95,10 +95,44 @@
 }
 
 .project-description code {
-  font-size: 0.88em;
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  color: var(--pine);
   background: var(--color-ghost-bg);
-  padding: 0.15em 0.4em;
+  padding: 0.15em 0.45em 0.18em;
   border-radius: 4px;
+  border: 1px solid var(--line);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+  white-space: nowrap;
+  transition: background-color var(--theme-transition-duration) var(--theme-transition-ease),
+              border-color var(--theme-transition-duration) var(--theme-transition-ease),
+              color var(--theme-transition-duration) var(--theme-transition-ease),
+              box-shadow var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+/* Selection highlight - subtle clay tint */
+.project-description code::selection {
+  background: rgba(196, 91, 55, 0.15);
+  color: var(--clay);
+}
+
+/* Ensure code blocks inside pre don't get inline styling */
+.project-description pre code {
+  font-size: inherit;
+  color: inherit;
+  background: transparent;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  white-space: pre;
+}
+
+/* Code inside links */
+.project-description a code {
+  color: inherit;
+  border-color: currentColor;
+  opacity: 0.9;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

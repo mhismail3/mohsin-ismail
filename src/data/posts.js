@@ -15,7 +15,9 @@ marked.setOptions({
   headerIds: false,
 });
 
-const rawPosts = import.meta.glob('../../public/posts/*.md', {
+// Posts now live in folders: /public/posts/{slug}/post.md
+// Images can be placed alongside: /public/posts/{slug}/image.png
+const rawPosts = import.meta.glob('../../public/posts/*/post.md', {
   query: '?raw',
   import: 'default',
   eager: true,
@@ -23,7 +25,7 @@ const rawPosts = import.meta.glob('../../public/posts/*.md', {
 
 const sanitizeConfig = {
   ADD_TAGS: ['iframe', 'div', 'figure', 'figcaption'],
-  ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'loading', 'src', 'title', 'data-code', 'data-language', 'data-codeblock'],
+  ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'loading', 'src', 'title', 'data-code', 'data-language', 'data-codeblock', 'data-postimage', 'data-src', 'data-caption'],
 };
 
 const stripMarkdown = (text = '') =>
@@ -74,15 +76,56 @@ const extractCodeBlocks = (markdown) => {
   return { processedContent, codeBlocks };
 };
 
+/**
+ * Extract images from markdown and replace with placeholders.
+ * Stores image data (src, alt/caption) for later rendering with PostImage component.
+ * Returns { processedContent, images }
+ */
+const extractImages = (markdown, basePath) => {
+  const images = [];
+  // Match markdown images: ![alt text](path)
+  const imageRegex = /!\[([^\]]*)\]\(([^)]+)\)/g;
+  
+  const processedContent = markdown.replace(imageRegex, (match, alt, src) => {
+    const index = images.length;
+    
+    // Resolve relative paths to the post's folder
+    // If src doesn't start with http/https or /, it's relative to the post folder
+    let resolvedSrc = src;
+    if (!src.startsWith('http') && !src.startsWith('/')) {
+      resolvedSrc = `${basePath}/${src}`;
+    }
+    
+    images.push({
+      src: resolvedSrc,
+      caption: alt.trim(),
+    });
+    
+    // Return a placeholder div that we'll replace with PostImage component
+    return `<div data-postimage="${index}" data-src="${encodeURIComponent(resolvedSrc)}" data-caption="${encodeURIComponent(alt.trim())}"></div>`;
+  });
+  
+  return { processedContent, images };
+};
+
 const posts = Object.entries(rawPosts).map(([path, raw]) => {
   const { data, content } = matter(raw);
-  const slug = path.split('/').pop()?.replace('.md', '') ?? 'post';
+  
+  // Extract slug from folder name: ../../public/posts/{slug}/post.md
+  const pathParts = path.split('/');
+  const slug = pathParts[pathParts.length - 2] ?? 'post';
+  
+  // Base path for resolving relative images in this post
+  const basePath = `/posts/${slug}`;
   
   // Extract code blocks before parsing markdown
-  const { processedContent, codeBlocks } = extractCodeBlocks(content);
+  const { processedContent: contentAfterCode, codeBlocks } = extractCodeBlocks(content);
   
-  // Parse markdown (code blocks are now placeholders)
-  const html = DOMPurify.sanitize(marked.parse(processedContent), sanitizeConfig);
+  // Extract images and resolve paths
+  const { processedContent: contentAfterImages, images } = extractImages(contentAfterCode, basePath);
+  
+  // Parse markdown (code blocks and images are now placeholders)
+  const html = DOMPurify.sanitize(marked.parse(contentAfterImages), sanitizeConfig);
 
   return {
     slug,
@@ -93,6 +136,8 @@ const posts = Object.entries(rawPosts).map(([path, raw]) => {
     excerpt: buildExcerpt(content),
     content: html,
     codeBlocks,
+    images,
+    basePath,
   };
 }).sort((a, b) => b.dateValue.getTime() - a.dateValue.getTime());
 

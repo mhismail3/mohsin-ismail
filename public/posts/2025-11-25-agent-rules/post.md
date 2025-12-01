@@ -87,8 +87,6 @@ Format: `YYYY-MM-DD HH-MM-SS - Topic.md`
 * **Update Logs:** If updating/reverting, include a "Diff" explanation and Rationale.
 ```
 
-## Why self-correction matters
-
 The "You should have..." trigger is the most important part. When I catch the agent doing something wrong, that phrase automatically kicks off a rule update. The agent doesn't just apologize, it tries to figure out why the rule failed and patch it (with mixed results so far...).
 
 The idea is that over time, this creates a feedback loop where the rules get more specific and edge cases get handled. It's like test-driven development, but for agent behavior.

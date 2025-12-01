@@ -5,6 +5,17 @@
  * @returns {string} Formatted date string (e.g., "Nov 26, 2025 3:45 PM")
  */
 export const formatDate = (value) => {
+  const { datePart, timePart } = formatDateParts(value);
+  return `${datePart} ${timePart}`;
+};
+
+/**
+ * Format a date value into separate date and time parts.
+ * 
+ * @param {string|Date} value - Date to format
+ * @returns {{ datePart: string, timePart: string }} Object with formatted date and time
+ */
+export const formatDateParts = (value) => {
   const date = new Date(value);
   const datePart = new Intl.DateTimeFormat('en', {
     month: 'short',
@@ -18,7 +29,7 @@ export const formatDate = (value) => {
     hour12: true,
   }).format(date);
   
-  return `${datePart} ${timePart}`;
+  return { datePart, timePart };
 };
 
 /**

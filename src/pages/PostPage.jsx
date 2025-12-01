@@ -4,20 +4,20 @@ import { usePageTitle, useTouchHover } from '../hooks';
 import { posts } from '../data';
 import { formatDate } from '../utils/formatDate';
 import { Header } from '../components/layout';
-import { AboutPanel, CodeBlock, Lightbox } from '../components/features';
+import { AboutPanel, CodeBlock, Lightbox, PostImage } from '../components/features';
 import { Pill } from '../components/ui';
 
 /**
- * Component that renders post content with CodeBlock components
+ * Component that renders post content with CodeBlock and PostImage components
  * replacing the placeholder divs
  */
-const PostContent = ({ html, codeBlocks, onImageClick }) => {
+const PostContent = ({ html, codeBlocks, images, onImageClick }) => {
   const { containerRef } = useTouchHover({
-    selector: 'IMG',
+    selector: '.post-image img',
     hoverClass: 'touch-hover',
   });
 
-  // Parse HTML and find code block placeholders
+  // Parse HTML and find code block / image placeholders
   const contentParts = useMemo(() => {
     if (!html) return [];
     
@@ -30,6 +30,8 @@ const PostContent = ({ html, codeBlocks, onImageClick }) => {
     const processNode = (node) => {
       if (node.nodeType === Node.ELEMENT_NODE) {
         const el = node;
+        
+        // Handle code block placeholders
         if (el.hasAttribute('data-codeblock')) {
           const index = parseInt(el.getAttribute('data-codeblock'), 10);
           const codeBlock = codeBlocks[index];
@@ -39,6 +41,21 @@ const PostContent = ({ html, codeBlocks, onImageClick }) => {
               language: codeBlock.language,
               code: codeBlock.code,
               key: `code-${index}`,
+            });
+          }
+          return;
+        }
+        
+        // Handle image placeholders
+        if (el.hasAttribute('data-postimage')) {
+          const index = parseInt(el.getAttribute('data-postimage'), 10);
+          const image = images?.[index];
+          if (image) {
+            parts.push({
+              type: 'postimage',
+              src: image.src,
+              caption: image.caption,
+              key: `image-${index}`,
             });
           }
           return;
@@ -63,16 +80,10 @@ const PostContent = ({ html, codeBlocks, onImageClick }) => {
     
     body.childNodes.forEach(processNode);
     return parts;
-  }, [html, codeBlocks]);
-
-  const handleClick = (e) => {
-    if (e.target.tagName === 'IMG') {
-      onImageClick(e.target.src);
-    }
-  };
+  }, [html, codeBlocks, images]);
 
   return (
-    <div ref={containerRef} className="post-body full-content" onClick={handleClick}>
+    <div ref={containerRef} className="post-body full-content">
       {contentParts.map((part) => {
         if (part.type === 'codeblock') {
           return (
@@ -81,6 +92,16 @@ const PostContent = ({ html, codeBlocks, onImageClick }) => {
               code={part.code}
               language={part.language}
               maxLines={12}
+            />
+          );
+        }
+        if (part.type === 'postimage') {
+          return (
+            <PostImage
+              key={part.key}
+              src={part.src}
+              caption={part.caption}
+              onClick={onImageClick}
             />
           );
         }
@@ -155,6 +176,7 @@ const PostPage = () => {
         <PostContent
           html={post.content}
           codeBlocks={post.codeBlocks}
+          images={post.images}
           onImageClick={setSelectedImage}
         />
 

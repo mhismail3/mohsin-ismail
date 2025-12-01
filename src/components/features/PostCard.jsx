@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { formatDate } from '../../utils/formatDate';
+import { formatDateParts } from '../../utils/formatDate';
 import { Icon } from '../ui';
 import Pill from '../ui/Pill';
 
@@ -58,7 +58,12 @@ const PostCard = ({ post, onTagClick, selectedTags = [] }) => {
     <article className="post-card">
       <div className="post-head">
         <div className="post-meta">
-          <div className="eyebrow">{formatDate(post.date)}</div>
+          <div className="eyebrow">
+            {(() => {
+              const { datePart, timePart } = formatDateParts(post.date);
+              return <>{datePart}<span className="eyebrow-dot">•</span>{timePart}</>;
+            })()}
+          </div>
           <h3>
             <Link to={`/posts/${post.slug}`} className="post-title-link">
               {post.title}
