@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OG Preview - Mohsin Ismail</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:wght@400&family=Newsreader:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ==========================================================================
+       OG IMAGE PREVIEW
+       Static 16:9 page designed for high-quality screenshot capture
+       Target: 1200×675px (optimal OG image dimensions)
+       ========================================================================== */
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Page container - fills viewport, content centered */
+    html, body {
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      /* Cream background from tokens */
+      background: #f8f3e8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Newsreader', serif;
+    }
+    
+    /* 
+     * For screenshot: Set browser to 1200×675 using DevTools device toolbar
+     * The content will be perfectly centered at any viewport size
+     */
+
+    /* ==========================================================================
+       PANEL - Styled like "Recent Posts" container
+       ========================================================================== */
+
+    .panel {
+      position: relative;
+      background: #fffefb;
+      border: 2px solid #e2d7c8;
+      border-radius: 48px;
+      padding: 120px 160px;
+      box-shadow: 0 40px 100px rgba(31, 26, 20, 0.12);
+      display: flex;
+      align-items: center;
+      gap: 100px;
+    }
+
+    /* Decorative inner dashed border */
+    .panel::before {
+      content: '';
+      position: absolute;
+      inset: 20px;
+      border-radius: 32px;
+      pointer-events: none;
+      border: 1.5px dashed rgba(31, 26, 20, 0.05);
+    }
+
+    /* ==========================================================================
+       AVATAR - Circular photo with floating shadow
+       ========================================================================== */
+
+    .avatar {
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      /* Layered shadow for depth (from tokens) */
+      box-shadow: 
+        0 0 0 2px rgba(31, 26, 20, 0.10),
+        0 8px 16px rgba(31, 26, 20, 0.30),
+        0 32px 64px rgba(31, 26, 20, 0.25);
+    }
+
+    /* ==========================================================================
+       CHAT BUBBLE - iMessage-inspired greeting
+       ========================================================================== */
+
+    .bubble-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .bubble {
+      position: relative;
+      background: linear-gradient(135deg, #e8f5f2 0%, #dff0ed 100%);
+      border: 2px solid rgba(44, 143, 122, 0.12);
+      border-radius: 56px;
+      border-bottom-left-radius: 12px;
+      padding: 56px 100px;
+      box-shadow: 
+        0 12px 32px rgba(44, 143, 122, 0.12),
+        0 4px 8px rgba(31, 26, 20, 0.04);
+    }
+
+    /* Bubble tail pointing to avatar */
+    .bubble::before {
+      content: '';
+      position: absolute;
+      left: -24px;
+      bottom: 28px;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 0 28px 36px 0;
+      border-color: transparent #e4f3f0 transparent transparent;
+      filter: drop-shadow(-2px 2px 2px rgba(44, 143, 122, 0.08));
+    }
+
+    /* "Hello." text in display font */
+    .bubble-text {
+      font-family: 'DM Serif Display', serif;
+      font-size: 7.5rem;
+      font-weight: 400;
+      color: #1f1a14;
+      letter-spacing: 0.01em;
+      line-height: 1;
+    }
+
+    /* ==========================================================================
+       SUBTLE BRANDING
+       ========================================================================== */
+
+    .site-url {
+      position: fixed;
+      bottom: 48px;
+      right: 56px;
+      font-family: 'Newsreader', serif;
+      font-size: 1.5rem;
+      font-weight: 500;
+      color: #5b5249;
+      letter-spacing: 0.02em;
+    }
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <img src="og-image.png" alt="Mohsin Ismail" class="avatar">
+    <div class="bubble-container">
+      <div class="bubble">
+        <span class="bubble-text">Hello.</span>
+      </div>
+    </div>
+  </div>
+  <span class="site-url">mhismail.com</span>
+</body>
+</html>
