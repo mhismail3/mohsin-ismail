@@ -58,6 +58,16 @@
 /* ─────────────────────────────────────────────────────────────────────────────
    INTERACTIVE STATES
    
+   3D Button Press Effect:
+   The shadow represents a fixed depth. When pressed, the button moves TOWARD
+   the shadow (down-right), making the visible shadow thinner. The shadow stays
+   visually anchored by ensuring: transform + box-shadow = constant (initial offset).
+   
+   For --shadow-retro-sm (2px 2px):
+   - Normal:  translate(0,0)   + shadow(2,2) = (2,2)
+   - Hover:   translate(1,1)   + shadow(1,1) = (2,2)
+   - Active:  translate(2,2)   + shadow(0,0) = (2,2)
+   
    Hover states wrapped in @media (hover: hover) to prevent "sticky hover" on
    touch devices. On iOS Safari, tapping triggers :hover which stays until you
    tap elsewhere - this media query ensures hover only applies on devices with
@@ -80,7 +90,7 @@
 
   .btn:disabled:hover {
     transform: none;
-    box-shadow: none;
+    box-shadow: var(--shadow-retro-sm);
     color: var(--ink);
     -webkit-text-fill-color: var(--ink);
   }
@@ -88,7 +98,7 @@
 
 .btn:active {
   transform: translate(2px, 2px);
-  box-shadow: none;
+  box-shadow: 0px 0px 0px var(--retro-shadow-color);
 }
 
 .btn:disabled {

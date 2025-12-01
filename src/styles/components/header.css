@@ -103,6 +103,10 @@
               color var(--duration-fast) ease;
 }
 
+/* 3D Press Effect for theme toggle (2px shadow):
+   - Normal:  translate(0,0) + shadow(2,2) = (2,2)
+   - Hover:   translate(1,1) + shadow(1,1) = (2,2)
+   - Active:  translate(2,2) + shadow(0,0) = (2,2) */
 @media (hover: hover) {
   .theme-toggle:hover {
     transform: translate(1px, 1px);
@@ -113,7 +117,7 @@
 
 .theme-toggle:active {
   transform: translate(2px, 2px);
-  box-shadow: none;
+  box-shadow: 0px 0px 0px var(--retro-shadow-color);
 }
 
 .theme-toggle:focus-visible {
@@ -363,11 +367,15 @@
   color: var(--pine);
 }
 
-/* Flyout menu button hover state */
+/* Flyout menu button hover state
+   3D Press Effect (3px shadow - visible buttons use box-shadow: 3px 3px):
+   - Normal:  translate(0,0)   + shadow(3,3)   = (3,3)
+   - Hover:   translate(1.5,1.5) + shadow(1.5,1.5) = (3,3)
+   - Active:  translate(3,3)   + shadow(0,0)   = (3,3) */
 @media (hover: hover) {
   .top-menu.visible .btn:hover {
-    transform: translateY(2px) scale(0.98);
-    box-shadow: 1px 1px 0px var(--retro-shadow-color);
+    transform: translate(1.5px, 1.5px);
+    box-shadow: 1.5px 1.5px 0px var(--retro-shadow-color);
     color: var(--pine);
     -webkit-text-fill-color: var(--pine);
     transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, color var(--duration-slow) var(--ease-out), -webkit-text-fill-color var(--duration-slow) var(--ease-out);
@@ -377,7 +385,7 @@
 /* Flyout menu button active/pressed state */
 .top-menu.visible .btn:active,
 .top-menu.visible .btn.touch-pressed {
-  transform: translateY(4px) scale(0.96);
+  transform: translate(3px, 3px);
   box-shadow: 0px 0px 0px var(--retro-shadow-color);
   transition: transform 0.06s ease-out, box-shadow 0.06s ease-out;
 }
@@ -462,11 +470,13 @@
 .top-menu.desktop .btn:nth-child(2) { --btn-stagger: 70ms; }
 .top-menu.desktop .btn:nth-child(3) { --btn-stagger: 120ms; }
 
-/* Desktop menu button hover state */
+/* Desktop menu button hover state
+   3D Press Effect (3px shadow when visible):
+   Shadow stays fixed, button presses toward it */
 @media (hover: hover) {
   .top-menu.desktop.visible .btn:hover {
-    transform: translateY(2px) scale(0.98);
-    box-shadow: 1px 1px 0px var(--retro-shadow-color);
+    transform: translate(1.5px, 1.5px);
+    box-shadow: 1.5px 1.5px 0px var(--retro-shadow-color);
     color: var(--pine);
     -webkit-text-fill-color: var(--pine);
     transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, color var(--duration-slow) var(--ease-out), -webkit-text-fill-color var(--duration-slow) var(--ease-out);
@@ -476,7 +486,7 @@
 /* Desktop menu button active/pressed state */
 .top-menu.desktop.visible .btn:active,
 .top-menu.desktop.visible .btn.touch-pressed {
-  transform: translateY(4px) scale(0.96);
+  transform: translate(3px, 3px);
   box-shadow: 0px 0px 0px var(--retro-shadow-color);
   transition: transform 0.06s ease-out, box-shadow 0.06s ease-out;
 }
@@ -566,11 +576,13 @@
 .top-menu.mobile .btn:nth-child(2) { --btn-stagger: 70ms; }
 .top-menu.mobile .btn:nth-child(3) { --btn-stagger: 120ms; }
 
-/* Mobile menu button hover state */
+/* Mobile menu button hover state
+   3D Press Effect (3px shadow when visible):
+   Shadow stays fixed, button presses toward it */
 @media (hover: hover) {
   .top-menu.mobile.visible .btn:hover {
-    transform: translateY(2px) scale(0.98);
-    box-shadow: 1px 1px 0px var(--retro-shadow-color);
+    transform: translate(1.5px, 1.5px);
+    box-shadow: 1.5px 1.5px 0px var(--retro-shadow-color);
     color: var(--pine);
     -webkit-text-fill-color: var(--pine);
     transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, color var(--duration-slow) var(--ease-out), -webkit-text-fill-color var(--duration-slow) var(--ease-out);
@@ -580,7 +592,7 @@
 /* Mobile menu button active/pressed state */
 .top-menu.mobile.visible .btn:active,
 .top-menu.mobile.visible .btn.touch-pressed {
-  transform: translateY(4px) scale(0.96);
+  transform: translate(3px, 3px);
   box-shadow: 0px 0px 0px var(--retro-shadow-color);
   transition: transform 0.06s ease-out, box-shadow 0.06s ease-out;
 }
@@ -847,10 +859,14 @@
 .top-bar.collapsed .top-menu.from-collapsed .btn:nth-child(3) { --btn-stagger: 120ms; }
 .top-bar.collapsed .top-menu.from-collapsed .btn:nth-child(4) { --btn-stagger: 170ms; }
 
-/* Collapsed menu button hover state */
+/* Collapsed menu button hover state
+   3D Press Effect (2px shadow when visible):
+   - Normal:  translate(0,0) + shadow(2,2) = (2,2)
+   - Hover:   translate(1,1) + shadow(1,1) = (2,2)
+   - Active:  translate(2,2) + shadow(0,0) = (2,2) */
 @media (hover: hover) {
   .top-bar.collapsed .top-menu.from-collapsed.visible .btn:hover {
-    transform: translateY(2px) scale(0.98);
+    transform: translate(1px, 1px);
     box-shadow: 1px 1px 0px var(--retro-shadow-color);
     color: var(--pine);
     -webkit-text-fill-color: var(--pine);
@@ -861,7 +877,7 @@
 /* Collapsed menu button active/pressed state */
 .top-bar.collapsed .top-menu.from-collapsed.visible .btn:active,
 .top-bar.collapsed .top-menu.from-collapsed.visible .btn.touch-pressed {
-  transform: translateY(4px) scale(0.96);
+  transform: translate(2px, 2px);
   box-shadow: 0px 0px 0px var(--retro-shadow-color);
   transition: transform 0.06s ease-out, box-shadow 0.06s ease-out;
 }
