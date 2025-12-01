@@ -100,6 +100,15 @@
   --shadow-color-strong: rgba(31, 26, 20, 0.7);
   --shadow-color-muted: rgba(62, 52, 42, 0.9);
   
+  /* Avatar floating shadow (layered for realism) */
+  --avatar-ring: 0 0 0 1px rgba(31, 26, 20, 0.12);
+  --avatar-shadow-contact: 0 3px 6px rgba(31, 26, 20, 0.35);
+  --avatar-shadow-ambient: 0 12px 28px rgba(31, 26, 20, 0.28);
+  --avatar-shadow-hover-contact: 0 2px 4px rgba(31, 26, 20, 0.38);
+  --avatar-shadow-hover-ambient: 0 6px 16px rgba(31, 26, 20, 0.22);
+  --avatar-shadow-active-contact: 0 1px 2px rgba(31, 26, 20, 0.42);
+  --avatar-shadow-active-ambient: 0 3px 8px rgba(31, 26, 20, 0.16);
+  
   /* Project pill glass effect */
   --color-pill-glass-bg: rgba(255, 255, 255, 0.65);
   --color-pill-glass-border: rgba(255, 255, 255, 0.2);
@@ -286,6 +295,15 @@
   --shadow-color-medium: rgba(0, 0, 0, 0.5);
   --shadow-color-strong: rgba(0, 0, 0, 0.6);
   --shadow-color-muted: rgba(0, 0, 0, 0.4);
+  
+  /* Avatar floating shadow (layered for realism) - darker for dark mode */
+  --avatar-ring: 0 0 0 1px rgba(255, 255, 255, 0.10);
+  --avatar-shadow-contact: 0 3px 8px rgba(0, 0, 0, 0.50);
+  --avatar-shadow-ambient: 0 14px 32px rgba(0, 0, 0, 0.45);
+  --avatar-shadow-hover-contact: 0 2px 5px rgba(0, 0, 0, 0.55);
+  --avatar-shadow-hover-ambient: 0 8px 18px rgba(0, 0, 0, 0.38);
+  --avatar-shadow-active-contact: 0 1px 3px rgba(0, 0, 0, 0.60);
+  --avatar-shadow-active-ambient: 0 3px 10px rgba(0, 0, 0, 0.28);
   
   /* Project pill glass effect */
   --color-pill-glass-bg: rgba(45, 42, 36, 0.75);

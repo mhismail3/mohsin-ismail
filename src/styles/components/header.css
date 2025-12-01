@@ -717,30 +717,42 @@
 
 /* ─────────────────────────────────────────────────────────────────────────────
    BRAND MARK - COLLAPSED STATE
-   Icon lifts off page with blurred shadow, interactive press states
+   Icon lifts off page with layered shadow for realistic depth
    ───────────────────────────────────────────────────────────────────────────── */
 
-/* Collapsed state - icon gains floating shadow (lift-off effect) */
+/* Collapsed state - multi-layer shadow for natural lift-off effect:
+   1. Ring: subtle edge definition to separate from background
+   2. Contact: tight, darker shadow directly under (close contact with surface)
+   3. Ambient: large, soft shadow for depth/atmosphere */
 .top-bar.collapsed .brand-mark-inner {
-  box-shadow: 0px 5px 5px var(--shadow-color-medium);
+  box-shadow:
+    var(--avatar-ring),
+    var(--avatar-shadow-contact),
+    var(--avatar-shadow-ambient);
 }
 
 .top-bar.collapsed .brand-mark.clickable {
   cursor: pointer;
 }
 
-/* Desktop hover - light depression */
+/* Desktop hover - settles closer to surface */
 @media (hover: hover) {
   .top-bar.collapsed .brand:hover .brand-mark-inner {
     transform: translateY(2px);
-    box-shadow: 0px 3px 3px var(--shadow-color-strong);
+    box-shadow:
+      var(--avatar-ring),
+      var(--avatar-shadow-hover-contact),
+      var(--avatar-shadow-hover-ambient);
   }
 }
 
-/* Active/pressed state - deeper depression */
+/* Active/pressed state - pressed down, minimal shadow */
 .top-bar.collapsed .brand:active .brand-mark-inner {
   transform: translateY(4px);
-  box-shadow: 0px 1px 1px var(--shadow-color-strong);
+  box-shadow:
+    var(--avatar-ring),
+    var(--avatar-shadow-active-contact),
+    var(--avatar-shadow-active-ambient);
   transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
 
