@@ -2,7 +2,7 @@ import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { usePageTitle, useTouchHover } from '../hooks';
 import { posts } from '../data';
-import { formatDate } from '../utils/formatDate';
+import { formatDateParts } from '../utils/formatDate';
 import { Header } from '../components/layout';
 import { AboutPanel, CodeBlock, Lightbox, PostImage } from '../components/features';
 import { Pill } from '../components/ui';
@@ -158,7 +158,12 @@ const PostPage = () => {
           <Link to="/" className="back-link">
             ← All Posts
           </Link>
-          <div className="eyebrow">{formatDate(post.date)}</div>
+          <div className="eyebrow">
+            {(() => {
+              const { datePart, timePart } = formatDateParts(post.date);
+              return <>{datePart}<span className="eyebrow-dot">•</span>{timePart}</>;
+            })()}
+          </div>
           <h1 className="post-title">{post.title}</h1>
           <div className="tag-row">
             {post.tags.map((tag) => (
