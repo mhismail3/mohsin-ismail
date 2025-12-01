@@ -7,6 +7,19 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>Mohsin Ismail</title>
+    <!-- Prevent theme flash: apply dark mode BEFORE first paint -->
+    <script>
+      (function() {
+        var theme = localStorage.getItem('theme-preference');
+        if (!theme) {
+          theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        if (theme === 'dark') {
+          document.documentElement.setAttribute('data-theme', 'dark');
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#1a1814');
+        }
+      })();
+    </script>
     <link
       href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital,wght@0,400;1,400&family=Newsreader:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap"
       rel="stylesheet"

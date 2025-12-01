@@ -16,8 +16,13 @@ export const ThemeContext = createContext({
  */
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(() => {
-    // Check localStorage first
     if (typeof window !== 'undefined') {
+      // First, check if inline script already set data-theme (prevents flash)
+      const htmlTheme = document.documentElement.getAttribute('data-theme');
+      if (htmlTheme === 'dark' || htmlTheme === 'light') {
+        return htmlTheme;
+      }
+      // Fallback: check localStorage
       const stored = localStorage.getItem(THEME_KEY);
       if (stored === 'dark' || stored === 'light') {
         return stored;
