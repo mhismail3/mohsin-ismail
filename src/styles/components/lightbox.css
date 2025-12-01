@@ -18,8 +18,11 @@
 
 .lightbox-content {
   position: relative;
-  max-width: 90vw;
-  max-height: 90vh;
+  /* Let the frame shrink-wrap to image size */
+  width: fit-content;
+  height: fit-content;
+  max-width: calc(85vw - 20px);
+  max-height: calc(85vh - 20px);
   border: 2px solid var(--retro-border-color);
   border-radius: var(--radius-sm);
   background: var(--color-bg);
@@ -30,19 +33,23 @@
 
 .lightbox-content img,
 .lightbox-content .progressive-image__img {
-  max-width: 100%;
-  max-height: calc(90vh - 16px);
+  /* Constrain image size, let it determine frame size */
+  max-width: min(75vw, 800px);
+  max-height: min(75vh, 700px);
+  width: auto;
+  height: auto;
   display: block;
   border-radius: 4px;
+  object-fit: contain;
 }
 
 /* Progressive image wrapper in lightbox */
 .lightbox-content .progressive-image {
   display: block;
-  max-width: 100%;
-  max-height: calc(90vh - 16px);
-  min-width: 200px;
-  min-height: 150px;
+  width: fit-content;
+  height: fit-content;
+  max-width: min(75vw, 800px);
+  max-height: min(75vh, 700px);
   border-radius: 4px;
 }
 
@@ -54,11 +61,12 @@
   position: absolute;
   top: -16px;
   right: -16px;
+  z-index: 10;
   width: 32px;
   height: 32px;
   border-radius: 50%;
   background: var(--clay);
-  color: var(--bg-white);
+  color: #ffffff;
   border: 2px solid var(--retro-border-color);
   font-size: 1.2rem;
   line-height: 1;
@@ -67,13 +75,24 @@
   cursor: pointer;
   box-shadow: var(--shadow-retro-sm);
   transition: transform var(--duration-fast) ease,
+              color var(--theme-transition-duration) var(--theme-transition-ease),
               background-color var(--theme-transition-duration) var(--theme-transition-ease),
               border-color var(--theme-transition-duration) var(--theme-transition-ease),
               box-shadow var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
+[data-theme="dark"] .lightbox-close {
+  color: #000000;
+}
+
 .lightbox-close:hover {
-  transform: scale(1.1);
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px var(--retro-shadow-color);
+}
+
+.lightbox-close:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px var(--retro-shadow-color);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

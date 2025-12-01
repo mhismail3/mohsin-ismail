@@ -128,22 +128,25 @@
 
 /* ─────────────────────────────────────────────────────────────────────────────
    LIGHTBOX INTEGRATION
-   Full-size images in lightbox
+   Frame shrink-wraps to image size
    ───────────────────────────────────────────────────────────────────────────── */
 
 .lightbox-content .progressive-image {
-  max-width: 90vw;
-  max-height: 90vh;
+  /* Shrink-wrap to image content */
+  width: fit-content;
+  height: fit-content;
+  max-width: min(75vw, 800px);
+  max-height: min(75vh, 700px);
 }
 
 .lightbox-content .progressive-image__img {
-  max-width: 90vw;
-  max-height: 90vh;
+  /* Image determines its own size within constraints */
+  max-width: min(75vw, 800px);
+  max-height: min(75vh, 700px);
+  width: auto;
+  height: auto;
   object-fit: contain;
-}
-
-/* Faster transition for lightbox since it's the focus */
-.lightbox-content .progressive-image__img {
+  /* Faster transition for lightbox since it's the focus */
   transition: 
     opacity 0.3s ease-out,
     transform 0.3s ease-out,
