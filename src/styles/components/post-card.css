@@ -75,7 +75,8 @@
   color: var(--pine);
   margin: 0 0.35em;
   font-size: 1em;
-  vertical-align: middle;
+  position: relative;
+  top: -0.1em;
 }
 
 .post-meta h3 {
