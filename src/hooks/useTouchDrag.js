@@ -1,24 +1,28 @@
 import { useCallback, useRef, useState, useEffect } from 'react';
 
 /**
- * Custom hook for touch-only draggable behavior with snap-back animation.
- * Designed specifically for iOS Safari with careful attention to:
- * - Distinguishing tap from drag gestures
- * - Preventing scroll interference during drag
+ * Custom hook for draggable behavior with snap-back animation.
+ * Works on BOTH touch devices (iOS/Android) and desktop (mouse).
+ * 
+ * Features:
+ * - Distinguishing tap/click from drag gestures
+ * - Preventing scroll interference during drag (touch)
+ * - Preventing native image drag behavior (desktop)
  * - Smooth 60fps position updates with direct DOM manipulation
  * - Natural spring-like snap-back animation
- * - Haptic-like visual feedback
+ * - Haptic-like visual feedback (scale on drag)
  * - iOS SAFE AREA BOUNDS - prevents icon from going under status bar/home indicator
+ * - VIEWPORT BOUNDS - keeps element within visible area on all devices
  * 
  * PERFORMANCE CRITICAL:
  * This hook uses direct DOM manipulation to achieve butter-smooth 60fps dragging.
  * Position updates bypass React's render cycle entirely:
  * 
- * 1. Touch position stored in ref (no re-renders)
+ * 1. Position stored in ref (no re-renders)
  * 2. RAF loop reads ref and updates DOM directly via element.style.transform
  * 3. Transforms composed correctly: translate3d(x,y,0) scale(s)
  * 4. CSS transitions disabled during drag, enabled during snap-back
- * 5. Drag bounds clamped to respect iOS safe area insets
+ * 5. Drag bounds clamped to respect iOS safe area insets + viewport
  * 
  * Why? React state updates → VDOM diffing → reconciliation adds 16-50ms lag,
  * causing visible jitter. Direct DOM manipulation is instantaneous (<5ms).
@@ -27,7 +31,7 @@ import { useCallback, useRef, useState, useEffect } from 'react';
  *
  * @param {Object} options - Configuration options
  * @param {boolean} options.enabled - Whether drag is currently enabled
- * @param {Function} options.onTap - Callback when gesture is detected as tap (not drag)
+ * @param {Function} options.onTap - Callback when gesture is detected as tap/click (not drag)
  * @param {number} options.dragThreshold - Pixels of movement before drag activates (default: 8)
  * @param {number} options.tapTimeout - Max ms for a touch to be considered a tap (default: 200)
  * @param {number} options.snapDuration - Duration of snap-back in ms (default: 450)
@@ -48,8 +52,8 @@ const useTouchDrag = ({
   const [isDragging, setIsDragging] = useState(false);
   const [isSnapping, setIsSnapping] = useState(false);
 
-  // Refs for tracking touch state without re-renders
-  const touchState = useRef({
+  // Refs for tracking drag state without re-renders
+  const dragState = useRef({
     startX: 0,
     startY: 0,
     startTime: 0,
@@ -59,8 +63,13 @@ const useTouchDrag = ({
     deltaY: 0,
     isDragging: false,
     rafId: null,
-    identifier: null, // Track the specific touch
-    // Bounds for clamping (calculated on touch start)
+    // For touch: track specific touch identifier
+    touchId: null,
+    // For mouse: track if mouse button is down
+    mouseDown: false,
+    // Input type for current drag session
+    inputType: null, // 'touch' | 'mouse'
+    // Bounds for clamping (calculated on drag start)
     bounds: {
       minX: -Infinity,
       maxX: Infinity,
@@ -69,23 +78,10 @@ const useTouchDrag = ({
     },
   });
 
-  // Check if device has touch capability (coarse pointer = touch/stylus)
-  const isTouchDevice = useRef(false);
-  
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // Primary check: coarse pointer (finger/stylus)
-      // Secondary: hover: none (touch-only devices)
-      const hasCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
-      const hasNoHover = window.matchMedia('(hover: none)').matches;
-      isTouchDevice.current = hasCoarsePointer || hasNoHover;
-    }
-  }, []);
-
   /**
    * Get iOS safe area insets from CSS custom properties.
    * These are set in tokens.css using env(safe-area-inset-*).
-   * Falls back to reasonable defaults for older browsers.
+   * Falls back to 0 for desktop browsers (which is correct - no safe areas).
    */
   const getSafeAreaInsets = useCallback(() => {
     if (typeof window === 'undefined') {
@@ -110,7 +106,8 @@ const useTouchDrag = ({
 
   /**
    * Calculate drag bounds based on element position, viewport, and safe areas.
-   * Called on touch start to establish the "play area" for dragging.
+   * Called on drag start to establish the "play area" for dragging.
+   * Works for both touch (iOS safe areas) and desktop (viewport bounds).
    */
   const calculateBounds = useCallback((element) => {
     if (!element) return null;
@@ -126,6 +123,7 @@ const useTouchDrag = ({
     const effectivePadding = padding + scaleOffset;
     
     // Effective viewport bounds (safe area + padding)
+    // On desktop, safe area values are 0, so this just uses viewport + padding
     const minViewX = safeArea.left + effectivePadding;
     const maxViewX = vw - safeArea.right - effectivePadding;
     const minViewY = safeArea.top + effectivePadding;
@@ -142,6 +140,17 @@ const useTouchDrag = ({
     return { minX, maxX, minY, maxY };
   }, [getSafeAreaInsets, boundsPadding, dragScale]);
 
+  /**
+   * Clamp delta values within calculated bounds.
+   */
+  const clampDelta = useCallback((rawX, rawY, bounds) => {
+    const { minX, maxX, minY, maxY } = bounds;
+    return {
+      x: Math.max(minX, Math.min(maxX, rawX)),
+      y: Math.max(minY, Math.min(maxY, rawY)),
+    };
+  }, []);
+
   // Apply transform directly to DOM for maximum responsiveness
   const applyTransform = useCallback((x, y, scale) => {
     const element = ref.current;
@@ -157,7 +166,7 @@ const useTouchDrag = ({
 
   // Update position smoothly using requestAnimationFrame
   const updatePosition = useCallback(() => {
-    const state = touchState.current;
+    const state = dragState.current;
     if (!state.isDragging) return;
 
     // Apply the transform directly to DOM - bypass React render cycle
@@ -188,29 +197,26 @@ const useTouchDrag = ({
     }, snapDuration);
   }, [snapDuration, applyTransform]);
 
-  // Touch start handler
-  const handleTouchStart = useCallback((e) => {
-    if (!enabled || !isTouchDevice.current) return;
-    
-    // Only handle single touch
-    if (e.touches.length !== 1) return;
-
-    const touch = e.touches[0];
-    const state = touchState.current;
+  /**
+   * Common drag start logic for both touch and mouse.
+   */
+  const startDrag = useCallback((clientX, clientY, inputType, touchId = null) => {
+    const state = dragState.current;
     const element = ref.current;
 
-    state.startX = touch.clientX;
-    state.startY = touch.clientY;
-    state.currentX = touch.clientX;
-    state.currentY = touch.clientY;
+    state.startX = clientX;
+    state.startY = clientY;
+    state.currentX = clientX;
+    state.currentY = clientY;
     state.deltaX = 0;
     state.deltaY = 0;
     state.startTime = Date.now();
     state.isDragging = false;
-    state.identifier = touch.identifier;
+    state.inputType = inputType;
+    state.touchId = touchId;
+    state.mouseDown = inputType === 'mouse';
 
     // Calculate bounds for this drag session
-    // Must be done at start because element position may change between drags
     const bounds = calculateBounds(element);
     if (bounds) {
       state.bounds = bounds;
@@ -227,41 +233,29 @@ const useTouchDrag = ({
       element.style.transition = '';
     }
     setIsSnapping(false);
-  }, [enabled, calculateBounds]);
+  }, [calculateBounds]);
 
-  // Touch move handler
-  const handleTouchMove = useCallback((e) => {
-    if (!enabled || !isTouchDevice.current) return;
-
-    const state = touchState.current;
+  /**
+   * Common drag move logic for both touch and mouse.
+   * Returns true if drag was activated, false otherwise.
+   */
+  const moveDrag = useCallback((clientX, clientY) => {
+    const state = dragState.current;
     
-    // Find our tracked touch
-    const touch = Array.from(e.touches).find(
-      t => t.identifier === state.identifier
-    );
-    if (!touch) return;
-
     // Update current position
-    state.currentX = touch.clientX;
-    state.currentY = touch.clientY;
+    state.currentX = clientX;
+    state.currentY = clientY;
 
     // Calculate raw deltas
-    let deltaX = state.currentX - state.startX;
-    let deltaY = state.currentY - state.startY;
-    
-    // Clamp deltas to stay within safe area bounds
-    // This prevents the icon from going under iOS status bar or home indicator
-    const { minX, maxX, minY, maxY } = state.bounds;
-    deltaX = Math.max(minX, Math.min(maxX, deltaX));
-    deltaY = Math.max(minY, Math.min(maxY, deltaY));
-    
-    // Store clamped deltas
-    state.deltaX = deltaX;
-    state.deltaY = deltaY;
-    
-    // Use raw distance for threshold check (so clamping doesn't prevent drag activation)
     const rawDeltaX = state.currentX - state.startX;
     const rawDeltaY = state.currentY - state.startY;
+    
+    // Clamp deltas to stay within safe area bounds
+    const clamped = clampDelta(rawDeltaX, rawDeltaY, state.bounds);
+    state.deltaX = clamped.x;
+    state.deltaY = clamped.y;
+    
+    // Use raw distance for threshold check
     const distance = Math.sqrt(rawDeltaX * rawDeltaX + rawDeltaY * rawDeltaY);
 
     // If we've moved past threshold, activate drag mode
@@ -277,28 +271,17 @@ const useTouchDrag = ({
       
       // Start the animation loop immediately
       state.rafId = requestAnimationFrame(updatePosition);
-      
-      // Prevent default to stop scroll
-      e.preventDefault();
+      return true; // Drag activated
     }
+    
+    return false;
+  }, [clampDelta, dragThreshold, updatePosition]);
 
-    // If dragging, prevent default to stop scroll (non-passive listener needed)
-    if (state.isDragging) {
-      e.preventDefault();
-    }
-  }, [enabled, dragThreshold, updatePosition]);
-
-  // Touch end handler
-  const handleTouchEnd = useCallback((e) => {
-    if (!enabled || !isTouchDevice.current) return;
-
-    const state = touchState.current;
-
-    // Verify this is our tracked touch ending
-    const touch = Array.from(e.changedTouches).find(
-      t => t.identifier === state.identifier
-    );
-    if (!touch) return;
+  /**
+   * Common drag end logic for both touch and mouse.
+   */
+  const endDrag = useCallback(() => {
+    const state = dragState.current;
 
     // Cancel animation frame
     if (state.rafId) {
@@ -309,28 +292,78 @@ const useTouchDrag = ({
     const elapsed = Date.now() - state.startTime;
     const distance = Math.sqrt(state.deltaX * state.deltaX + state.deltaY * state.deltaY);
 
-    // Determine if this was a tap or drag
+    // Determine if this was a tap/click or drag
     if (!state.isDragging && distance < dragThreshold && elapsed < tapTimeout) {
-      // It's a tap!
-      e.preventDefault(); // Prevent click event duplication
+      // It's a tap/click!
       onTap?.();
     } else if (state.isDragging) {
       // End drag, trigger snap-back
-      e.preventDefault();
       snapBack();
     }
 
     // Reset state
     state.isDragging = false;
-    state.identifier = null;
+    state.touchId = null;
+    state.mouseDown = false;
+    state.inputType = null;
     state.deltaX = 0;
     state.deltaY = 0;
     setIsDragging(false);
-  }, [enabled, dragThreshold, tapTimeout, onTap, snapBack]);
+  }, [dragThreshold, tapTimeout, onTap, snapBack]);
 
-  // Touch cancel handler (iOS can fire this during gesture conflicts)
+  // ═══════════════════════════════════════════════════════════════════════════
+  // TOUCH EVENT HANDLERS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  const handleTouchStart = useCallback((e) => {
+    if (!enabled) return;
+    
+    // Only handle single touch
+    if (e.touches.length !== 1) return;
+
+    const touch = e.touches[0];
+    startDrag(touch.clientX, touch.clientY, 'touch', touch.identifier);
+  }, [enabled, startDrag]);
+
+  const handleTouchMove = useCallback((e) => {
+    if (!enabled) return;
+
+    const state = dragState.current;
+    if (state.inputType !== 'touch') return;
+    
+    // Find our tracked touch
+    const touch = Array.from(e.touches).find(
+      t => t.identifier === state.touchId
+    );
+    if (!touch) return;
+
+    const activated = moveDrag(touch.clientX, touch.clientY);
+    
+    // Prevent default to stop scroll when drag activates or is active
+    if (activated || state.isDragging) {
+      e.preventDefault();
+    }
+  }, [enabled, moveDrag]);
+
+  const handleTouchEnd = useCallback((e) => {
+    if (!enabled) return;
+
+    const state = dragState.current;
+    if (state.inputType !== 'touch') return;
+
+    // Verify this is our tracked touch ending
+    const touch = Array.from(e.changedTouches).find(
+      t => t.identifier === state.touchId
+    );
+    if (!touch) return;
+
+    e.preventDefault(); // Prevent click event from also firing
+    endDrag();
+  }, [enabled, endDrag]);
+
   const handleTouchCancel = useCallback(() => {
-    const state = touchState.current;
+    const state = dragState.current;
+    if (state.inputType !== 'touch') return;
 
     if (state.rafId) {
       cancelAnimationFrame(state.rafId);
@@ -342,31 +375,126 @@ const useTouchDrag = ({
     }
 
     state.isDragging = false;
-    state.identifier = null;
+    state.touchId = null;
+    state.inputType = null;
     setIsDragging(false);
   }, [snapBack]);
 
-  // Attach touch listeners with proper options
+  // ═══════════════════════════════════════════════════════════════════════════
+  // MOUSE EVENT HANDLERS (Desktop)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  const handleMouseDown = useCallback((e) => {
+    if (!enabled) return;
+    
+    // Only handle left mouse button
+    if (e.button !== 0) return;
+    
+    // Prevent native image drag behavior
+    e.preventDefault();
+    
+    startDrag(e.clientX, e.clientY, 'mouse');
+  }, [enabled, startDrag]);
+
+  // Mouse move handler - attached to document to track outside element
+  const handleMouseMove = useCallback((e) => {
+    const state = dragState.current;
+    if (!state.mouseDown || state.inputType !== 'mouse') return;
+
+    moveDrag(e.clientX, e.clientY);
+  }, [moveDrag]);
+
+  // Mouse up handler - attached to document to catch release anywhere
+  const handleMouseUp = useCallback((e) => {
+    const state = dragState.current;
+    if (!state.mouseDown || state.inputType !== 'mouse') return;
+
+    // Only handle left mouse button
+    if (e.button !== 0) return;
+
+    endDrag();
+  }, [endDrag]);
+
+  // Handle mouse leaving window (treat as cancel)
+  const handleMouseLeave = useCallback((e) => {
+    const state = dragState.current;
+    if (!state.mouseDown || state.inputType !== 'mouse') return;
+
+    // Only trigger if leaving the document entirely
+    if (e.relatedTarget === null) {
+      if (state.isDragging) {
+        snapBack();
+      }
+      state.mouseDown = false;
+      state.inputType = null;
+      setIsDragging(false);
+    }
+  }, [snapBack]);
+
+  // Prevent context menu on right-click during drag
+  const handleContextMenu = useCallback((e) => {
+    const state = dragState.current;
+    if (state.isDragging) {
+      e.preventDefault();
+    }
+  }, []);
+
+  // Prevent native drag behavior on the element
+  const handleDragStart = useCallback((e) => {
+    e.preventDefault();
+  }, []);
+
+  // Attach event listeners
   useEffect(() => {
     const element = ref.current;
     if (!element || !enabled) return;
 
-    // touchstart and touchend can be passive
+    // ─────────────────────────────────────────────────────────────────────────
+    // TOUCH EVENTS (on element)
+    // ─────────────────────────────────────────────────────────────────────────
     element.addEventListener('touchstart', handleTouchStart, { passive: true });
     element.addEventListener('touchend', handleTouchEnd, { passive: false });
     element.addEventListener('touchcancel', handleTouchCancel, { passive: true });
-    
-    // touchmove must be non-passive to allow preventDefault during drag
     element.addEventListener('touchmove', handleTouchMove, { passive: false });
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // MOUSE EVENTS
+    // mousedown on element, move/up on document (to track outside element)
+    // ─────────────────────────────────────────────────────────────────────────
+    element.addEventListener('mousedown', handleMouseDown);
+    element.addEventListener('dragstart', handleDragStart); // Prevent native drag
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('mouseleave', handleMouseLeave);
+    element.addEventListener('contextmenu', handleContextMenu);
+
+    // Set cursor style to indicate draggable
+    element.style.cursor = 'grab';
+    element.style.userSelect = 'none';
+    element.style.webkitUserSelect = 'none';
+
     return () => {
+      // Touch cleanup
       element.removeEventListener('touchstart', handleTouchStart);
       element.removeEventListener('touchmove', handleTouchMove);
       element.removeEventListener('touchend', handleTouchEnd);
       element.removeEventListener('touchcancel', handleTouchCancel);
 
+      // Mouse cleanup
+      element.removeEventListener('mousedown', handleMouseDown);
+      element.removeEventListener('dragstart', handleDragStart);
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mouseleave', handleMouseLeave);
+      element.removeEventListener('contextmenu', handleContextMenu);
+
+      // Reset element styles
+      element.style.cursor = '';
+      element.style.userSelect = '';
+      element.style.webkitUserSelect = '';
+
       // Cleanup any pending animation frame and reset element
-      const state = touchState.current;
+      const state = dragState.current;
       if (state.rafId) {
         cancelAnimationFrame(state.rafId);
       }
@@ -376,7 +504,31 @@ const useTouchDrag = ({
         element.style.willChange = '';
       }
     };
-  }, [enabled, handleTouchStart, handleTouchMove, handleTouchEnd, handleTouchCancel]);
+  }, [
+    enabled,
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
+    handleTouchCancel,
+    handleMouseDown,
+    handleMouseMove,
+    handleMouseUp,
+    handleMouseLeave,
+    handleContextMenu,
+    handleDragStart,
+  ]);
+
+  // Update cursor during drag
+  useEffect(() => {
+    const element = ref.current;
+    if (!element || !enabled) return;
+    
+    if (isDragging) {
+      element.style.cursor = 'grabbing';
+    } else {
+      element.style.cursor = 'grab';
+    }
+  }, [isDragging, enabled]);
 
   return {
     ref,

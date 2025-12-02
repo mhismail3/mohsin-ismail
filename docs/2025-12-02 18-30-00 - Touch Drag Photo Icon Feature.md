@@ -1,14 +1,23 @@
 # Touch Drag Photo Icon Feature
 
 **Date:** December 2, 2025  
-**Updated:** December 2, 2025 (Performance optimization + iOS safe area bounds)  
-**Feature:** Draggable photo icon on touch devices with snap-back animation
+**Updated:** December 2, 2025 (Extended to ALL devices - touch + desktop mouse)  
+**Feature:** Draggable photo icon on ALL devices with snap-back animation
 
 ## Summary
 
-Added a touch-only feature where users on touch screen devices (primarily iOS) can drag the collapsed header photo icon around. When released, the icon smoothly snaps back to its original position with a spring animation. A single tap still toggles the dropdown menu as before.
+The photo icon in the header is now draggable on **ALL devices** - both touch (iOS/Android) and desktop (mouse). Users can:
 
-**Performance:** Uses direct DOM manipulation with `requestAnimationFrame` for butter-smooth 60fps tracking on iOS Safari.
+1. **Click/tap** the photo → Navigate home (when header expanded) or toggle menu (when collapsed)
+2. **Drag** the photo → It follows cursor/finger with playful visual feedback
+3. **Release** → Photo springs back to original position with bounce animation
+
+**Benefits:**
+- Fun, interactive micro-interaction
+- **Prevents "save image" behavior** - users can't drag the photo to desktop to save it
+- Consistent experience across all devices
+
+**Performance:** Uses direct DOM manipulation with `requestAnimationFrame` for butter-smooth 60fps tracking.
 
 ## Files Changed
 
@@ -23,9 +32,9 @@ Added a touch-only feature where users on touch screen devices (primarily iOS) c
 
 ## Implementation Details
 
-### useTouchDrag Hook
+### useTouchDrag Hook (now supports ALL input types)
 
-A comprehensive touch gesture handler designed for iOS Safari with:
+A comprehensive gesture handler that works on both touch AND mouse:
 
 1. **Tap vs Drag Detection**
    - `dragThreshold: 8px` - Movement threshold before drag activates

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useTheme, useIsTouch } from '../../hooks';
+import { useTheme } from '../../hooks';
 import useTouchDrag from '../../hooks/useTouchDrag';
 import { Icon } from '../ui';
 import logoMark from '../../assets/mohsin.png';
@@ -36,7 +36,6 @@ const Header = ({ label, onLogoClick }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isDark, toggleTheme } = useTheme();
-  const isTouch = useIsTouch();
 
   // Cleanup timeouts on unmount
   useEffect(() => {
@@ -116,7 +115,7 @@ const Header = ({ label, onLogoClick }) => {
     return () => media.removeEventListener('change', handler);
   }, []);
 
-  const handleHome = () => {
+  const handleHome = useCallback(() => {
     if (onLogoClick) {
       onLogoClick();
     }
@@ -125,7 +124,7 @@ const Header = ({ label, onLogoClick }) => {
     }
     closeMenu();
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, [onLogoClick, location.pathname, navigate, closeMenu]);
 
   const handleNav = (path) => {
     if (path === '/') {
@@ -194,36 +193,41 @@ const Header = ({ label, onLogoClick }) => {
     }
   }, [isOpen, isCollapsed, closeMenu]);
 
-  // Touch drag hook for collapsed photo icon (touch devices only)
-  // Enables playful drag-and-release interaction with snap-back animation
-  const {
-    ref: touchDragRef,
-    isDragging,
-    isSnapping,
-  } = useTouchDrag({
-    enabled: isCollapsed && isTouch,
-    onTap: toggleMenu,
-    dragThreshold: 8, // Pixels before drag activates
-    tapTimeout: 200,  // Max ms for tap detection
-    snapDuration: 450, // Spring snap-back duration
-    dragScale: 1.08, // Scale up during drag
-  });
-
-  // Handle brand click - either go home (when expanded) or toggle menu (when collapsed)
-  // On touch devices when collapsed, the useTouchDrag hook handles tap detection
-  const handleBrandClick = (e) => {
-    // On touch devices when collapsed, let useTouchDrag handle the tap
-    if (isCollapsed && isTouch) {
-      e.preventDefault();
-      return;
-    }
-    
+  // Callback for when photo icon is tapped/clicked (without dragging)
+  // Behavior depends on header state:
+  // - Collapsed: toggle the navigation menu
+  // - Expanded: go to home page
+  const handlePhotoTap = useCallback(() => {
     if (isCollapsed) {
-      e.preventDefault();
       toggleMenu();
     } else {
       handleHome();
     }
+  }, [isCollapsed, toggleMenu, handleHome]);
+
+  // Drag hook for photo icon - works on ALL devices (touch + mouse)
+  // Enables playful drag-and-release interaction with snap-back animation
+  // Also prevents native image drag behavior (save image on desktop)
+  const {
+    ref: dragRef,
+    isDragging,
+    isSnapping,
+  } = useTouchDrag({
+    enabled: true, // Always enabled - works on all devices
+    onTap: handlePhotoTap,
+    dragThreshold: 8, // Pixels before drag activates
+    tapTimeout: 200,  // Max ms for tap/click detection
+    snapDuration: 450, // Spring snap-back duration
+    dragScale: 1.08, // Scale up during drag
+    boundsPadding: 12, // Padding from viewport/safe area edges
+  });
+
+  // Handle brand button click - the drag hook handles tap/click detection,
+  // so we only need to prevent default to avoid duplicate handling
+  const handleBrandClick = (e) => {
+    // The useTouchDrag hook handles both tap/click and drag detection
+    // Prevent the button's default click from also firing
+    e.preventDefault();
   };
 
   // Build nav links - add Home option when collapsed
@@ -271,6 +275,7 @@ const Header = ({ label, onLogoClick }) => {
   
   const brandMarkClass = [
     'brand-mark',
+    'draggable', // Always draggable now
     isCollapsed ? 'clickable' : '',
     isDragging ? 'dragging' : '',
     isSnapping ? 'snapping' : '',
@@ -287,7 +292,7 @@ const Header = ({ label, onLogoClick }) => {
         >
           <span className={brandMarkClass}>
             <span 
-              ref={touchDragRef}
+              ref={dragRef}
               className="brand-mark-inner"
             >
               <img src={logoMark} alt="Mohsin Ismail logo" />

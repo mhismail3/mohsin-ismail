@@ -854,26 +854,53 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   TOUCH DRAG STATE (Touch devices only)
-   When user drags the collapsed photo icon, it follows their finger with
-   subtle visual feedback, then springs back on release.
+   DRAGGABLE PHOTO ICON
+   The photo icon is draggable on ALL devices (touch + mouse).
+   When dragged, it follows the cursor/finger with visual feedback,
+   then springs back to its original position on release.
    
    NOTE: Position and scale transforms are handled directly by JS via
-   useTouchDrag hook for maximum responsiveness. CSS only handles shadows.
+   useTouchDrag hook for maximum responsiveness. CSS only handles shadows/cursors.
    ───────────────────────────────────────────────────────────────────────────── */
 
-/* Dragging state - enhanced shadow for lifted appearance
-   Transform (translate + scale) is applied via JS for 60fps precision */
+/* Base draggable state - cursor and selection prevention */
+.brand-mark.draggable .brand-mark-inner {
+  /* Cursor is set by JS (grab/grabbing), but ensure no text selection */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  /* Prevent native image drag on the img inside */
+  -webkit-user-drag: none;
+}
+
+.brand-mark.draggable .brand-mark-inner img {
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+/* Touch-action: none prevents scroll interference during drag on touch devices */
+@media (hover: none) {
+  .brand-mark.draggable .brand-mark-inner {
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   DRAG STATES - COLLAPSED HEADER
+   Enhanced visual feedback when header is collapsed (floating photo only)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Dragging state - enhanced shadow for lifted appearance */
 .top-bar.collapsed .brand-mark.dragging .brand-mark-inner {
   box-shadow:
     var(--avatar-ring),
     0 8px 16px rgba(31, 26, 20, 0.4),
     0 20px 40px rgba(31, 26, 20, 0.3);
-  /* Quick shadow transition for lifted feel */
   transition: box-shadow 0.15s ease;
 }
 
-/* Dark mode drag shadow */
+/* Dark mode drag shadow - collapsed */
 [data-theme="dark"] .top-bar.collapsed .brand-mark.dragging .brand-mark-inner {
   box-shadow:
     var(--avatar-ring),
@@ -881,30 +908,41 @@
     0 22px 44px rgba(0, 0, 0, 0.45);
 }
 
-/* Snapping state - shadow returns smoothly (JS handles transform snap-back)
-   The spring animation timing is controlled by JS */
+/* Snapping state - shadow returns smoothly */
 .top-bar.collapsed .brand-mark.snapping .brand-mark-inner {
   box-shadow:
     var(--avatar-ring),
     var(--avatar-shadow-contact),
     var(--avatar-shadow-ambient);
-  /* Shadow snaps back with same timing as transform */
   transition: box-shadow 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Prevent text selection and context menus during drag */
-.top-bar.collapsed .brand-mark.dragging {
-  -webkit-user-select: none;
-  user-select: none;
-  -webkit-touch-callout: none;
+/* ─────────────────────────────────────────────────────────────────────────────
+   DRAG STATES - EXPANDED HEADER
+   Subtle visual feedback when header is expanded (photo in header bar)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Dragging state - subtle lift effect in expanded header */
+.top-bar:not(.collapsed) .brand-mark.dragging .brand-mark-inner {
+  box-shadow:
+    0 0 0 1px rgba(31, 26, 20, 0.1),
+    0 4px 12px rgba(31, 26, 20, 0.25),
+    0 12px 28px rgba(31, 26, 20, 0.2);
+  transition: box-shadow 0.15s ease;
 }
 
-/* Touch-action: none on the brand-mark when draggable to prevent scroll interference */
-@media (hover: none) {
-  .top-bar.collapsed .brand-mark.clickable {
-    touch-action: none;
-    -webkit-tap-highlight-color: transparent;
-  }
+/* Dark mode drag shadow - expanded */
+[data-theme="dark"] .top-bar:not(.collapsed) .brand-mark.dragging .brand-mark-inner {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 4px 14px rgba(0, 0, 0, 0.45),
+    0 14px 32px rgba(0, 0, 0, 0.35);
+}
+
+/* Snapping state - return to flat appearance */
+.top-bar:not(.collapsed) .brand-mark.snapping .brand-mark-inner {
+  box-shadow: none;
+  transition: box-shadow 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
