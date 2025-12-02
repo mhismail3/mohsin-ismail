@@ -5,6 +5,7 @@ export { default as usePageTitle } from './usePageTitle';
 export { default as useIsTouch } from './useIsTouch';
 export { default as useIsMobile } from './useIsMobile';
 export { default as useTheme } from './useTheme';
+export { default as useSlingshotGesture } from './useSlingshotGesture';
 
 
 
