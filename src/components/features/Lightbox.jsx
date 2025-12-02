@@ -45,12 +45,19 @@ const Lightbox = ({ src, alt = 'Full size view', onClose }) => {
       aria-modal="true"
       aria-label="Image lightbox"
     >
-      <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
-        <ProgressiveImage 
-          src={src} 
-          alt={alt}
-          eager={true}
-        />
+      {/* Separate backdrop element - does NOT inherit opacity from parent */}
+      {/* Rendered first in DOM order so it appears behind content */}
+      <div className="lightbox-backdrop" aria-hidden="true" />
+      
+      {/* Content wrapper for positioning the close button outside overflow:hidden */}
+      <div className="lightbox-frame" onClick={(e) => e.stopPropagation()}>
+        <div className="lightbox-content">
+          <ProgressiveImage 
+            src={src} 
+            alt={alt}
+            eager={true}
+          />
+        </div>
         <button
           className="lightbox-close"
           onClick={onClose}

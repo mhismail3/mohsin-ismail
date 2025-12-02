@@ -1,41 +1,124 @@
 /* =============================================================================
    LIGHTBOX COMPONENT
    Full-screen image modal overlay
+   
+   iOS Safari Safe Area Fix:
+   The backdrop uses position:fixed with oversized dimensions to guarantee
+   full viewport coverage including notch/Dynamic Island and home indicator
+   areas. This avoids iOS Safari's delayed safe-area-inset calculation that
+   causes a two-stage render when using inset:0.
    ============================================================================= */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   OVERLAY CONTAINER
+   Provides positioning context and click-to-close area.
+   No background or opacity animation here - that's handled by .lightbox-backdrop
+   ───────────────────────────────────────────────────────────────────────────── */
 
 .lightbox-overlay {
   position: fixed;
   inset: 0;
   z-index: var(--z-modal);
+  
+  /* Layout for centering content */
+  display: grid;
+  place-items: center;
+  
+  /* Safe area aware padding for content */
+  padding: max(20px, env(safe-area-inset-top, 20px))
+           max(20px, env(safe-area-inset-right, 20px))
+           max(20px, env(safe-area-inset-bottom, 20px))
+           max(20px, env(safe-area-inset-left, 20px));
+  
+  /* Prevent any inherited transitions from affecting mount */
+  animation: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   BACKDROP
+   Separate DOM element (not pseudo-element) to avoid inheriting opacity.
+   Uses fixed positioning with oversized dimensions to guarantee full
+   viewport coverage on iOS Safari regardless of safe-area timing.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.lightbox-backdrop {
+  /* Fixed positioning independent of parent */
+  position: fixed;
+  
+  /* Oversized to guarantee coverage of notch, status bar, home indicator.
+     Using viewport-relative negative positioning ensures coverage even if
+     iOS Safari delays safe-area-inset calculation. */
+  top: -10vh;
+  left: -10vw;
+  right: -10vw;
+  bottom: -10vh;
+  
+  /* Visual styling */
   background: var(--color-overlay);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  display: grid;
-  place-items: center;
-  padding: 20px;
-  animation: lightbox-fadeIn var(--duration-normal) ease-out;
+  
+  /* CRITICAL: Disable ALL transitions to prevent global base.css rules
+     from causing delayed background appearance */
+  transition: none !important;
+  
+  /* Force immediate GPU layer creation */
+  will-change: opacity;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  
+  /* Isolation from paint operations */
+  contain: strict;
+  
+  /* Fade in animation - opacity only, positioning is instant */
+  opacity: 0;
+  animation: lightbox-backdropFadeIn 0.18s ease-out forwards;
+}
+
+/* Backdrop fade - very fast to minimize perception of delay */
+@keyframes lightbox-backdropFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   CONTENT FRAME
+   Wrapper for positioning close button outside overflow:hidden container
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.lightbox-frame {
+  position: relative;
+  z-index: 1; /* Above backdrop */
+  
+  /* Constrain to viewport with safe area consideration */
+  max-width: calc(100vw - 40px - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px));
+  max-height: calc(100vh - 40px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  max-height: calc(100dvh - 40px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  
+  /* Content entrance animation */
+  animation: lightbox-contentPopIn var(--duration-slow) var(--ease-bounce);
 }
 
 .lightbox-content {
-  position: relative;
-  /* Let the frame shrink-wrap to image size */
-  width: fit-content;
-  height: fit-content;
-  max-width: calc(85vw - 20px);
-  max-height: calc(85vh - 20px);
+  /* Retro card styling */
   border: 2px solid var(--retro-border-color);
   border-radius: var(--radius-sm);
   background: var(--color-bg);
   padding: var(--space-sm);
   box-shadow: 8px 8px 0px var(--retro-shadow-color);
-  animation: lightbox-popIn var(--duration-slow) var(--ease-bounce);
+  
+  /* Prevent image overflow - close button is now outside this container */
+  overflow: hidden;
 }
 
 .lightbox-content img,
 .lightbox-content .progressive-image__img {
-  /* Constrain image size, let it determine frame size */
-  max-width: min(75vw, 800px);
-  max-height: min(75vh, 700px);
+  /* Constrain to container while maintaining aspect ratio */
+  max-width: min(calc(100vw - 60px), 800px);
+  max-height: min(calc(100vh - 60px), 700px);
+  max-height: min(calc(100dvh - 60px), 700px);
   width: auto;
   height: auto;
   display: block;
@@ -46,10 +129,8 @@
 /* Progressive image wrapper in lightbox */
 .lightbox-content .progressive-image {
   display: block;
-  width: fit-content;
-  height: fit-content;
-  max-width: min(75vw, 800px);
-  max-height: min(75vh, 700px);
+  max-width: 100%;
+  max-height: 100%;
   border-radius: 4px;
 }
 
@@ -101,12 +182,7 @@
    ANIMATIONS
    ───────────────────────────────────────────────────────────────────────────── */
 
-@keyframes lightbox-fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes lightbox-popIn {
+@keyframes lightbox-contentPopIn {
   from { 
     transform: scale(0.95); 
     opacity: 0; 
@@ -116,6 +192,5 @@
     opacity: 1; 
   }
 }
-
 
 
