@@ -33,6 +33,16 @@
 :root {
   /* Color Scheme */
   color-scheme: light;
+  
+  /* ─────────────────────────────────────────────────────────────────────────────
+     iOS SAFE AREA INSETS
+     Exposed as CSS custom properties so JavaScript can read them.
+     These are critical for drag bounds on iOS devices with notch/Dynamic Island.
+     ───────────────────────────────────────────────────────────────────────────── */
+  --safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --safe-area-inset-right: env(safe-area-inset-right, 0px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-inset-left: env(safe-area-inset-left, 0px);
 
   /* ─────────────────────────────────────────────────────────────────────────────
      BASE PALETTE
