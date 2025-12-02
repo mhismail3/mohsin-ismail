@@ -60,10 +60,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-base);
+  gap: var(--space-sm);
   position: relative;
   z-index: 5;
   pointer-events: none;
+  min-width: 0; /* Allow children to shrink below content size */
 }
 
 .top-bar-row > * {
@@ -78,6 +79,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-sm);
+  flex-shrink: 0; /* Never shrink - buttons must always be visible */
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -187,9 +189,11 @@
   cursor: pointer;
   color: var(--ink);
   font-family: var(--font-display);
-  font-size: clamp(1.55rem, 4.5vw, 2.2rem);
+  font-size: clamp(1.4rem, 4.5vw, 2.2rem);
   letter-spacing: var(--tracking-tight);
   transition: color var(--theme-transition-duration) var(--theme-transition-ease);
+  min-width: 0; /* Allow brand to shrink below content size */
+  flex: 1 1 0; /* Allow growing and shrinking */
 }
 
 @media (hover: hover) {
@@ -208,6 +212,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0; /* Avatar should never shrink */
 }
 
 .brand-mark-inner {
@@ -233,6 +238,13 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
+}
+
+.brand-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0; /* Allow shrinking in flex context */
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -651,14 +663,33 @@
   }
 
   .brand {
-    font-size: 1.65rem;
+    font-size: 1.85rem;
+    gap: var(--space-md);
   }
 }
 
-@media (max-width: 380px) {
+@media (max-width: 480px) {
   .brand {
-    gap: var(--space-md);
-    font-size: 1.35rem;
+    font-size: 1.65rem;
+    gap: var(--space-sm);
+  }
+  
+  .top-bar {
+    padding: 11px 12px;
+  }
+}
+
+@media (max-width: 400px) {
+  .brand {
+    font-size: 1.40rem;
+    gap: var(--space-xs);
+  }
+}
+
+@media (max-width: 360px) {
+  .brand {
+    gap: var(--space-xs);
+    font-size: 1.3rem;
   }
   
   .brand-mark-inner {
@@ -667,13 +698,49 @@
   }
   
   .top-bar {
-    padding: 10px 12px;
+    padding: 10px 10px;
+  }
+  
+  .header-actions {
+    gap: var(--space-xs);
   }
   
   .menu-toggle {
-    min-width: 52px;
-    padding-left: 0.6rem;
-    padding-right: 0.6rem;
+    min-width: 48px;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  
+  .theme-toggle {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (max-width: 320px) {
+  .brand {
+    font-size: 1.15rem;
+    gap: var(--space-2xs);
+  }
+  
+  .brand-mark-inner {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .top-bar {
+    padding: 8px 8px;
+  }
+  
+  .menu-toggle {
+    min-width: 44px;
+    padding-left: 0.4rem;
+    padding-right: 0.4rem;
+  }
+  
+  .theme-toggle {
+    width: 30px;
+    height: 30px;
   }
 }
 
