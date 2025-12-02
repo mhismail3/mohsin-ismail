@@ -45,13 +45,23 @@
   /* Fixed positioning independent of parent */
   position: fixed;
   
-  /* Oversized to guarantee coverage of notch, status bar, home indicator.
-     Using viewport-relative negative positioning ensures coverage even if
-     iOS Safari delays safe-area-inset calculation. */
-  top: -10vh;
-  left: -10vw;
-  right: -10vw;
-  bottom: -10vh;
+  /* ROBUST iOS Safari Coverage:
+     Use centered oversized approach to guarantee full coverage regardless of:
+     - Safari address bar state (hidden/visible/transitioning)
+     - Safe area inset timing delays
+     - Dynamic viewport height changes (dvh vs lvh vs vh)
+     - Scroll position when lightbox opens
+     
+     200vw x 200lvh centered = always larger than any possible viewport state */
+  top: 50%;
+  left: 50%;
+  width: 200vw;
+  height: 200vh;
+  height: 200lvh; /* Large viewport height - accounts for hidden address bar */
+  
+  /* Center the oversized backdrop and force GPU layer */
+  transform: translate(-50%, -50%) translateZ(0);
+  -webkit-transform: translate(-50%, -50%) translateZ(0);
   
   /* Visual styling */
   background: var(--color-overlay);
@@ -64,8 +74,6 @@
   
   /* Force immediate GPU layer creation */
   will-change: opacity;
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   
