@@ -1,6 +1,6 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { usePageTitle, useTouchHover } from '../hooks';
+import { usePageTitle, useTouchHover, useTapFeedback } from '../hooks';
 import { posts } from '../data';
 import { formatDateParts } from '../utils/formatDate';
 import { Header } from '../components/layout';
@@ -122,6 +122,7 @@ const PostPage = () => {
   const postIndex = posts.findIndex((p) => p.slug === slug);
   const post = postIndex !== -1 ? posts[postIndex] : null;
   const [selectedImage, setSelectedImage] = useState(null);
+  const { getTapProps } = useTapFeedback();
 
   // Posts are sorted newest first, so:
   // - "Previous" (older) = index + 1
@@ -155,7 +156,7 @@ const PostPage = () => {
 
       <article className="panel post-page">
         <div className="post-page-head">
-          <Link to="/" className="back-link">
+          <Link to="/" className="back-link" {...getTapProps()}>
             ← All Posts
           </Link>
           <div className="eyebrow">
@@ -188,7 +189,7 @@ const PostPage = () => {
         <div className="post-footer">
           <nav className="post-nav">
             {prevPost ? (
-              <Link to={`/posts/${prevPost.slug}`} className="post-nav-link post-nav-prev">
+              <Link to={`/posts/${prevPost.slug}`} className="post-nav-link post-nav-prev" {...getTapProps()}>
                 <span className="post-nav-label">← Previous Post</span>
                 <span className="post-nav-title">{prevPost.title}</span>
               </Link>
@@ -196,7 +197,7 @@ const PostPage = () => {
               <div className="post-nav-spacer" />
             )}
             {nextPost ? (
-              <Link to={`/posts/${nextPost.slug}`} className="post-nav-link post-nav-next">
+              <Link to={`/posts/${nextPost.slug}`} className="post-nav-link post-nav-next" {...getTapProps()}>
                 <span className="post-nav-label">Next Post →</span>
                 <span className="post-nav-title">{nextPost.title}</span>
               </Link>

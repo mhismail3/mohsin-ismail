@@ -1,6 +1,7 @@
 // Custom Hooks Barrel Export
 export { default as useTouchHover } from './useTouchHover';
 export { default as useTouchDrag } from './useTouchDrag';
+export { default as useTapFeedback } from './useTapFeedback';
 export { default as useCarousel } from './useCarousel';
 export { default as usePageTitle } from './usePageTitle';
 export { default as useIsTouch } from './useIsTouch';

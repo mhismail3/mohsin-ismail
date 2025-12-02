@@ -127,6 +127,22 @@ button {
   touch-action: manipulation;
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   TAP FEEDBACK - iOS Safari Touch Support
+   
+   The .tap-active class is applied by the useTapFeedback hook on touchstart
+   for reliable visual feedback on iOS. Combined with :active for full coverage.
+   
+   Fast transition for snappy, responsive feel on touch devices.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.tap-feedback {
+  transition: transform 0.08s ease-out, 
+              color 0.08s ease-out,
+              background-color 0.08s ease-out,
+              box-shadow 0.08s ease-out;
+}
+
 button {
   font-family: inherit;
   -webkit-appearance: none;

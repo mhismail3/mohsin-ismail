@@ -133,9 +133,17 @@
   }
 }
 
-.pill.icon-btn:active {
-  transform: translateY(1px);
+/* Active/pressed state - more pronounced feedback for touch */
+.pill.icon-btn:active,
+.pill.icon-btn.tap-active {
+  color: var(--pine);
+  background: var(--color-surface-hover);
+  border-color: var(--color-border);
+  transform: scale(0.92);
   box-shadow: none;
+  transition: transform 0.06s ease-out, 
+              background-color 0.06s ease-out,
+              color 0.06s ease-out;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

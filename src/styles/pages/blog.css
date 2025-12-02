@@ -83,6 +83,14 @@
   }
 }
 
+/* Active/pressed state for touch feedback */
+.back-link:active,
+.back-link.tap-active {
+  color: var(--aero);
+  transform: translateX(-2px);
+  transition: transform 0.06s ease-out, color 0.06s ease-out;
+}
+
 .post-page-head {
   margin-bottom: 2rem;
 }
@@ -151,6 +159,31 @@
   .post-nav-next:hover {
     transform: translateX(4px);
   }
+}
+
+/* Active/pressed state for touch feedback */
+.post-nav-link:active,
+.post-nav-link.tap-active {
+  transform: translateY(1px);
+  transition: transform 0.06s ease-out;
+}
+
+.post-nav-link:active .post-nav-label,
+.post-nav-link:active .post-nav-title,
+.post-nav-link.tap-active .post-nav-label,
+.post-nav-link.tap-active .post-nav-title {
+  color: var(--aero);
+  transition: color 0.06s ease-out;
+}
+
+.post-nav-prev:active,
+.post-nav-prev.tap-active {
+  transform: translateX(-2px);
+}
+
+.post-nav-next:active,
+.post-nav-next.tap-active {
+  transform: translateX(2px);
 }
 
 .post-nav-label {

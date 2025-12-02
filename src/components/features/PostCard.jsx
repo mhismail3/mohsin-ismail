@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { formatDateParts } from '../../utils/formatDate';
+import { useTapFeedback } from '../../hooks';
 import { Icon } from '../ui';
 import Pill from '../ui/Pill';
 
@@ -9,6 +10,7 @@ const PostCard = ({ post, onTagClick, selectedTags = [] }) => {
   const [isOverflowing, setIsOverflowing] = useState(false);
   const excerptRef = useRef(null);
   const navigate = useNavigate();
+  const { getTapProps } = useTapFeedback();
 
   // Detect if excerpt content overflows (needs truncation)
   useEffect(() => {
@@ -65,7 +67,7 @@ const PostCard = ({ post, onTagClick, selectedTags = [] }) => {
             })()}
           </div>
           <h3>
-            <Link to={`/posts/${post.slug}`} className="post-title-link">
+            <Link to={`/posts/${post.slug}`} className="post-title-link" {...getTapProps()}>
               {post.title}
             </Link>
           </h3>

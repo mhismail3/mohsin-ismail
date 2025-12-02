@@ -202,6 +202,20 @@
   }
 }
 
+/* Active/pressed state for touch feedback */
+.brand:active,
+.brand.tap-active {
+  color: var(--pine);
+  transform: scale(0.98);
+  transition: transform 0.06s ease-out, color 0.06s ease-out;
+}
+
+/* Don't apply scale when collapsed (photo handles its own feedback) */
+.top-bar.collapsed .brand:active,
+.top-bar.collapsed .brand.tap-active {
+  transform: none;
+}
+
 .brand:focus-visible {
   outline: 2px dashed var(--clay);
   outline-offset: 4px;

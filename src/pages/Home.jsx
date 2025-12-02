@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { usePageTitle } from '../hooks';
+import { usePageTitle, useTapFeedback } from '../hooks';
 import { posts, portfolioProjects } from '../data';
 import { Header } from '../components/layout';
 import { AboutPanel, PostCard } from '../components/features';
@@ -9,6 +9,7 @@ const RECENT_POSTS_COUNT = 3;
 
 function Home() {
   usePageTitle('Mohsin Ismail');
+  const { getTapProps } = useTapFeedback();
 
   // Get the most recent portfolio project
   const featuredProject = portfolioProjects[0];
@@ -26,7 +27,7 @@ function Home() {
           <div>
             <div className="eyebrow">Recent Posts</div>
           </div>
-          <Link to="/blog" className="see-all-link">
+          <Link to="/blog" className="see-all-link" {...getTapProps()}>
             View all posts &rarr;
           </Link>
         </div>
@@ -50,7 +51,7 @@ function Home() {
             <div>
               <div className="eyebrow">Latest Project</div>
             </div>
-            <Link to="/portfolio" className="see-all-link">
+            <Link to="/portfolio" className="see-all-link" {...getTapProps()}>
               See other projects &rarr;
             </Link>
           </div>

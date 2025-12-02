@@ -115,6 +115,14 @@
   }
 }
 
+/* Active/pressed state for touch feedback */
+.see-all-link:active,
+.see-all-link.tap-active {
+  color: var(--aero);
+  transform: translateX(2px);
+  transition: transform 0.06s ease-out, color 0.06s ease-out;
+}
+
 /* ─────────────────────────────────────────────────────────────────────────────
    RESPONSIVE
    ───────────────────────────────────────────────────────────────────────────── */

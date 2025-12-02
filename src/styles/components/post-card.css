@@ -163,13 +163,23 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
 .post-title-link {
   color: var(--ink);
   text-decoration: none;
-  transition: color var(--theme-transition-duration) var(--theme-transition-ease);
+  transition: color var(--theme-transition-duration) var(--theme-transition-ease),
+              transform 0.08s ease-out;
+  display: inline-block; /* Required for transform to work on inline element */
 }
 
 @media (hover: hover) {
   .post-title-link:hover {
     color: var(--pine);
   }
+}
+
+/* Active/pressed state for touch feedback */
+.post-title-link:active,
+.post-title-link.tap-active {
+  color: var(--pine);
+  transform: scale(0.99);
+  transition: transform 0.06s ease-out, color 0.06s ease-out;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
