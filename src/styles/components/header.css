@@ -751,9 +751,21 @@
   cursor: pointer;
 }
 
-/* Desktop hover - settles closer to surface */
+/* Constrain clickable area to just the photo when collapsed.
+   The invisible brand-name area should not be interactive. */
+.top-bar.collapsed .brand {
+  pointer-events: none;
+}
+
+.top-bar.collapsed .brand-mark {
+  pointer-events: auto;
+}
+
+/* Desktop hover - settles closer to surface
+   Use .brand-mark:hover (not .brand:hover) so the effect only triggers when
+   hovering directly over the photo, not the invisible brand-name area */
 @media (hover: hover) {
-  .top-bar.collapsed .brand:hover .brand-mark-inner {
+  .top-bar.collapsed .brand-mark:hover .brand-mark-inner {
     transform: translateY(2px);
     box-shadow:
       var(--avatar-ring),
@@ -762,8 +774,10 @@
   }
 }
 
-/* Active/pressed state - pressed down, minimal shadow */
-.top-bar.collapsed .brand:active .brand-mark-inner {
+/* Active/pressed state - pressed down, minimal shadow
+   Use .brand-mark:active (not .brand:active) so the effect only triggers when
+   clicking directly on the photo, not the invisible brand-name area */
+.top-bar.collapsed .brand-mark:active .brand-mark-inner {
   transform: translateY(4px);
   box-shadow:
     var(--avatar-ring),
@@ -774,11 +788,17 @@
 
 /* ─────────────────────────────────────────────────────────────────────────────
    MENU FROM COLLAPSED STATE
-   Replicates mobile menu animation exactly, but left-aligned with icon
+   Replicates mobile menu animation exactly, but left-aligned with icon.
+   
+   IMPORTANT: These styles use .top-menu.from-collapsed WITHOUT requiring
+   .top-bar.collapsed as an ancestor. This ensures the menu maintains its
+   position during close animations even if the header un-collapses mid-animation
+   (e.g., when user scrolls up quickly while menu is closing).
    ───────────────────────────────────────────────────────────────────────────── */
 
-/* Override desktop menu position when collapsed - use mobile-style dropdown */
-.top-bar.collapsed .top-menu.from-collapsed {
+/* Override desktop menu position when opened from collapsed state */
+.top-menu.desktop.from-collapsed,
+.top-menu.mobile.from-collapsed {
   /* Position below the icon, left edge aligned with brand mark */
   /* left value must match .top-bar padding-left to align with content */
   position: absolute;
@@ -806,15 +826,15 @@
   pointer-events: none;
 }
 
-.top-bar.collapsed .top-menu.from-collapsed.visible {
+.top-menu.from-collapsed.visible {
   pointer-events: auto;
 }
 
-.top-bar.collapsed .top-menu.from-collapsed.closing {
+.top-menu.from-collapsed.closing {
   pointer-events: none;
 }
 
-.top-bar.collapsed .top-menu.from-collapsed .top-menu-content {
+.top-menu.from-collapsed .top-menu-content {
   flex-direction: column;
   width: auto;
   gap: var(--space-sm);
@@ -822,7 +842,7 @@
 }
 
 /* Button animations - exactly like mobile menu but left-aligned */
-.top-bar.collapsed .top-menu.from-collapsed .btn {
+.top-menu.from-collapsed .btn {
   min-width: auto;
   /* Match .btn.small padding for consistent sizing */
   padding: 0.45rem 0.9rem 0.35rem 0.9rem;
@@ -846,7 +866,7 @@
   transition-delay: var(--btn-stagger, 0ms);
 }
 
-.top-bar.collapsed .top-menu.from-collapsed.visible .btn {
+.top-menu.from-collapsed.visible .btn {
   opacity: 1;
   -webkit-transform: translateY(0) scale(1) rotate(0deg);
   transform: translateY(0) scale(1) rotate(0deg);
@@ -854,10 +874,10 @@
 }
 
 /* Staggered animation timing */
-.top-bar.collapsed .top-menu.from-collapsed .btn:nth-child(1) { --btn-stagger: 20ms; }
-.top-bar.collapsed .top-menu.from-collapsed .btn:nth-child(2) { --btn-stagger: 70ms; }
-.top-bar.collapsed .top-menu.from-collapsed .btn:nth-child(3) { --btn-stagger: 120ms; }
-.top-bar.collapsed .top-menu.from-collapsed .btn:nth-child(4) { --btn-stagger: 170ms; }
+.top-menu.from-collapsed .btn:nth-child(1) { --btn-stagger: 20ms; }
+.top-menu.from-collapsed .btn:nth-child(2) { --btn-stagger: 70ms; }
+.top-menu.from-collapsed .btn:nth-child(3) { --btn-stagger: 120ms; }
+.top-menu.from-collapsed .btn:nth-child(4) { --btn-stagger: 170ms; }
 
 /* Collapsed menu button hover state
    3D Press Effect (2px shadow when visible):
@@ -865,7 +885,7 @@
    - Hover:   translate(1,1) + shadow(1,1) = (2,2)
    - Active:  translate(2,2) + shadow(0,0) = (2,2) */
 @media (hover: hover) {
-  .top-bar.collapsed .top-menu.from-collapsed.visible .btn:hover {
+  .top-menu.from-collapsed.visible .btn:hover {
     transform: translate(1px, 1px);
     box-shadow: 1px 1px 0px var(--retro-shadow-color);
     color: var(--pine);
@@ -875,15 +895,15 @@
 }
 
 /* Collapsed menu button active/pressed state */
-.top-bar.collapsed .top-menu.from-collapsed.visible .btn:active,
-.top-bar.collapsed .top-menu.from-collapsed.visible .btn.touch-pressed {
+.top-menu.from-collapsed.visible .btn:active,
+.top-menu.from-collapsed.visible .btn.touch-pressed {
   transform: translate(2px, 2px);
   box-shadow: 0px 0px 0px var(--retro-shadow-color);
   transition: transform 0.06s ease-out, box-shadow 0.06s ease-out;
 }
 
 /* Closing animation */
-.top-bar.collapsed .top-menu.from-collapsed.visible.closing .btn {
+.top-menu.from-collapsed.visible.closing .btn {
   opacity: 0;
   -webkit-transform: translateY(-14px) scale(0.85) rotate(3deg);
   transform: translateY(-14px) scale(0.85) rotate(3deg);
@@ -898,13 +918,13 @@
   transition-delay: var(--btn-stagger-close, 0ms);
 }
 
-.top-bar.collapsed .top-menu.from-collapsed.visible.closing .btn:nth-child(1) { --btn-stagger-close: 90ms; }
-.top-bar.collapsed .top-menu.from-collapsed.visible.closing .btn:nth-child(2) { --btn-stagger-close: 60ms; }
-.top-bar.collapsed .top-menu.from-collapsed.visible.closing .btn:nth-child(3) { --btn-stagger-close: 30ms; }
-.top-bar.collapsed .top-menu.from-collapsed.visible.closing .btn:nth-child(4) { --btn-stagger-close: 0ms; }
+.top-menu.from-collapsed.visible.closing .btn:nth-child(1) { --btn-stagger-close: 90ms; }
+.top-menu.from-collapsed.visible.closing .btn:nth-child(2) { --btn-stagger-close: 60ms; }
+.top-menu.from-collapsed.visible.closing .btn:nth-child(3) { --btn-stagger-close: 30ms; }
+.top-menu.from-collapsed.visible.closing .btn:nth-child(4) { --btn-stagger-close: 0ms; }
 
 /* Home link - same style as other buttons */
-.top-bar.collapsed .top-menu.from-collapsed .btn.home-link {
+.top-menu.from-collapsed .btn.home-link {
   /* Matches other buttons exactly - no special styling */
   background: var(--bg-white);
   border-color: var(--retro-border-color);
@@ -912,7 +932,7 @@
 }
 
 /* Active state for collapsed menu buttons (including home) */
-.top-bar.collapsed .top-menu.from-collapsed .btn.active {
+.top-menu.from-collapsed .btn.active {
   background: var(--color-surface-active);
   border-color: var(--pine);
   color: var(--pine);
@@ -920,13 +940,15 @@
 
 /* Responsive left positioning to match header padding at each breakpoint */
 @media (min-width: 840px) {
-  .top-bar.collapsed .top-menu.from-collapsed {
+  .top-menu.desktop.from-collapsed,
+  .top-menu.mobile.from-collapsed {
     left: 18px; /* matches .top-bar padding on desktop */
   }
 }
 
 @media (max-width: 380px) {
-  .top-bar.collapsed .top-menu.from-collapsed {
+  .top-menu.desktop.from-collapsed,
+  .top-menu.mobile.from-collapsed {
     left: 12px; /* matches .top-bar padding on very small screens */
   }
 }
@@ -978,18 +1000,34 @@
   /* 
    * Menu positioning: right edge aligns with photo's right edge.
    * Using right positioning instead of transform so button right edges align.
-   * right: calc(100% + 30px) places menu right edge 30px left of header's left edge,
-   * which matches the photo's right edge position.
+   * right: calc(100% + 20px) places menu right edge 20px left of header's left edge,
+   * which aligns with the photo's right edge position.
+   *
+   * IMPORTANT: Using .from-collapsed WITHOUT .top-bar.collapsed dependency so
+   * the menu maintains its position during close animations even if the header
+   * un-collapses mid-animation (user scrolling up quickly).
+   *
+   * NOTE: Must use same specificity (.desktop/.mobile) as the 840px rules above
+   * to ensure these styles win due to cascade order.
    */
-  .top-bar.collapsed .top-menu.from-collapsed {
+  .top-menu.desktop.from-collapsed,
+  .top-menu.mobile.from-collapsed {
     transform: none;
     left: auto;
     right: calc(100% + 20px);
   }
   
   /* Right-align menu buttons so their right edges align with photo's right edge */
-  .top-bar.collapsed .top-menu.from-collapsed .top-menu-content {
+  .top-menu.desktop.from-collapsed .top-menu-content,
+  .top-menu.mobile.from-collapsed .top-menu-content {
     align-items: flex-end;
+  }
+  
+  /* Update button transform-origin to right for wide desktop */
+  .top-menu.desktop.from-collapsed .btn,
+  .top-menu.mobile.from-collapsed .btn {
+    -webkit-transform-origin: right center;
+    transform-origin: right center;
   }
   
   /* Ensure non-collapsed state has identity transform for smooth transition back */
