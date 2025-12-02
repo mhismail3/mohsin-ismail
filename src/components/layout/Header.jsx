@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useTheme, useIsTouch, useSlingshotGesture } from '../../hooks';
+import { useTheme } from '../../hooks';
 import { Icon } from '../ui';
 import logoMark from '../../assets/mohsin.png';
 
@@ -35,12 +35,6 @@ const Header = ({ label, onLogoClick }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isDark, toggleTheme } = useTheme();
-  const isTouch = useIsTouch();
-  
-  // Ref to hold toggle function for slingshot gesture callback
-  const toggleMenuRef = useRef(null);
-  // Track if touch interaction just happened (to prevent duplicate click handling)
-  const touchInteractionRef = useRef(false);
 
   // Cleanup timeouts on unmount
   useEffect(() => {
@@ -181,7 +175,7 @@ const Header = ({ label, onLogoClick }) => {
     touchStartRef.current = null;
   };
 
-  const toggleMenu = useCallback(() => {
+  const toggleMenu = () => {
     if (isOpen) {
       closeMenu();
     } else {
@@ -196,43 +190,10 @@ const Header = ({ label, onLogoClick }) => {
       setOpenedWhileCollapsed(isCollapsed);
       setIsOpen(true);
     }
-  }, [isOpen, closeMenu, isCollapsed]);
-  
-  // Update ref for slingshot callback
-  toggleMenuRef.current = toggleMenu;
-  
-  // Slingshot gesture for touch devices when collapsed
-  // Tap+hold+drag down creates rubberband effect, release slingshots to top
-  const slingshotGesture = useSlingshotGesture({
-    enabled: isTouch && isCollapsed && !isOpen,
-    holdDelay: 120,
-    pullThreshold: 35,
-    maxPull: 100,
-    resistance: 0.35,
-    onTap: useCallback(() => {
-      // Mark that a touch interaction just occurred
-      touchInteractionRef.current = true;
-      // Clear the flag after a delay (after any synthetic click would fire)
-      setTimeout(() => {
-        touchInteractionRef.current = false;
-      }, 100);
-      
-      // Tap without drag should toggle the menu
-      if (toggleMenuRef.current) {
-        toggleMenuRef.current();
-      }
-    }, []),
-  });
+  };
 
   // Handle brand click - either go home (when expanded) or toggle menu (when collapsed)
-  // On touch devices when collapsed, the slingshot gesture handles taps via onTap callback
   const handleBrandClick = (e) => {
-    // If a touch interaction just occurred, this click is likely synthetic - ignore it
-    // This prevents double-firing when slingshot's onTap already handled the interaction
-    if (touchInteractionRef.current) {
-      return;
-    }
-    
     if (isCollapsed) {
       e.preventDefault();
       toggleMenu();
@@ -287,24 +248,7 @@ const Header = ({ label, onLogoClick }) => {
   const brandMarkClass = [
     'brand-mark',
     isCollapsed ? 'clickable' : '',
-    // Slingshot gesture states (touch devices only)
-    slingshotGesture.isHolding ? 'slingshot-holding' : '',
-    slingshotGesture.isDragging ? 'slingshot-dragging' : '',
-    slingshotGesture.isReadyToRelease ? 'slingshot-ready' : '',
-    slingshotGesture.isReleasing ? 'slingshot-releasing' : '',
   ].filter(Boolean).join(' ');
-  
-  // Calculate slingshot visual transforms
-  const slingshotActive = slingshotGesture.isDragging || slingshotGesture.isReleasing;
-  const pullTransform = slingshotGesture.isDragging 
-    ? `translateY(${slingshotGesture.pullDistance * 0.3}px) scale(${1 + slingshotGesture.pullProgress * 0.05})`
-    : '';
-  const tensionHeight = slingshotGesture.isDragging 
-    ? slingshotGesture.pullDistance * 0.7 
-    : 0;
-
-  // Determine if slingshot gesture should handle touch events on brand
-  const slingshotEnabled = isTouch && isCollapsed && !isOpen;
 
   return (
     <header className={headerClass}>
@@ -315,31 +259,10 @@ const Header = ({ label, onLogoClick }) => {
           onClick={handleBrandClick} 
           aria-label={isCollapsed ? 'Open navigation menu' : 'Go to home'}
         >
-          <span 
-            className={brandMarkClass}
-            {...(slingshotEnabled ? slingshotGesture.handlers : {})}
-          >
-            <span 
-              className="brand-mark-inner"
-              style={slingshotActive ? { transform: pullTransform } : undefined}
-            >
+          <span className={brandMarkClass}>
+            <span className="brand-mark-inner">
               <img src={logoMark} alt="Mohsin Ismail logo" />
             </span>
-            {/* Slingshot tension indicator - only rendered on touch devices when collapsed */}
-            {slingshotEnabled && (
-              <>
-                <span 
-                  className="slingshot-tension" 
-                  style={{ height: `${tensionHeight}px` }}
-                  aria-hidden="true"
-                />
-                <span className="slingshot-arrow" aria-hidden="true">
-                  <svg viewBox="0 0 24 24">
-                    <path d="M12 19V5M5 12l7-7 7 7" />
-                  </svg>
-                </span>
-              </>
-            )}
           </span>
           <span className="brand-name">{label}</span>
         </button>
