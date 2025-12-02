@@ -262,43 +262,43 @@
   color-scheme: dark;
   
   /* Core colors */
-  --color-bg: #1a1814;
+  --color-bg: #1a1816;
   --color-text: #f0ebe3;
   --color-text-muted: #a39e96;
-  --color-border: #3d3730;
+  --color-border: #3a3530;
   
   /* Surface colors */
-  --color-surface: #252219;
-  --color-surface-elevated: #2d2a24;
-  --color-surface-glass: rgba(37, 34, 25, 0.92);
-  --color-surface-glass-solid: rgba(45, 42, 36, 0.96);
+  --color-surface: #24221e;
+  --color-surface-elevated: #2c2a25;
+  --color-surface-glass: rgba(36, 34, 30, 0.92);
+  --color-surface-glass-solid: rgba(44, 42, 37, 0.96);
   
   /* Interactive state colors */
   --color-surface-active: #1a3330;
-  --color-surface-hover: #2d2a24;
-  --color-surface-warning: #3d2a24;
+  --color-surface-hover: #2c2a25;
+  --color-surface-warning: #3a2a26;
   --color-surface-success: #1a3324;
-  --color-surface-muted: #2a2d2b;
+  --color-surface-muted: #282826;
   
   /* Code block colors (inverted - light on dark in light mode becomes dark on light) */
-  --color-code-bg: #0d0f12;
+  --color-code-bg: #0c0c0b;
   --color-code-text: #e5e7eb;
-  --color-code-header: #1e1c18;
-  --color-code-hover: #2a2720;
+  --color-code-header: #1c1b18;
+  --color-code-hover: #2a2824;
   
   /* Misc UI colors */
   --color-selection: #1a3330;
-  --color-overlay: rgba(26, 24, 20, 0.94);
-  --color-badge: #3d3a35;
+  --color-overlay: rgba(26, 24, 22, 0.94);
+  --color-badge: #3a3530;
   --color-panel-border-inner: rgba(255, 255, 255, 0.04);
   
-  /* Fade colors for text truncation - must match panel-bg (#252219) exactly */
-  --color-fade-start: rgba(37, 34, 25, 0);
-  --color-fade-end: #252219;
+  /* Fade colors for text truncation - must match panel-bg (#24221e) exactly */
+  --color-fade-start: rgba(36, 34, 30, 0);
+  --color-fade-end: #24221e;
   
   /* Animatable gradient colors (registered with @property at top of file) */
-  --gradient-fade-end: #252219;
-  --gradient-fade-start: rgba(37, 34, 25, 0);
+  --gradient-fade-end: #24221e;
+  --gradient-fade-start: rgba(36, 34, 30, 0);
   
   /* Shadow colors - darker shadows for dark mode */
   --shadow-color: rgba(0, 0, 0, 0.3);
@@ -316,7 +316,7 @@
   --avatar-shadow-active-ambient: 0 3px 10px rgba(0, 0, 0, 0.28);
   
   /* Project pill glass effect */
-  --color-pill-glass-bg: rgba(45, 42, 36, 0.75);
+  --color-pill-glass-bg: rgba(44, 42, 37, 0.75);
   --color-pill-glass-border: rgba(255, 255, 255, 0.1);
   
   /* Ghost button */
@@ -328,19 +328,19 @@
   --shadow-hover: 5px 11px 10px rgba(0, 0, 0, 0.5);
   
   /* Panel background for dark mode - solid color, matches color-surface */
-  --panel-bg: #252219;
+  --panel-bg: #24221e;
   --bg-card: var(--color-surface);
-  --bg-white: #252219;
+  --bg-white: #24221e;
   
   /* Override base palette for components using them directly */
-  --cream: #1a1814;
+  --cream: #1a1816;
   --ink: #f0ebe3;
-  --line: #3d3730;
+  --line: #3a3530;
   --muted: #a39e96;
   
   /* Retro borders & shadows - dark grey instead of white in dark mode */
-  --retro-shadow-color: #0f0d0a;
-  --retro-border-color: #3d3730;
+  --retro-shadow-color: #0e0e0c;
+  --retro-border-color: #3a3530;
   --shadow-retro: 4px 4px 0px var(--retro-shadow-color);
   --shadow-retro-sm: 2px 2px 0px var(--retro-shadow-color);
   --shadow-retro-lg: 5px 5px 0px var(--retro-shadow-color);
