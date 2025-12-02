@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useTheme } from '../../hooks';
+import { useTheme, useIsTouch } from '../../hooks';
+import useTouchDrag from '../../hooks/useTouchDrag';
 import { Icon } from '../ui';
 import logoMark from '../../assets/mohsin.png';
 
@@ -35,6 +36,7 @@ const Header = ({ label, onLogoClick }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isDark, toggleTheme } = useTheme();
+  const isTouch = useIsTouch();
 
   // Cleanup timeouts on unmount
   useEffect(() => {
@@ -175,7 +177,7 @@ const Header = ({ label, onLogoClick }) => {
     touchStartRef.current = null;
   };
 
-  const toggleMenu = () => {
+  const toggleMenu = useCallback(() => {
     if (isOpen) {
       closeMenu();
     } else {
@@ -190,10 +192,32 @@ const Header = ({ label, onLogoClick }) => {
       setOpenedWhileCollapsed(isCollapsed);
       setIsOpen(true);
     }
-  };
+  }, [isOpen, isCollapsed, closeMenu]);
+
+  // Touch drag hook for collapsed photo icon (touch devices only)
+  // Enables playful drag-and-release interaction with snap-back animation
+  const {
+    ref: touchDragRef,
+    isDragging,
+    isSnapping,
+  } = useTouchDrag({
+    enabled: isCollapsed && isTouch,
+    onTap: toggleMenu,
+    dragThreshold: 8, // Pixels before drag activates
+    tapTimeout: 200,  // Max ms for tap detection
+    snapDuration: 450, // Spring snap-back duration
+    dragScale: 1.08, // Scale up during drag
+  });
 
   // Handle brand click - either go home (when expanded) or toggle menu (when collapsed)
+  // On touch devices when collapsed, the useTouchDrag hook handles tap detection
   const handleBrandClick = (e) => {
+    // On touch devices when collapsed, let useTouchDrag handle the tap
+    if (isCollapsed && isTouch) {
+      e.preventDefault();
+      return;
+    }
+    
     if (isCollapsed) {
       e.preventDefault();
       toggleMenu();
@@ -248,6 +272,8 @@ const Header = ({ label, onLogoClick }) => {
   const brandMarkClass = [
     'brand-mark',
     isCollapsed ? 'clickable' : '',
+    isDragging ? 'dragging' : '',
+    isSnapping ? 'snapping' : '',
   ].filter(Boolean).join(' ');
 
   return (
@@ -260,7 +286,10 @@ const Header = ({ label, onLogoClick }) => {
           aria-label={isCollapsed ? 'Open navigation menu' : 'Go to home'}
         >
           <span className={brandMarkClass}>
-            <span className="brand-mark-inner">
+            <span 
+              ref={touchDragRef}
+              className="brand-mark-inner"
+            >
               <img src={logoMark} alt="Mohsin Ismail logo" />
             </span>
           </span>

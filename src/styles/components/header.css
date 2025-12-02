@@ -854,6 +854,60 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   TOUCH DRAG STATE (Touch devices only)
+   When user drags the collapsed photo icon, it follows their finger with
+   subtle visual feedback, then springs back on release.
+   
+   NOTE: Position and scale transforms are handled directly by JS via
+   useTouchDrag hook for maximum responsiveness. CSS only handles shadows.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Dragging state - enhanced shadow for lifted appearance
+   Transform (translate + scale) is applied via JS for 60fps precision */
+.top-bar.collapsed .brand-mark.dragging .brand-mark-inner {
+  box-shadow:
+    var(--avatar-ring),
+    0 8px 16px rgba(31, 26, 20, 0.4),
+    0 20px 40px rgba(31, 26, 20, 0.3);
+  /* Quick shadow transition for lifted feel */
+  transition: box-shadow 0.15s ease;
+}
+
+/* Dark mode drag shadow */
+[data-theme="dark"] .top-bar.collapsed .brand-mark.dragging .brand-mark-inner {
+  box-shadow:
+    var(--avatar-ring),
+    0 8px 18px rgba(0, 0, 0, 0.55),
+    0 22px 44px rgba(0, 0, 0, 0.45);
+}
+
+/* Snapping state - shadow returns smoothly (JS handles transform snap-back)
+   The spring animation timing is controlled by JS */
+.top-bar.collapsed .brand-mark.snapping .brand-mark-inner {
+  box-shadow:
+    var(--avatar-ring),
+    var(--avatar-shadow-contact),
+    var(--avatar-shadow-ambient);
+  /* Shadow snaps back with same timing as transform */
+  transition: box-shadow 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Prevent text selection and context menus during drag */
+.top-bar.collapsed .brand-mark.dragging {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Touch-action: none on the brand-mark when draggable to prevent scroll interference */
+@media (hover: none) {
+  .top-bar.collapsed .brand-mark.clickable {
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    MENU FROM COLLAPSED STATE
    Replicates mobile menu animation exactly, but left-aligned with icon.
    
