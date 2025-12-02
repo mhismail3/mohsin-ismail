@@ -579,8 +579,8 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
 
 @media (hover: hover) {
   .post-body a:hover {
-    color: var(--pine);
-    text-decoration-color: var(--pine);
+    color: var(--clay);
+    text-decoration-color: var(--clay);
     text-decoration-thickness: 2px;
   }
 }
@@ -596,7 +596,7 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
   outline: 2px dashed var(--clay);
   outline-offset: 3px;
   border-radius: 2px;
-  text-decoration-color: var(--pine);
+  text-decoration-color: var(--clay);
   text-decoration-thickness: 2px;
 }
 
