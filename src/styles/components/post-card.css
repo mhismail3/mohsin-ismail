@@ -281,7 +281,8 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   BLOCKQUOTE
+   BLOCKQUOTE - Base Styles
+   Simple blockquotes without attribution
    ───────────────────────────────────────────────────────────────────────────── */
 
 .post-body blockquote {
@@ -303,7 +304,7 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
   margin-top: 0.6rem;
 }
 
-/* Quote attribution/citation */
+/* Quote attribution/citation (legacy simple format) */
 .post-body blockquote cite {
   display: block;
   margin-top: 0.5rem;
@@ -317,15 +318,141 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
   content: '— ';
 }
 
-/* Desktop hover */
+/* Desktop hover - simple blockquote */
 @media (hover: hover) and (pointer: fine) {
-  .post-body blockquote:hover {
+  .post-body blockquote:not(.attributed-quote):hover {
     transform: translateX(4px);
     border-color: var(--clay);
   }
 
-  .post-body blockquote:hover cite {
+  .post-body blockquote:not(.attributed-quote):hover cite {
     color: var(--clay);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ATTRIBUTED QUOTE - Clean Literary Style
+   
+   Enhanced blockquote with integrated attribution:
+   - Decorative opening quotation mark
+   - Clean serif typography
+   - Attribution inline within the quote block
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.post-body blockquote.attributed-quote {
+  position: relative;
+  margin: 1.5rem 0;
+  padding: 0 0 0 1.5rem;
+  border-left: 3px solid var(--pine);
+  background: transparent;
+  transition: transform var(--duration-normal) var(--ease-out),
+              border-color var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+/* Large decorative opening quotation mark */
+.post-body blockquote.attributed-quote::before {
+  content: '"';
+  position: absolute;
+  top: -0.4em;
+  left: -0.08em;
+  font-family: var(--font-display);
+  font-size: 4rem;
+  line-height: 1;
+  color: var(--pine);
+  opacity: 0.12;
+  pointer-events: none;
+  user-select: none;
+  transition: opacity var(--duration-normal) var(--ease-out),
+              color var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+/* Quote text container */
+.post-body blockquote.attributed-quote .quote-text {
+  position: relative;
+}
+
+.post-body blockquote.attributed-quote .quote-text p {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: var(--leading-relaxed);
+  color: var(--color-text-muted);
+  margin: 0;
+  transition: color var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+.post-body blockquote.attributed-quote .quote-text p + p {
+  margin-top: 0.6rem;
+}
+
+/* Attribution - single line within quote block */
+.post-body blockquote.attributed-quote .quote-attribution {
+  display: block;
+  margin-top: 0.75rem;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--pine);
+  transition: color var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+/* All attribution elements - same size and inline */
+.post-body blockquote.attributed-quote .quote-author,
+.post-body blockquote.attributed-quote .quote-source,
+.post-body blockquote.attributed-quote .quote-context {
+  display: inline;
+  font-size: inherit;
+  font-style: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
+
+/* Em-dash before author */
+.post-body blockquote.attributed-quote .quote-author::before {
+  content: '— ';
+}
+
+/* Separator before source */
+.post-body blockquote.attributed-quote .quote-source::before {
+  content: ', ';
+}
+
+/* Additional context */
+.post-body blockquote.attributed-quote .quote-context::before {
+  content: ', ';
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ATTRIBUTED QUOTE - Hover States
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (hover: hover) and (pointer: fine) {
+  .post-body blockquote.attributed-quote:hover {
+    transform: translateX(4px);
+    border-color: var(--clay);
+  }
+
+  .post-body blockquote.attributed-quote:hover::before {
+    opacity: 0.2;
+    color: var(--clay);
+  }
+
+  .post-body blockquote.attributed-quote:hover .quote-attribution {
+    color: var(--clay);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ATTRIBUTED QUOTE - Responsive
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 480px) {
+  .post-body blockquote.attributed-quote::before {
+    font-size: 3rem;
+    top: -0.3em;
+  }
+
+  .post-body blockquote.attributed-quote {
+    padding-left: 1.25rem;
   }
 }
 

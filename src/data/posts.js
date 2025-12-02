@@ -15,6 +15,98 @@ marked.setOptions({
   headerIds: false,
 });
 
+/**
+ * Custom blockquote renderer that detects and styles attributions.
+ * 
+ * Attribution format: Lines starting with — (em-dash), – (en-dash), or -- (double dash)
+ * 
+ * Supported patterns:
+ * - `— Author Name`
+ * - `— Author Name, *Source Title*`
+ * - `— Author Name, *Source Title*, additional info`
+ * 
+ * Creates semantic HTML structure:
+ * <blockquote class="attributed-quote">
+ *   <div class="quote-text">...</div>
+ *   <footer class="quote-attribution">
+ *     <cite class="quote-author">Author Name</cite>
+ *     <span class="quote-source">Source Title</span>
+ *     <span class="quote-context">additional info</span>
+ *   </footer>
+ * </blockquote>
+ */
+const blockquoteRenderer = {
+  blockquote(token) {
+    // Get the raw text content to check for attribution
+    const rawText = token.raw || '';
+    
+    // Check if there's an attribution line (starts with em-dash, en-dash, or --)
+    const attributionMatch = rawText.match(/^>\s*(?:—|–|--)\s*(.+)$/m);
+    
+    if (!attributionMatch) {
+      // No attribution, render normally
+      const body = this.parser.parse(token.tokens);
+      return `<blockquote>\n${body}</blockquote>\n`;
+    }
+    
+    // Extract the attribution line
+    const attributionLine = attributionMatch[1].trim();
+    
+    // Parse the attribution: "Author Name, *Source*, context"
+    // First, extract italic parts (source/work titles)
+    const italicMatch = attributionLine.match(/\*([^*]+)\*/);
+    const source = italicMatch ? italicMatch[1].trim() : null;
+    
+    // Remove the italic part to get remaining text
+    const withoutItalics = attributionLine.replace(/\*[^*]+\*/g, '|||PLACEHOLDER|||');
+    const parts = withoutItalics.split(',').map(p => p.trim());
+    
+    // First part is always the author
+    const author = parts[0].replace('|||PLACEHOLDER|||', '').trim();
+    
+    // Check for additional context (parts after source)
+    let context = '';
+    if (parts.length > 1) {
+      // Find parts that aren't the placeholder (source was there)
+      const contextParts = parts.slice(1).filter(p => p !== '|||PLACEHOLDER|||' && p !== '');
+      if (contextParts.length > 0) {
+        context = contextParts.join(', ').trim();
+      }
+    }
+    
+    // Filter out the attribution line from tokens
+    const filteredTokens = token.tokens.filter(t => {
+      if (t.type === 'paragraph' && t.raw) {
+        const trimmed = t.raw.trim();
+        return !trimmed.match(/^(?:—|–|--)\s*/);
+      }
+      return true;
+    });
+    
+    // Render the quote text
+    const quoteText = this.parser.parse(filteredTokens);
+    
+    // Build the attribution footer
+    let attributionHtml = `<footer class="quote-attribution">`;
+    attributionHtml += `<cite class="quote-author">${author}</cite>`;
+    if (source) {
+      attributionHtml += `<span class="quote-source">${source}</span>`;
+    }
+    if (context) {
+      attributionHtml += `<span class="quote-context">${context}</span>`;
+    }
+    attributionHtml += `</footer>`;
+    
+    return `<blockquote class="attributed-quote">
+<div class="quote-text">${quoteText}</div>
+${attributionHtml}
+</blockquote>\n`;
+  }
+};
+
+// Apply custom renderer
+marked.use({ renderer: blockquoteRenderer });
+
 // Posts now live in folders: /public/posts/{slug}/post.md
 // Images can be placed alongside: /public/posts/{slug}/image.png
 const rawPosts = import.meta.glob('../../public/posts/*/post.md', {
@@ -24,18 +116,18 @@ const rawPosts = import.meta.glob('../../public/posts/*/post.md', {
 });
 
 const sanitizeConfig = {
-  ADD_TAGS: ['iframe', 'div', 'figure', 'figcaption'],
-  ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'loading', 'src', 'title', 'data-code', 'data-language', 'data-codeblock', 'data-postimage', 'data-src', 'data-caption'],
+  ADD_TAGS: ['iframe', 'div', 'figure', 'figcaption', 'footer', 'cite'],
+  ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'loading', 'src', 'title', 'data-code', 'data-language', 'data-codeblock', 'data-postimage', 'data-src', 'data-caption', 'class'],
 };
 
 const stripMarkdown = (text = '') =>
   text
-    .replace(/```[\s\S]*?```/g, ' ')
-    .replace(/`([^`]*)`/g, '$1')
-    .replace(/!\[[^\]]*]\([^)]+\)/g, ' ')
-    .replace(/\[[^\]]*]\(([^)]+)\)/g, '$1')
-    .replace(/[#>*_~\-]/g, ' ')
-    .replace(/\s+/g, ' ')
+    .replace(/```[\s\S]*?```/g, ' ')           // Remove code blocks
+    .replace(/`([^`]*)`/g, '$1')               // Inline code → just the code text
+    .replace(/!\[[^\]]*]\([^)]+\)/g, ' ')      // Remove images entirely
+    .replace(/\[([^\]]*)\]\([^)]+\)/g, '$1')   // Links → just the link text (not URL)
+    .replace(/[#>*_~\-]/g, ' ')                // Remove markdown syntax chars
+    .replace(/\s+/g, ' ')                      // Collapse whitespace
     .trim();
 
 /**
