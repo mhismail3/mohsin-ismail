@@ -222,13 +222,27 @@ const Header = ({ label, onLogoClick }) => {
     boundsPadding: 12, // Padding from viewport/safe area edges
   });
 
-  // Handle brand button click - the drag hook handles tap/click detection,
-  // so we only need to prevent default to avoid duplicate handling
-  const handleBrandClick = (e) => {
-    // The useTouchDrag hook handles both tap/click and drag detection
-    // Prevent the button's default click from also firing
-    e.preventDefault();
-  };
+  // Handle brand button click - coordinates with the drag hook on the photo.
+  // The drag hook handles tap/click on the photo; this handler covers the brand-name text.
+  const handleBrandClick = useCallback((e) => {
+    // The drag hook handles all interactions directly on the photo (brand-mark-inner).
+    // Check if click originated from within the brand-mark to avoid double-handling.
+    const brandMark = e.currentTarget.querySelector('.brand-mark');
+    if (brandMark && brandMark.contains(e.target)) {
+      // Click was on the photo area - drag hook already handled this interaction.
+      // Just prevent default button behavior.
+      e.preventDefault();
+      return;
+    }
+    
+    // Click was on the brand-name text (visible in non-collapsed state).
+    // Navigate home when not collapsed.
+    if (!isCollapsed) {
+      handleHome();
+    }
+    // When collapsed, CSS pointer-events prevents clicks on brand-name anyway,
+    // but this is a safety fallback if the event somehow fires.
+  }, [isCollapsed, handleHome]);
 
   // Build nav links - add Home option when collapsed
   const navLinks = isCollapsed
