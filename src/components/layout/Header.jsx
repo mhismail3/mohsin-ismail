@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from '../../hooks';
 import useTouchDrag from '../../hooks/useTouchDrag';
+import useTapFeedback from '../../hooks/useTapFeedback';
 import { Icon } from '../ui';
 import logoMark from '../../assets/mohsin.png';
 
@@ -36,6 +37,9 @@ const Header = ({ label, onLogoClick }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isDark, toggleTheme } = useTheme();
+  
+  // Instant tap feedback for brand button (iOS Safari :active is unreliable)
+  const { getTapProps: getBrandTapProps } = useTapFeedback();
 
   // Cleanup timeouts on unmount
   useEffect(() => {
@@ -303,6 +307,7 @@ const Header = ({ label, onLogoClick }) => {
           type="button" 
           onClick={handleBrandClick} 
           aria-label={isCollapsed ? 'Open navigation menu' : 'Go to home'}
+          {...getBrandTapProps()}
         >
           <span className={brandMarkClass}>
             <span 
