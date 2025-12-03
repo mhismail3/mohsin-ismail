@@ -21,42 +21,23 @@ gallery:
   - gallery-5.png
 ---
 
-I developed Moose Tabs over a weekend to solve my own frustration with managing 50+ browser tabs. Chrome's flat tab bar becomes unusable at scale, and existing solutions felt outdated or clunky. The challenge: build a modern, performant tree view with sophisticated drag-and-drop that runs entirely locally using Chrome's Manifest V3 architecture.
-
-## Core Architecture & Challenges
+I developed Moose Tabs over a few weeks as a way to self-organize tabs in a fast way. Chrome's flat tab bar becomes unusable at scale, and existing solutions felt clunky. The challenge was to build a modern, performant tree view with sophisticated drag-and-drop that runs entirely locally using Chrome's Manifest V3 architecture.
 
 ### Global Animation Coordination via Singleton Pattern
 
-One of the trickier problems was animating tabs smoothly during reorders—both the moved tabs *and* the displaced ones need to animate simultaneously, even though they're in completely different parts of the component tree.
+One of the trickier problems was animating tabs smoothly during reorders. Both the moved tabs *and* the displaced ones need to animate simultaneously, even though they're in completely different parts of the component tree. 
 
-*   **Solution**: I implemented a module-level singleton with a pub/sub notification system. The `useTabAnimations` hook provides a `subscribe()` function that registers listeners to a global `Set`. When a drag completes, `startAnimation()` updates the global state and notifies all subscribers, triggering synchronized CSS animations across the entire tree without prop drilling.
+The solution was to implement a module-level singleton with a pub/sub notification system. The `useTabAnimations` hook provides a `subscribe()` function that registers listeners to a global `Set`. When a drag completes, `startAnimation()` updates the global state and notifies all subscribers, triggering synchronized CSS animations across the entire tree without prop drilling.
 
 ### Depth-Aware Drop Zone Priority System
 
-In a nested tree, dragging over a parent tab also triggers the drop zone on all its ancestors—a classic z-order problem with `react-dnd`.
-
-*   **Solution**: I built a `DropZoneContext` with a priority system: **deeper levels always win**. When multiple tabs detect a hover, the context compares nesting depths and only the deepest target becomes the "active" drop zone. This ensures you can precisely target a nested child without the parent stealing the drop.
-
-### Bidirectional Index Recalculation
-
-Moving tabs in Chrome is deceptively complex. When you move a tab *down* the list, removing it from its original position shifts all indices above it by -1. Moving *up* has no shift. Get this wrong and tabs land one position off.
-
-*   **The Math**: For downward moves, I calculate `adjustedIndex = targetIndex - countOfDraggedTabsBeforeTarget`. For upward moves, no adjustment. The code also handles moving entire family trees (parent + all descendants) in a single batch while preserving their relative order.
+In a nested tree, dragging over a parent tab also triggers the drop zone on all its ancestors, which is apparently a classic z-order problem with `react-dnd`. The solution was to build a `DropZoneContext` with a priority system: deeper levels always win. When multiple tabs detect a hover, the context compares nesting depths and only the deepest target becomes the "active" drop zone. This ensures you can precisely target a nested child without the parent stealing the drop.
 
 ### Position-Based Drop Intent Detection
 
-Rather than cluttering the UI with separate "sibling" and "child" drop targets, I detect intent from the cursor position: **left 60% = sibling, right 40% = child**.
+Rather than cluttering the UI with separate "sibling" and "child" drop targets, I detect intent from the cursor position: left 60% = sibling, right 40% = child.
 
-*   **Visual Feedback**: Drop zones dynamically color-code based on target depth using a level-based hierarchy (green → yellow → red → blue → steel blue for deep nesting). The CSS generates pseudo-elements with pulsing animations that match the accent color of the *target* level.
-
-### Runtime Custom Drag Preview
-
-The default browser drag image is ugly and doesn't represent nested structures. I generate a custom preview at drag start by:
-
-1.  Cloning the tab's `.tab-content` element
-2.  Resolving CSS custom properties via `getComputedStyle()` to inline actual colors
-3.  Adding stacked card pseudo-elements if the tab has children (visual cue that you're moving a branch)
-4.  Applying a subtle rotation and elevated shadow for that "lifted" feel
+* Visual Feedback: Drop zones dynamically color-code based on target depth using a level-based hierarchy (green → yellow → red → blue → steel blue for deep nesting). The CSS generates pseudo-elements with pulsing animations that match the accent color of the *target* level.
 
 ### Service Worker Resilience
 
