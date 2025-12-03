@@ -1170,6 +1170,14 @@
     transform: translateX(-86px);
   }
   
+  /* Preserve the collapsed transform when :active on wide desktop.
+     The global .brand:active rule sets transform:none which would override
+     the translateX(-86px), causing an unwanted jump when clicking. */
+  .top-bar.collapsed .brand:active,
+  .top-bar.collapsed .brand.tap-active {
+    transform: translateX(-86px);
+  }
+  
   /* 
    * Menu positioning: right edge aligns with photo's right edge.
    * Using right positioning instead of transform so button right edges align.
