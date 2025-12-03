@@ -206,8 +206,8 @@
 .brand:active,
 .brand.tap-active {
   color: var(--pine);
-  transform: scale(0.95);
-  transition: transform 0.05s ease-out, color 0.05s ease-out;
+  transform: scale(0.98);
+  transition: transform 0.06s ease-out, color 0.06s ease-out;
 }
 
 /* Don't apply scale when collapsed (photo handles its own feedback) */
