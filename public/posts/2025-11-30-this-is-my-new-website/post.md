@@ -17,7 +17,7 @@ In 2017, I wrote my first personal website over a couple of months  - in plain H
 
 Then, 6-7 months ago I decided that Claude Code with Sonnet 4 seemed good enough to create v2 of my portfolio. I wanted to see how well Sonnet 4 could actually interpret my requests for specific UI features and design choices - how well could it adjust to my preferences, and would I be able to hone in on a finished product that I'd feel comfortable with deploying?
 
-I didn't exactly get there - I wasn't able to get it to implement the kind of sophisticated interactions and *really* specific design choices that I wanted. But it wasn't bad! It still lives [here](https://mhismail3.github.io/HomeBase/portfolio/) if you're curious, and is now used to host all of the mini projects I previously showcased on my v1 portfolio.
+I didn't exactly get there - I wasn't able to get it to implement the kind of sophisticated interactions and *really* specific design choices that I wanted. But it wasn't bad! It still lives [here](https://mhismail3.github.io/personal-website-v2/) if you're curious, and is now used to host all of the mini projects I previously showcased on my v1 portfolio.
 
 I put it to the side. It wasn't a top priority, and it didn't seem to be getting me what I wanted anyways. But in the last couple of months, it became increasingly clear that the new frontier models (GPT 5/5.1 and Gemini 3) are far more capable of being steered, and delivering output of far higher quality and complexity. So I decided that the last attempt was now v1.5, and that I'd start on a new v2.
 

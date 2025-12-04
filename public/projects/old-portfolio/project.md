@@ -3,8 +3,8 @@ title: Old Portfolio
 slug: old-portfolio
 date: 2025-09-15
 summary: A static Astro rebuild of my retired portfolio, keeping older projects online for posterity with a clean, content-first layout.
-github: https://github.com/mhismail3/HomeBase
-live: https://mhismail3.github.io/HomeBase/portfolio/
+github: https://github.com/mhismail3/personal-website-v2
+live: https://mhismail3.github.io/personal-website-v2/
 tags:
   - Astro
   - TypeScript
