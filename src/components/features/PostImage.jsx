@@ -45,3 +45,4 @@ const PostImage = ({ src, caption, onClick }) => {
 
 export default PostImage;
 
+

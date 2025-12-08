@@ -86,3 +86,4 @@ To test this fix:
 2. Click the photo to open the dropdown menu
 3. While the menu is open, scroll up quickly (before the menu closes)
 4. The menu should close smoothly in place without jumping to the right side
+
