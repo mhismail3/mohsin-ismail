@@ -50,3 +50,12 @@ Practical fixes and patterns discovered through debugging this project. Favor th
 
 8) **Worker/analytics snippets**
    - When embedding third-party snippets, leave a clear placeholder (e.g., GoatCounter subdomain) and keep the tag lightweight/defer/async to avoid blocking render. Remove unused/blocked providers promptly to prevent errors or duplicate beacons.
+
+9) **Internal links (BrowserRouter)**
+   - This site uses BrowserRouter (not HashRouter). Internal links must use clean paths without `#`:
+     - Posts: `/posts/{slug}` (e.g., `/posts/2025-12-08-my-dotfiles`)
+     - Projects: `/portfolio/{slug}` (e.g., `/portfolio/alces-pdf-merger`)
+     - Static pages: `/blog`, `/about`, `/portfolio`
+   - When generating shareable URLs in code, use `${window.location.origin}/posts/${slug}` (no `#`).
+   - The prerender script (`scripts/prerender-meta.js`) generates static HTML for each route with correct Open Graph meta tags for social media sharing.
+   - The 404.html handles SPA routing for paths that aren't prerendered.
