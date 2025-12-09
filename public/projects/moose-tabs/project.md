@@ -1,7 +1,7 @@
 ---
 title: Moose Tabs
 slug: moose-tabs
-date: 2025-06-23
+date: 2025-12-09
 summary: A Chrome extension that transforms the chaotic flat tab bar into an intelligent hierarchical tree view. Features a custom recursive hierarchy engine, bidirectional drag-and-drop with depth-aware drop zones, and real-time multi-window sync via Manifest V3 service workers.
 github: https://github.com/mhismail3/moose-tabs
 live: https://chromewebstore.google.com/detail/moose-tabs-organize-your/ecgdnamlhfodmjokjobadclppaddeond
@@ -11,15 +11,41 @@ tags:
   - Chrome Extension V3
   - react-dnd
   - Webpack
+  - AI Integration
+  - LLM
 status: Completed
 cover: cover.jpg
 gallery:
   - gallery-1.jpeg
   - gallery-2.png
   - gallery-3.png
-  - gallery-4.gif
+  - gallery-4.png
   - gallery-5.png
 ---
+
+## Version 2.0.0 — December 2025
+
+After living with the 1.0 release, I realized that while a manual tree is great, maintaining it takes effort. Version 2.0 introduces an "AI Organization Toolkit" to automate that cognitive load, along with major architectural improvements to make the extension feel more native.
+
+### Local-First AI Organization Architecture
+
+The core feature of 2.0 is the ability to group messy tabs instantly using AI. I wanted to avoid the privacy nightmare of sending user history to a central server, so I built a "Bring Your Own Key" (BYOK) system.
+
+The extension talks directly to your chosen provider (OpenAI, Anthropic, Gemini, etc.) from your browser - no middleman server. I implemented a content script that safely injects into active tabs (using strictly scoped `activeTab` permissions) to scrape metadata like page titles and descriptions. This context is fed into the LLM prompt to generate meaningful group names like "React Docs" or "Jira Tickets" rather than generic "Work" buckets. The prompts are tuned to output a strict JSON schema that maps tabs to groups. The system then diffs this AI suggestion against your current tree, allowing you to preview the reorganization before committing it.
+
+### The Toolbar Popup View
+
+Not everyone wants a permanent sidebar taking up screen real estate. I refactored the main `TabTreeComponent` to be environment-agnostic. It now mounts in two places: the side panel and a new toolbar popup.
+
+Both views share the same live data source. I switched from simple message passing to long-lived `chrome.runtime.connect` ports. This ensures that if you reorder a tab in the popup, the sidebar (if open) animates the change in real-time without desyncing.
+
+### Enhanced Theme Engine
+
+The theming system got a total overhaul. I implemented a `MutationObserver` on the `<html>` root to detect system theme changes instantly. The UI now mirrors Chrome's native "System/Light/Dark" preference automatically but includes a manual override stored in `chrome.storage.sync`.
+
+---
+
+## Version 1.0.0 — June 2025
 
 I developed Moose Tabs over a few weeks as a way to self-organize tabs in a fast way. Chrome's flat tab bar becomes unusable at scale, and existing solutions felt clunky. The challenge was to build a modern, performant tree view with sophisticated drag-and-drop that runs entirely locally using Chrome's Manifest V3 architecture.
 

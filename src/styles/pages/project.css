@@ -136,6 +136,53 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   HORIZONTAL RULE / DIVIDER
+   Diamond ornament with single thin lines - matches post divider styling
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.project-description hr {
+  position: relative;
+  border: none;
+  margin: 1.5rem 0;
+  height: 1rem;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Diamond ornament in center */
+.project-description hr::before {
+  content: '◆';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.55rem;
+  color: var(--pine);
+  background: var(--panel-bg);
+  padding: 0 0.6rem;
+  z-index: 2;
+  line-height: 1;
+  transition: color var(--theme-transition-duration) var(--theme-transition-ease),
+              background-color var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+/* Single solid line at 50% width, centered */
+.project-description hr::after {
+  content: '';
+  position: absolute;
+  left: 25%;
+  right: 25%;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 0;
+  border-top: 1px solid var(--line);
+  z-index: 1;
+  transition: border-color var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    GITHUB CARD (Legacy - if used)
    ───────────────────────────────────────────────────────────────────────────── */
 
