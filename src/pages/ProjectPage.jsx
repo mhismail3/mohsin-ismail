@@ -17,7 +17,7 @@ const ProjectPage = () => {
 
   const carouselImages = useMemo(() => {
     if (!project) return [];
-    return [project.image, ...(project.gallery || [])];
+    return [project.image, ...(project.gallery || [])].filter(Boolean);
   }, [project]);
 
   // Helper to check if a file is an animated format

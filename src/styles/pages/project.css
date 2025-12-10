@@ -136,6 +136,46 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   INLINE LINKS
+   Markdown links styled with retro underline and hover effects
+   Uses text-decoration for proper multi-line support
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.project-description a {
+  color: var(--aero);
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  transition: color var(--theme-transition-duration) var(--theme-transition-ease),
+              text-decoration-color var(--theme-transition-duration) var(--theme-transition-ease),
+              text-decoration-thickness var(--duration-normal) ease;
+}
+
+@media (hover: hover) {
+  .project-description a:hover {
+    color: var(--clay);
+    text-decoration-color: var(--clay);
+    text-decoration-thickness: 2px;
+  }
+}
+
+/* Active/pressed state */
+.project-description a:active {
+  color: var(--clay);
+  text-decoration-color: var(--clay);
+}
+
+/* Focus state for keyboard navigation */
+.project-description a:focus-visible {
+  outline: 2px dashed var(--clay);
+  outline-offset: 3px;
+  border-radius: 2px;
+  text-decoration-color: var(--clay);
+  text-decoration-thickness: 2px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    HORIZONTAL RULE / DIVIDER
    Diamond ornament with single thin lines - matches post divider styling
    ───────────────────────────────────────────────────────────────────────────── */
