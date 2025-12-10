@@ -82,3 +82,4 @@ CSS gradients cannot be transitioned directly (they snap to new values). For ele
 ## Result
 All UI elements now animate smoothly and consistently when toggling between light and dark themes, eliminating the visual "flash" that occurred before.
 
+

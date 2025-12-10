@@ -10,7 +10,7 @@ tags:
   - Firebase
   - iOS
   - MVVM
-status: Incomplete
+status: "📥 Shelved"
 cover: cover.jpg
 gallery:
   - gallery-1.png

@@ -8,7 +8,7 @@ tags:
   - CSS
   - LESS
   - Brackets
-status: Archived
+status: "🗄️ Archived"
 cover: cover.jpg
 gallery:
   - gallery-1.png

@@ -12,7 +12,7 @@ tags:
   - pdf-lib
   - pdfjs-dist
   - localforage
-status: Completed
+status: "🚀 Shipped"
 cover: cover.jpg
 gallery:
   - gallery-1.png

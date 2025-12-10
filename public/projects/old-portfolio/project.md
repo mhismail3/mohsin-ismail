@@ -11,7 +11,7 @@ tags:
   - Static site
   - Markdown
   - GitHub Pages
-status: Archived
+status: "🗄️ Archived"
 cover: cover.jpeg
 gallery:
   - gallery-1.png

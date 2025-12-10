@@ -87,3 +87,4 @@ To test this fix:
 3. While the menu is open, scroll up quickly (before the menu closes)
 4. The menu should close smoothly in place without jumping to the right side
 
+

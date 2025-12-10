@@ -13,7 +13,7 @@ tags:
   - Webpack
   - AI Integration
   - LLM
-status: Completed
+status: "🚀 Shipped"
 cover: cover.jpg
 gallery:
   - gallery-1.jpeg
