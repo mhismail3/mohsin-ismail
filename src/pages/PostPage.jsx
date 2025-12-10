@@ -166,17 +166,6 @@ const PostPage = () => {
             })()}
           </div>
           <h1 className="post-title">{post.title}</h1>
-          <div className="tag-row">
-            {post.tags.map((tag) => (
-              <Pill
-                key={tag}
-                size="small"
-                onClick={() => navigate(`/blog?tag=${encodeURIComponent(tag)}`)}
-              >
-                #{tag}
-              </Pill>
-            ))}
-          </div>
         </div>
 
         <PostContent
@@ -185,6 +174,18 @@ const PostPage = () => {
           images={post.images}
           onImageClick={setSelectedImage}
         />
+
+        <div className="tag-row post-tags">
+          {post.tags.map((tag) => (
+            <Pill
+              key={tag}
+              size="small"
+              onClick={() => navigate(`/blog?tag=${encodeURIComponent(tag)}`)}
+            >
+              #{tag}
+            </Pill>
+          ))}
+        </div>
 
         <div className="post-footer">
           <nav className="post-nav">

@@ -88,3 +88,4 @@ To test this fix:
 4. The menu should close smoothly in place without jumping to the right side
 
 
+

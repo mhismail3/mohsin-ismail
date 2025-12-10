@@ -105,13 +105,13 @@
   line-height: var(--leading-tight);
 }
 
-.post-page-head .tag-row {
-  margin-top: 0.4rem;
-  margin-bottom: 0;
+.post-tags {
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
 }
 
 .post-footer {
-  margin-top: 2.5rem;
+  margin-top: 1.5rem;
   padding-top: 1.25rem;
   padding-bottom: 1.25rem;
   margin-bottom: -0.4rem;
