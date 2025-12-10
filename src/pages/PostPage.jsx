@@ -4,14 +4,14 @@ import { usePageTitle, useTouchHover, useTapFeedback } from '../hooks';
 import { posts } from '../data';
 import { formatDateParts } from '../utils/formatDate';
 import { Header } from '../components/layout';
-import { AboutPanel, CodeBlock, Lightbox, PostImage } from '../components/features';
+import { AboutPanel, CodeBlock, InlineFootnote, Lightbox, PostImage } from '../components/features';
 import { Pill } from '../components/ui';
 
 /**
  * Component that renders post content with CodeBlock and PostImage components
  * replacing the placeholder divs
  */
-const PostContent = ({ html, codeBlocks, images, onImageClick }) => {
+const PostContent = ({ html, codeBlocks, images, footnotes = [], onImageClick }) => {
   const { containerRef } = useTouchHover({
     selector: '.post-image img',
     hoverClass: 'touch-hover',
@@ -60,6 +60,21 @@ const PostContent = ({ html, codeBlocks, images, onImageClick }) => {
           }
           return;
         }
+
+        // Handle footnote placeholders
+        if (el.hasAttribute('data-footnote')) {
+          const index = parseInt(el.getAttribute('data-footnote'), 10);
+          const footnote = footnotes?.[index];
+          if (footnote) {
+            parts.push({
+              type: 'footnote',
+              content: footnote.html,
+              index,
+              key: `footnote-${index}`,
+            });
+          }
+          return;
+        }
       }
       
       // For other nodes, get the outer HTML
@@ -102,6 +117,15 @@ const PostContent = ({ html, codeBlocks, images, onImageClick }) => {
               src={part.src}
               caption={part.caption}
               onClick={onImageClick}
+            />
+          );
+        }
+        if (part.type === 'footnote') {
+          return (
+            <InlineFootnote
+              key={part.key}
+              index={part.index}
+              content={part.content}
             />
           );
         }
@@ -172,6 +196,7 @@ const PostPage = () => {
           html={post.content}
           codeBlocks={post.codeBlocks}
           images={post.images}
+          footnotes={post.footnotes}
           onImageClick={setSelectedImage}
         />
 

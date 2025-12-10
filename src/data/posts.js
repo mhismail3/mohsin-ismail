@@ -117,7 +117,7 @@ const rawPosts = import.meta.glob('../../public/posts/*/post.md', {
 
 const sanitizeConfig = {
   ADD_TAGS: ['iframe', 'div', 'figure', 'figcaption', 'footer', 'cite'],
-  ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'loading', 'src', 'title', 'data-code', 'data-language', 'data-codeblock', 'data-postimage', 'data-src', 'data-caption', 'class'],
+  ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'loading', 'src', 'title', 'data-code', 'data-language', 'data-codeblock', 'data-postimage', 'data-footnote', 'data-src', 'data-caption', 'class'],
 };
 
 const stripMarkdown = (text = '') =>
@@ -200,6 +200,38 @@ const extractImages = (markdown, basePath) => {
   return { processedContent, images };
 };
 
+/**
+ * Extract inline footnotes of the form ^[Footnote text]
+ * and replace them with placeholders rendered as interactive bubbles.
+ */
+const extractFootnotes = (markdown) => {
+  const footnotes = [];
+  const footnoteRegex = /\^\[([^\]]+)\]/g;
+
+  const processedContent = markdown.replace(footnoteRegex, (match, noteContent) => {
+    const index = footnotes.length;
+
+    // Allow lightweight inline markdown inside the footnote content
+    const sanitizedNote = DOMPurify.sanitize(
+      marked.parseInline(noteContent),
+      {
+        ADD_TAGS: ['em', 'strong', 'code', 'a', 'span', 'br'],
+        ADD_ATTR: ['href', 'title', 'target', 'rel'],
+      },
+    );
+
+    footnotes.push({
+      html: sanitizedNote,
+      raw: noteContent,
+    });
+
+    // Placeholder for later replacement with InlineFootnote component
+    return `<span data-footnote="${index}"></span>`;
+  });
+
+  return { processedContent, footnotes };
+};
+
 const posts = Object.entries(rawPosts).map(([path, raw]) => {
   const { data, content } = matter(raw);
   
@@ -216,8 +248,11 @@ const posts = Object.entries(rawPosts).map(([path, raw]) => {
   // Extract images and resolve paths
   const { processedContent: contentAfterImages, images } = extractImages(contentAfterCode, basePath);
   
+  // Extract inline footnotes (after images/code placeholders)
+  const { processedContent: contentAfterFootnotes, footnotes } = extractFootnotes(contentAfterImages);
+
   // Parse markdown (code blocks and images are now placeholders)
-  const html = DOMPurify.sanitize(marked.parse(contentAfterImages), sanitizeConfig);
+  const html = DOMPurify.sanitize(marked.parse(contentAfterFootnotes), sanitizeConfig);
 
   return {
     slug,
@@ -229,6 +264,7 @@ const posts = Object.entries(rawPosts).map(([path, raw]) => {
     content: html,
     codeBlocks,
     images,
+    footnotes,
     basePath,
   };
 }).sort((a, b) => b.dateValue.getTime() - a.dateValue.getTime());

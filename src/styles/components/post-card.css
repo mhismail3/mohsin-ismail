@@ -473,6 +473,128 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   INLINE FOOTNOTES
+   Circular superscript bubble + animated popover for extra context
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.footnote-inline {
+  display: inline-flex;
+  position: relative;
+  vertical-align: super;
+  margin-left: 0.35rem;
+}
+
+.footnote-bubble {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border-strong);
+  background: var(--bg-card);
+  color: var(--pine);
+  font-size: 0.7rem;
+  font-weight: 700;
+  box-shadow: var(--shadow-retro-sm);
+  cursor: pointer;
+  transition: transform var(--duration-normal) var(--ease-out),
+              box-shadow var(--theme-transition-duration) var(--theme-transition-ease),
+              background-color var(--theme-transition-duration) var(--theme-transition-ease),
+              color var(--theme-transition-duration) var(--theme-transition-ease),
+              border-color var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+.footnote-bubble-inner {
+  line-height: 1;
+  transform: translateY(-1px);
+}
+
+@media (hover: hover) {
+  .footnote-bubble:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-retro-md);
+    color: var(--aero);
+    border-color: var(--aero);
+  }
+}
+
+.footnote-bubble:active,
+.footnote-bubble.tap-active,
+.footnote-bubble.open {
+  transform: translateY(-1px) scale(0.98);
+  background: var(--aero-soft);
+  border-color: var(--aero);
+  color: var(--ink);
+}
+
+.footnote-popover {
+  position: absolute;
+  top: -0.35rem;
+  left: 50%;
+  transform: translate(-50%, -110%) scale(0.97);
+  min-width: 220px;
+  max-width: min(320px, 80vw);
+  padding: 0.65rem 0.75rem;
+  background: var(--bg-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-retro-md);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-normal) ease, transform var(--duration-normal) ease;
+  z-index: 4;
+}
+
+.footnote-popover::after {
+  content: '';
+  position: absolute;
+  bottom: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 12px;
+  background: var(--bg-surface);
+  border-left: 1px solid var(--color-border-strong);
+  border-bottom: 1px solid var(--color-border-strong);
+  transform: translateX(-50%) rotate(45deg);
+  box-shadow: 3px 3px 6px var(--shadow-color-strong);
+  z-index: -1;
+}
+
+.footnote-popover.visible {
+  opacity: 1;
+  transform: translate(-50%, -118%) scale(1);
+  pointer-events: auto;
+}
+
+.footnote-popover-content {
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.footnote-popover-content p {
+  margin: 0;
+}
+
+.footnote-popover-content a {
+  color: var(--aero);
+  font-weight: 600;
+}
+
+@media (max-width: 540px) {
+  .footnote-popover {
+    left: 0;
+    transform: translate(-10%, -112%) scale(0.97);
+  }
+
+  .footnote-popover.visible {
+    transform: translate(-10%, -118%) scale(1);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    FIGURE & FIGCAPTION
    Semantic container for images with optional captions in post content.
    Use <figure><img src="..."><figcaption>Caption</figcaption></figure> in markdown.
