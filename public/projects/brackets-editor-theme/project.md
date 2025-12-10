@@ -18,7 +18,7 @@ gallery:
 
 ## A Theme for Brackets Text Editor
 
-At this time, I was trying out Adobe's [Brackets Editor](https://brackets.io/) for some front-end development, and I wanted a theme that was  dark, but with a colorful palette that wouldn't strain my eyes. The theme is written in LESS and covers syntax highlighting for HTML, CSS, and JavaScript. 
+At the time, I was trying out Adobe's [Brackets Editor](https://brackets.io/) for some front-end development, and I wanted a theme that was  dark, but with a colorful palette that wouldn't strain my eyes. The theme is written in LESS and covers syntax highlighting for HTML, CSS, and JavaScript. 
 
 I published it to the Brackets Extension Manager under the name "Introversed Dark," where it picked up 18,000+ downloads!
 
