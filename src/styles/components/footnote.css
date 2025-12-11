@@ -119,19 +119,6 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   OVERLAY
-   Click-outside detection layer
-   ───────────────────────────────────────────────────────────────────────────── */
-
-.footnote-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: calc(var(--z-modal) - 1);
-  /* Transparent - only for click detection */
-  background: transparent;
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
    POPUP TOOLTIP
    Floating card that displays footnote content
    ───────────────────────────────────────────────────────────────────────────── */

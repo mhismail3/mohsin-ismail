@@ -129,36 +129,39 @@ const FootnotePopupManager = React.forwardRef((props, ref) => {
 
   if (!popup) return null;
 
+  // Note: We render the popup directly without an overlay wrapper.
+  // Previously there was a .footnote-overlay with position:fixed; inset:0;
+  // but this caused iOS Safari (especially iOS 26 with floating tab bar) to
+  // render a solid color behind the browser chrome. Click-outside detection
+  // is handled via document event listeners, so the overlay wasn't needed.
   return createPortal(
-    <div className="footnote-overlay">
-      <div
-        ref={popupRef}
-        className={`footnote-popup footnote-popup--${popup.position.placement}`}
-        style={{ 
-          top: `${popup.position.top}px`, 
-          left: `${popup.position.left}px`,
-          width: `${popup.position.width}px`,
-        }}
-        onClick={(e) => e.stopPropagation()}
-        role="tooltip"
-      >
-        <div className="footnote-popup-header">
-          <span className="footnote-popup-number">{popup.number}</span>
-          <button 
-            ref={closeButtonRef}
-            className="footnote-popup-close" 
-            onClick={handleCloseButtonTap}
-            onTouchStart={(e) => {
-              // Add pressed state on touch for immediate feedback
-              e.currentTarget.classList.add('footnote-popup-close--pressed');
-            }}
-            aria-label="Close"
-          >
-            ×
-          </button>
-        </div>
-        <div className="footnote-popup-content" dangerouslySetInnerHTML={{ __html: parsedContent }} />
+    <div
+      ref={popupRef}
+      className={`footnote-popup footnote-popup--${popup.position.placement}`}
+      style={{ 
+        top: `${popup.position.top}px`, 
+        left: `${popup.position.left}px`,
+        width: `${popup.position.width}px`,
+      }}
+      onClick={(e) => e.stopPropagation()}
+      role="tooltip"
+    >
+      <div className="footnote-popup-header">
+        <span className="footnote-popup-number">{popup.number}</span>
+        <button 
+          ref={closeButtonRef}
+          className="footnote-popup-close" 
+          onClick={handleCloseButtonTap}
+          onTouchStart={(e) => {
+            // Add pressed state on touch for immediate feedback
+            e.currentTarget.classList.add('footnote-popup-close--pressed');
+          }}
+          aria-label="Close"
+        >
+          ×
+        </button>
       </div>
+      <div className="footnote-popup-content" dangerouslySetInnerHTML={{ __html: parsedContent }} />
     </div>,
     document.body
   );
