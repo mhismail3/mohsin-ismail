@@ -116,12 +116,43 @@ const rawPosts = import.meta.glob('../../public/posts/*/post.md', {
 });
 
 const sanitizeConfig = {
-  ADD_TAGS: ['iframe', 'div', 'figure', 'figcaption', 'footer', 'cite'],
-  ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'loading', 'src', 'title', 'data-code', 'data-language', 'data-codeblock', 'data-postimage', 'data-footnote', 'data-src', 'data-caption', 'class'],
+  ADD_TAGS: ['iframe', 'div', 'figure', 'figcaption', 'footer', 'cite', 'span', 'button'],
+  ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'loading', 'src', 'title', 'data-code', 'data-language', 'data-codeblock', 'data-postimage', 'data-src', 'data-caption', 'data-footnote', 'data-content', 'data-number', 'class', 'aria-label', 'type'],
+};
+
+/**
+ * Remove footnotes from text using bracket balancing.
+ * Handles nested brackets like ^[text with [link](url)]
+ */
+const stripFootnotes = (text) => {
+  let result = '';
+  let i = 0;
+  
+  while (i < text.length) {
+    if (text[i] === '^' && text[i + 1] === '[') {
+      // Found footnote start, skip to matching ]
+      let depth = 1;
+      let j = i + 2;
+      
+      while (j < text.length && depth > 0) {
+        if (text[j] === '[') depth++;
+        else if (text[j] === ']') depth--;
+        j++;
+      }
+      
+      // Skip the entire footnote
+      i = j;
+    } else {
+      result += text[i];
+      i++;
+    }
+  }
+  
+  return result;
 };
 
 const stripMarkdown = (text = '') =>
-  text
+  stripFootnotes(text)                         // Remove footnotes first (handles nested brackets)
     .replace(/```[\s\S]*?```/g, ' ')           // Remove code blocks
     .replace(/`([^`]*)`/g, '$1')               // Inline code → just the code text
     .replace(/!\[[^\]]*]\([^)]+\)/g, ' ')      // Remove images entirely
@@ -201,35 +232,88 @@ const extractImages = (markdown, basePath) => {
 };
 
 /**
- * Extract inline footnotes of the form ^[Footnote text]
- * and replace them with placeholders rendered as interactive bubbles.
+ * Extract inline footnotes from markdown and replace with placeholders.
+ * Footnote syntax: ^[footnote text here]
+ * The text inside brackets can contain inline markdown (emphasis, code, links).
+ * Uses a bracket-balancing approach to handle nested brackets properly.
+ * Skips footnotes inside inline code (backticks) to avoid incorrect processing.
+ * Returns { processedContent, footnotes }
  */
 const extractFootnotes = (markdown) => {
   const footnotes = [];
-  const footnoteRegex = /\^\[([^\]]+)\]/g;
-
-  const processedContent = markdown.replace(footnoteRegex, (match, noteContent) => {
-    const index = footnotes.length;
-
-    // Allow lightweight inline markdown inside the footnote content
-    const sanitizedNote = DOMPurify.sanitize(
-      marked.parseInline(noteContent),
-      {
-        ADD_TAGS: ['em', 'strong', 'code', 'a', 'span', 'br'],
-        ADD_ATTR: ['href', 'title', 'target', 'rel'],
-      },
-    );
-
-    footnotes.push({
-      html: sanitizedNote,
-      raw: noteContent,
-    });
-
-    // Placeholder for later replacement with InlineFootnote component
-    return `<span data-footnote="${index}"></span>`;
+  
+  // First, protect inline code by replacing backtick content with placeholders
+  const inlineCodePlaceholders = [];
+  let protectedMarkdown = markdown.replace(/`([^`]+)`/g, (match) => {
+    const index = inlineCodePlaceholders.length;
+    inlineCodePlaceholders.push(match);
+    return `\x00INLINECODE${index}\x00`;
   });
-
-  return { processedContent, footnotes };
+  
+  // Helper to restore inline code placeholders in a string
+  const restoreInlineCode = (str) => {
+    return str.replace(/\x00INLINECODE(\d+)\x00/g, (match, indexStr) => {
+      const idx = parseInt(indexStr, 10);
+      return inlineCodePlaceholders[idx] || match;
+    });
+  };
+  
+  // Now process footnotes with bracket-balancing
+  let result = '';
+  let i = 0;
+  
+  while (i < protectedMarkdown.length) {
+    // Look for ^[
+    if (protectedMarkdown[i] === '^' && protectedMarkdown[i + 1] === '[') {
+      // Found start of footnote, now find matching ]
+      let depth = 1;
+      let j = i + 2;
+      let content = '';
+      
+      while (j < protectedMarkdown.length && depth > 0) {
+        if (protectedMarkdown[j] === '[') {
+          depth++;
+          content += protectedMarkdown[j];
+        } else if (protectedMarkdown[j] === ']') {
+          depth--;
+          if (depth > 0) {
+            content += protectedMarkdown[j];
+          }
+        } else {
+          content += protectedMarkdown[j];
+        }
+        j++;
+      }
+      
+      if (depth === 0) {
+        // Successfully found matching bracket
+        const index = footnotes.length;
+        // Restore inline code in footnote content before storing
+        const restoredContent = restoreInlineCode(content.trim());
+        
+        footnotes.push({
+          content: restoredContent,
+          number: index + 1,
+        });
+        
+        // Add placeholder span with a unique class for easy selection
+        result += `<span class="footnote-placeholder" data-footnote="${index}" data-content="${encodeURIComponent(restoredContent)}"></span>`;
+        i = j;
+      } else {
+        // No matching bracket, keep as-is
+        result += protectedMarkdown[i];
+        i++;
+      }
+    } else {
+      result += protectedMarkdown[i];
+      i++;
+    }
+  }
+  
+  // Restore inline code placeholders in the main content
+  result = restoreInlineCode(result);
+  
+  return { processedContent: result, footnotes };
 };
 
 const posts = Object.entries(rawPosts).map(([path, raw]) => {
@@ -248,10 +332,10 @@ const posts = Object.entries(rawPosts).map(([path, raw]) => {
   // Extract images and resolve paths
   const { processedContent: contentAfterImages, images } = extractImages(contentAfterCode, basePath);
   
-  // Extract inline footnotes (after images/code placeholders)
+  // Extract inline footnotes
   const { processedContent: contentAfterFootnotes, footnotes } = extractFootnotes(contentAfterImages);
-
-  // Parse markdown (code blocks and images are now placeholders)
+  
+  // Parse markdown (code blocks, images, and footnotes are now placeholders)
   const html = DOMPurify.sanitize(marked.parse(contentAfterFootnotes), sanitizeConfig);
 
   return {

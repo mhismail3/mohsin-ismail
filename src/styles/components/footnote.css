@@ -1,0 +1,395 @@
+/* =============================================================================
+   FOOTNOTE COMPONENT
+   Inline footnote bubbles with animated popup tooltips
+   
+   Design Goals:
+   - Circular superscript bubble that sits inline with text
+   - Smooth animated popup on click/tap
+   - Retro aesthetic matching the site's design language
+   - Fully accessible and mobile-friendly
+   ============================================================================= */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TRIGGER BUBBLE
+   Small circular superscript that indicates a footnote is available
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.footnote-trigger {
+  /* Inline positioning as superscript */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: super;
+  position: relative;
+  top: -0.15em;
+  margin: 0 0.06em;
+  
+  /* Circular bubble sizing - compact */
+  width: 1em;
+  height: 1em;
+  min-width: 15px;
+  min-height: 15px;
+  
+  /* Visual styling - matches site's accent colors */
+  background: var(--aero);
+  color: #ffffff;
+  border: 1px solid var(--pine);
+  border-radius: 50%;
+  box-shadow: 0.5px 0.5px 0px var(--retro-shadow-color);
+  
+  /* Typography */
+  font-family: var(--font-mono);
+  font-size: 0.55em;
+  font-weight: 700;
+  line-height: 1;
+  
+  /* Interactive */
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  
+  /* Animations */
+  transition: transform var(--duration-fast) var(--ease-out),
+              background-color var(--duration-fast) var(--ease-out),
+              box-shadow var(--duration-fast) var(--ease-out),
+              border-color var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+.footnote-trigger-number {
+  /* Slight optical adjustment for number centering */
+  position: relative;
+  top: -0.5px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TRIGGER STATES
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Hover - desktop only */
+@media (hover: hover) {
+  .footnote-trigger:hover {
+    background: var(--pine);
+    transform: scale(1.15) translateY(-1px);
+    box-shadow: 1px 1px 0px var(--retro-shadow-color);
+  }
+}
+
+/* Active/pressed state */
+.footnote-trigger:active,
+.footnote-trigger.tap-active {
+  transform: scale(0.95);
+  box-shadow: 0px 0px 0px var(--retro-shadow-color);
+  transition: transform 0.06s ease-out, box-shadow 0.06s ease-out;
+}
+
+/* Open/active state */
+.footnote-trigger--active {
+  background: var(--clay);
+  border-color: var(--clay);
+  transform: scale(1.2);
+  box-shadow: 1px 1px 0px var(--retro-shadow-color);
+}
+
+@media (hover: hover) {
+  .footnote-trigger--active:hover {
+    background: var(--clay);
+    border-color: var(--clay);
+  }
+}
+
+/* Focus state for keyboard navigation */
+.footnote-trigger:focus-visible {
+  outline: 2px dashed var(--clay);
+  outline-offset: 3px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   OVERLAY
+   Click-outside detection layer
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.footnote-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-modal) - 1);
+  /* Transparent - only for click detection */
+  background: transparent;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   POPUP TOOLTIP
+   Floating card that displays footnote content
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.footnote-popup {
+  position: fixed;
+  z-index: var(--z-modal);
+  
+  /* Sizing */
+  width: 320px;
+  max-width: calc(100vw - 32px);
+  
+  /* Positioning - centered horizontally via transform */
+  transform: translateX(-50%);
+  
+  /* Card styling - matches site's panel/lightbox aesthetic */
+  background: var(--panel-bg);
+  border: 1.5px solid var(--retro-border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-retro-sm),
+              0 8px 24px var(--shadow-color);
+  
+  /* Smooth opening animation */
+  animation: footnote-popIn 0.25s var(--ease-bounce);
+  
+  /* Prevent text selection during animation */
+  overflow: hidden;
+}
+
+/* Popup appears below trigger */
+.footnote-popup--below {
+  transform-origin: top center;
+}
+
+/* Popup appears above trigger */
+.footnote-popup--above {
+  transform: translateX(-50%) translateY(-100%);
+  transform-origin: bottom center;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   POPUP HEADER
+   Number indicator and close button
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.footnote-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-base);
+  border-bottom: 1px dashed var(--color-border);
+  background: var(--color-surface-elevated);
+}
+
+.footnote-popup-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: var(--aero);
+  color: #ffffff;
+  border: 1.5px solid var(--pine);
+  border-radius: 50%;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 1px 1px 0px var(--retro-shadow-color);
+}
+
+.footnote-popup-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: var(--color-ghost-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color var(--duration-fast) ease,
+              color var(--duration-fast) ease,
+              transform var(--duration-fast) ease;
+}
+
+@media (hover: hover) {
+  .footnote-popup-close:hover {
+    background: var(--color-surface-warning);
+    color: var(--clay);
+    transform: scale(1.1);
+  }
+}
+
+.footnote-popup-close:active {
+  transform: scale(0.9);
+}
+
+.footnote-popup-close:focus-visible {
+  outline: 2px dashed var(--clay);
+  outline-offset: 2px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   POPUP CONTENT
+   Footnote text with inline markdown support
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.footnote-popup-content {
+  padding: var(--space-base) var(--space-lg);
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  line-height: var(--leading-relaxed);
+  color: var(--color-text);
+}
+
+/* Inline markdown styling within footnotes */
+.footnote-popup-content em {
+  font-style: italic;
+}
+
+.footnote-popup-content strong {
+  font-weight: 600;
+}
+
+.footnote-popup-content code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  color: var(--pine);
+  background: var(--color-ghost-bg);
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+  border: 1px solid var(--line);
+}
+
+.footnote-popup-content a {
+  color: var(--aero);
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-underline-offset: 2px;
+  transition: color var(--duration-fast) ease,
+              text-decoration-color var(--duration-fast) ease;
+}
+
+@media (hover: hover) {
+  .footnote-popup-content a:hover {
+    color: var(--clay);
+    text-decoration-color: var(--clay);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   POPUP ANIMATION
+   Bouncy scale-in effect
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@keyframes footnote-popIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.85);
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+/* Animation variant for above placement */
+.footnote-popup--above {
+  animation-name: footnote-popInAbove;
+}
+
+@keyframes footnote-popInAbove {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-100%) scale(0.85);
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-100%) scale(1);
+  }
+}
+
+/* Closing animation class - added via JS before removal */
+.footnote-popup--closing {
+  animation: footnote-popOut 0.15s ease-out forwards;
+}
+
+.footnote-popup--closing.footnote-popup--above {
+  animation-name: footnote-popOutAbove;
+}
+
+@keyframes footnote-popOut {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.9);
+  }
+}
+
+@keyframes footnote-popOutAbove {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-100%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-100%) scale(0.9);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   DARK THEME ADJUSTMENTS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .footnote-trigger {
+  color: #ffffff;
+  /* More prominent shadow in dark mode for visibility */
+  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .footnote-popup-number {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .footnote-popup-close {
+  color: var(--color-text-muted);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   RESPONSIVE - MOBILE
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 480px) {
+  .footnote-popup {
+    width: calc(100vw - 24px);
+    max-width: none;
+  }
+  
+  .footnote-popup-content {
+    font-size: 0.9rem;
+    padding: var(--space-base);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   REDUCED MOTION
+   Respect user preference for reduced motion
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .footnote-trigger {
+    transition: none;
+  }
+  
+  .footnote-popup {
+    animation: none;
+  }
+  
+  .footnote-popup-close {
+    transition: none;
+  }
+}
+

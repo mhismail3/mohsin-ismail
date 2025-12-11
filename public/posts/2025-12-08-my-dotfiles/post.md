@@ -7,7 +7,9 @@ tags:
   - automation
 ---
 
-I've long been intrigued by the idea of having a "perfect backup" strategy for all of my devices and tools. But I've mostly ended up doing this manually, by writing Notion pages for myself listing out all of the apps and configuration changes to be made on any new machine. Lately, after exploring some of the blogs and posts by the various smart people discussing AI on X, I found out about the world of dotfiles, and decided to use AI to speed-write my own [dotfiles](https://github.com/mhismail3/dotfiles).
+I've long been intrigued by the idea of having a "perfect backup" strategy for all of my devices and tools. But I've mostly ended up doing this manually, by writing Notion pages for myself listing out all of the apps and configuration changes to be made on any new machine. Lately, after exploring some of the blogs and posts by the various smart people discussing AI on X, I found out about the world of dotfiles, and decided to use AI to speed-write^[I consider myself a perfectionist, and I'm sure that I could spend countless hours endlessly tweaking my config in order to get it *exactly* right, but there would certainly be diminishing returns. 
+
+So, my goal (for now) was to bootstrap the most important tools and things in order to start coding with agents quickly.] my own [dotfiles](https://github.com/mhismail3/dotfiles).
 
 For the uninitiated, dotfiles are hidden configuration files (many start with a `.`) that customize your shell, git, editors, and other tools. The idea of a dotfiles repo is to version-control all of these configs so that setting up a new Mac becomes a single command instead of hours of manual configuration.
 
