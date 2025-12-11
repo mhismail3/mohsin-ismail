@@ -174,6 +174,7 @@ FootnotePopupManager.displayName = 'FootnotePopupManager';
  * Footnotes are injected as DOM elements and managed without causing re-renders.
  */
 const PostContent = ({ html, codeBlocks, images, footnotes, onImageClick }) => {
+  const navigate = useNavigate();
   const { containerRef } = useTouchHover({
     selector: '.post-image img',
     hoverClass: 'touch-hover',
@@ -270,8 +271,35 @@ const PostContent = ({ html, codeBlocks, images, footnotes, onImageClick }) => {
     return () => observer.disconnect();
   }, [contentParts, footnotes]);
 
-  // Handle footnote trigger clicks via event delegation
+  // Handle footnote trigger clicks and internal link navigation via event delegation
   const handleClick = useCallback((e) => {
+    // Check for internal link clicks first
+    const link = e.target.closest('a[href]');
+    if (link) {
+      const href = link.getAttribute('href');
+      // Check if it's an internal link (starts with / or is relative to site origin)
+      const isInternal = href.startsWith('/') || 
+        (href.startsWith(window.location.origin) && !href.includes('://') === false);
+      const isHashLink = href.startsWith('#');
+      const isMailto = href.startsWith('mailto:');
+      const isExternal = href.startsWith('http://') || href.startsWith('https://');
+      
+      // For internal links that aren't hash/mailto, use React Router navigation
+      if (!isHashLink && !isMailto) {
+        if (href.startsWith('/')) {
+          e.preventDefault();
+          navigate(href);
+          return;
+        } else if (isExternal && href.startsWith(window.location.origin)) {
+          // Same-origin absolute URLs
+          e.preventDefault();
+          const path = href.replace(window.location.origin, '');
+          navigate(path);
+          return;
+        }
+      }
+    }
+    
     const trigger = e.target.closest('.footnote-trigger');
     if (!trigger) return;
     
@@ -336,7 +364,7 @@ const PostContent = ({ html, codeBlocks, images, footnotes, onImageClick }) => {
       position: { top, left, placement, width: popupWidth },
       triggerElement: trigger,
     });
-  }, [footnotes]);
+  }, [footnotes, navigate]);
 
   return (
     <>

@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React, { useState, useMemo, useCallback } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { usePageTitle } from '../hooks';
 import { portfolioProjects } from '../data';
 import { Header } from '../components/layout';
@@ -8,8 +8,33 @@ import { Pill, Icon } from '../components/ui';
 
 const ProjectPage = () => {
   const { slug } = useParams();
+  const navigate = useNavigate();
   const project = portfolioProjects.find((p) => p.slug === slug);
   const [selectedImage, setSelectedImage] = useState(null);
+
+  // Handle internal link clicks via event delegation
+  const handleContentClick = useCallback((e) => {
+    const link = e.target.closest('a[href]');
+    if (!link) return;
+    
+    const href = link.getAttribute('href');
+    const isHashLink = href.startsWith('#');
+    const isMailto = href.startsWith('mailto:');
+    const isExternal = href.startsWith('http://') || href.startsWith('https://');
+    
+    // For internal links that aren't hash/mailto, use React Router navigation
+    if (!isHashLink && !isMailto) {
+      if (href.startsWith('/')) {
+        e.preventDefault();
+        navigate(href);
+      } else if (isExternal && href.startsWith(window.location.origin)) {
+        // Same-origin absolute URLs
+        e.preventDefault();
+        const path = href.replace(window.location.origin, '');
+        navigate(path);
+      }
+    }
+  }, [navigate]);
 
   usePageTitle(
     project ? `${project.title} - Mohsin Ismail` : 'Project Not Found - Mohsin Ismail'
@@ -101,6 +126,7 @@ const ProjectPage = () => {
         <div className="project-content">
           <div 
             className="project-description"
+            onClick={handleContentClick}
             dangerouslySetInnerHTML={{ __html: project.description }}
           />
         </div>

@@ -21,6 +21,7 @@
 @import './components/toast.css';
 @import './components/post-card.css';
 @import './components/progressive-image.css';
+@import './components/page-transition.css';
 
 /* Page-specific styles */
 @import './pages/blog.css';

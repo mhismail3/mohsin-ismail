@@ -8,6 +8,7 @@ import {
   PortfolioPage,
   ProjectPage,
 } from './pages';
+import { PageTransition } from './components/layout';
 import logoMark from './assets/mohsin.png';
 
 function App() {
@@ -36,24 +37,26 @@ function App() {
   return (
     <Router>
       <div className="app">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route
-            path="/blog"
-            element={
-              <BlogPage
-                selectedTags={selectedTags}
-                setSelectedTags={setSelectedTags}
-                page={page}
-                setPage={setPage}
-              />
-            }
-          />
-          <Route path="/posts/:slug" element={<PostPage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/portfolio" element={<PortfolioPage />} />
-          <Route path="/portfolio/:slug" element={<ProjectPage />} />
-        </Routes>
+        <PageTransition>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route
+              path="/blog"
+              element={
+                <BlogPage
+                  selectedTags={selectedTags}
+                  setSelectedTags={setSelectedTags}
+                  page={page}
+                  setPage={setPage}
+                />
+              }
+            />
+            <Route path="/posts/:slug" element={<PostPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/portfolio" element={<PortfolioPage />} />
+            <Route path="/portfolio/:slug" element={<ProjectPage />} />
+          </Routes>
+        </PageTransition>
       </div>
     </Router>
   );

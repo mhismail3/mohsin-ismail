@@ -1,0 +1,287 @@
+/* =============================================================================
+   PAGE TRANSITIONS - Staggered Cascade Animation
+   Elegant sequential fade-in for page elements
+   ============================================================================= */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TRANSITION CONTAINER
+   
+   The wrapper itself has NO animation to avoid breaking the fixed header.
+   Transform on ancestors breaks `position: fixed` descendants.
+   Instead, we animate individual sections and content elements.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.page-transition {
+  /* No animation on container - children animate individually */
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   STAGGER ANIMATION KEYFRAME
+   
+   Subtle fade + lift effect. Transform is safe here because we apply it
+   to sibling elements of the header, not ancestors.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@keyframes staggerFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Simple fade for elements where transform might cause issues */
+@keyframes simpleFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SECTION-LEVEL STAGGER
+   
+   Each major section/panel fades in sequentially.
+   Using nth-of-type(section) to skip the fixed header element.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.page-transition .frame > section,
+.page-transition .frame > article {
+  opacity: 0;
+  animation: staggerFadeIn 0.32s ease-in-out both;
+}
+
+/* Stagger timing for sections (70ms apart) */
+.page-transition .frame > section:nth-of-type(1),
+.page-transition .frame > article:nth-of-type(1) { animation-delay: 0.03s; }
+
+.page-transition .frame > section:nth-of-type(2),
+.page-transition .frame > article:nth-of-type(2) { animation-delay: 0.1s; }
+
+.page-transition .frame > section:nth-of-type(3),
+.page-transition .frame > article:nth-of-type(3) { animation-delay: 0.17s; }
+
+.page-transition .frame > section:nth-of-type(4),
+.page-transition .frame > article:nth-of-type(4) { animation-delay: 0.24s; }
+
+.page-transition .frame > section:nth-of-type(5),
+.page-transition .frame > article:nth-of-type(5) { animation-delay: 0.31s; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   POST CARDS STAGGER
+   
+   Individual blog post cards animate in sequence within the post list.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.page-transition .post-list > article {
+  opacity: 0;
+  animation: staggerFadeIn 0.28s ease-in-out both;
+}
+
+/* Stagger timing for post cards (45ms apart, starting after section delay) */
+.page-transition .post-list > article:nth-child(1) { animation-delay: 0.06s; }
+.page-transition .post-list > article:nth-child(2) { animation-delay: 0.11s; }
+.page-transition .post-list > article:nth-child(3) { animation-delay: 0.16s; }
+.page-transition .post-list > article:nth-child(4) { animation-delay: 0.20s; }
+.page-transition .post-list > article:nth-child(5) { animation-delay: 0.24s; }
+.page-transition .post-list > article:nth-child(6) { animation-delay: 0.28s; }
+.page-transition .post-list > article:nth-child(7) { animation-delay: 0.32s; }
+.page-transition .post-list > article:nth-child(8) { animation-delay: 0.35s; }
+.page-transition .post-list > article:nth-child(9) { animation-delay: 0.38s; }
+.page-transition .post-list > article:nth-child(10) { animation-delay: 0.41s; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PORTFOLIO MOODBOARD STAGGER
+   
+   Moodboard columns animate in sequence (left to right).
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.page-transition .moodboard-column {
+  opacity: 0;
+  animation: staggerFadeIn 0.32s ease-in-out both;
+}
+
+.page-transition .moodboard-column:nth-child(1) { animation-delay: 0.06s; }
+.page-transition .moodboard-column:nth-child(2) { animation-delay: 0.13s; }
+.page-transition .moodboard-column:nth-child(3) { animation-delay: 0.20s; }
+
+/* Project cards within moodboard columns */
+.page-transition .moodboard-column .project-card {
+  opacity: 0;
+  animation: staggerFadeIn 0.28s ease-in-out both;
+}
+
+.page-transition .moodboard-column:nth-child(1) .project-card:nth-child(1) { animation-delay: 0.1s; }
+.page-transition .moodboard-column:nth-child(1) .project-card:nth-child(2) { animation-delay: 0.18s; }
+.page-transition .moodboard-column:nth-child(1) .project-card:nth-child(3) { animation-delay: 0.26s; }
+
+.page-transition .moodboard-column:nth-child(2) .project-card:nth-child(1) { animation-delay: 0.14s; }
+.page-transition .moodboard-column:nth-child(2) .project-card:nth-child(2) { animation-delay: 0.22s; }
+.page-transition .moodboard-column:nth-child(2) .project-card:nth-child(3) { animation-delay: 0.30s; }
+
+.page-transition .moodboard-column:nth-child(3) .project-card:nth-child(1) { animation-delay: 0.18s; }
+.page-transition .moodboard-column:nth-child(3) .project-card:nth-child(2) { animation-delay: 0.26s; }
+.page-transition .moodboard-column:nth-child(3) .project-card:nth-child(3) { animation-delay: 0.34s; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ABOUT PAGE CONTENT STAGGER
+   
+   About content paragraphs and gallery animate in sequence.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.page-transition .about-content > * {
+  opacity: 0;
+  animation: staggerFadeIn 0.28s ease-in-out both;
+}
+
+.page-transition .about-content > *:nth-child(1) { animation-delay: 0.06s; }
+.page-transition .about-content > *:nth-child(2) { animation-delay: 0.12s; }
+.page-transition .about-content > *:nth-child(3) { animation-delay: 0.18s; }
+.page-transition .about-content > *:nth-child(4) { animation-delay: 0.24s; }
+.page-transition .about-content > *:nth-child(5) { animation-delay: 0.30s; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FEATURED PROJECT (Home Page)
+   
+   The featured project card on the home page.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.page-transition .featured-project-card {
+  opacity: 0;
+  animation: staggerFadeIn 0.32s ease-in-out both;
+  animation-delay: 0.12s;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   POST PAGE CONTENT
+   
+   The article content on individual post pages.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.page-transition .post-page .post-page-head {
+  opacity: 0;
+  animation: staggerFadeIn 0.28s ease-in-out both;
+  animation-delay: 0.04s;
+}
+
+.page-transition .post-page .post-body {
+  opacity: 0;
+  animation: staggerFadeIn 0.32s ease-in-out both;
+  animation-delay: 0.12s;
+}
+
+.page-transition .post-page .post-tags {
+  opacity: 0;
+  animation: staggerFadeIn 0.28s ease-in-out both;
+  animation-delay: 0.2s;
+}
+
+.page-transition .post-page .post-footer {
+  opacity: 0;
+  animation: staggerFadeIn 0.28s ease-in-out both;
+  animation-delay: 0.26s;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PROJECT PAGE CONTENT
+   
+   The project detail page elements.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.page-transition .project-page .project-hero {
+  opacity: 0;
+  animation: staggerFadeIn 0.32s ease-in-out both;
+  animation-delay: 0.04s;
+}
+
+.page-transition .project-page .project-content {
+  opacity: 0;
+  animation: staggerFadeIn 0.32s ease-in-out both;
+  animation-delay: 0.12s;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PANEL HEADERS
+   
+   Panel headers (eyebrow + title) get a subtle early entrance.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.page-transition .panel-head {
+  opacity: 0;
+  animation: simpleFadeIn 0.25s ease-in-out both;
+  animation-delay: 0.02s;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TAG CLOUD STAGGER
+   
+   Filter tags animate with slight stagger.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.page-transition .filter-row .tag-cloud .pill {
+  opacity: 0;
+  animation: simpleFadeIn 0.22s ease-in-out both;
+}
+
+.page-transition .filter-row .tag-cloud .pill:nth-child(1) { animation-delay: 0.22s; }
+.page-transition .filter-row .tag-cloud .pill:nth-child(2) { animation-delay: 0.24s; }
+.page-transition .filter-row .tag-cloud .pill:nth-child(3) { animation-delay: 0.26s; }
+.page-transition .filter-row .tag-cloud .pill:nth-child(4) { animation-delay: 0.28s; }
+.page-transition .filter-row .tag-cloud .pill:nth-child(5) { animation-delay: 0.30s; }
+.page-transition .filter-row .tag-cloud .pill:nth-child(6) { animation-delay: 0.32s; }
+.page-transition .filter-row .tag-cloud .pill:nth-child(7) { animation-delay: 0.34s; }
+.page-transition .filter-row .tag-cloud .pill:nth-child(8) { animation-delay: 0.36s; }
+.page-transition .filter-row .tag-cloud .pill:nth-child(n+9) { animation-delay: 0.38s; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   REDUCED MOTION
+   
+   Respect user preferences - simple fade only, no transforms.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .page-transition .frame > section,
+  .page-transition .frame > article,
+  .page-transition .post-list > article,
+  .page-transition .moodboard-column,
+  .page-transition .moodboard-column .project-card,
+  .page-transition .about-content > *,
+  .page-transition .featured-project-card,
+  .page-transition .post-page .post-page-head,
+  .page-transition .post-page .post-body,
+  .page-transition .post-page .post-tags,
+  .page-transition .post-page .post-footer,
+  .page-transition .project-page .project-hero,
+  .page-transition .project-page .project-content,
+  .page-transition .panel-head,
+  .page-transition .filter-row .tag-cloud .pill {
+    animation: simpleFadeIn 0.2s ease both;
+    animation-delay: 0s;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PREVENT INITIAL FLASH
+   
+   When theme isn't ready yet, disable animations to prevent FOUC.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+html:not(.theme-ready) .page-transition .frame > section,
+html:not(.theme-ready) .page-transition .frame > article,
+html:not(.theme-ready) .page-transition .post-list > article,
+html:not(.theme-ready) .page-transition .moodboard-column,
+html:not(.theme-ready) .page-transition .moodboard-column .project-card,
+html:not(.theme-ready) .page-transition .about-content > *,
+html:not(.theme-ready) .page-transition .featured-project-card,
+html:not(.theme-ready) .page-transition .post-page .post-page-head,
+html:not(.theme-ready) .page-transition .post-page .post-body,
+html:not(.theme-ready) .page-transition .post-page .post-tags,
+html:not(.theme-ready) .page-transition .post-page .post-footer,
+html:not(.theme-ready) .page-transition .project-page .project-hero,
+html:not(.theme-ready) .page-transition .project-page .project-content,
+html:not(.theme-ready) .page-transition .panel-head,
+html:not(.theme-ready) .page-transition .filter-row .tag-cloud .pill {
+  animation: none;
+  opacity: 1;
+}
