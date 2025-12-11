@@ -122,23 +122,18 @@
 
 /* ─────────────────────────────────────────────────────────────────────────────
    ABOUT PAGE PANEL (Full page version)
+   
+   NOTE: margin-top for header clearance is handled by `.top-bar + *` in header.css
+   which applies the spacing to the page-transition wrapper. No extra margin needed here.
    ───────────────────────────────────────────────────────────────────────────── */
 
 .about-page-panel {
   max-width: var(--max-width-content);
   width: 100%;
-  margin: 0 auto;
-  margin-top: var(--header-height-mobile);
 }
 
 .about-eyebrow {
   margin-bottom: 1rem;
-}
-
-@media (min-width: 840px) {
-  .about-page-panel {
-    margin-top: var(--header-height-desktop);
-  }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

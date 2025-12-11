@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useLayoutEffect, useState, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from '../../hooks';
 import { usePageTransition } from '../../contexts';
@@ -52,7 +52,12 @@ const Header = ({ label, onLogoClick }) => {
 
   // Reset collapsed state when navigation starts
   // This ensures header is in expanded state when new page loads
-  useEffect(() => {
+  // 
+  // CRITICAL: Must use useLayoutEffect (not useEffect) to ensure state changes
+  // happen synchronously BEFORE the browser paints. This prevents a visual flash
+  // where the collapsed header briefly expands before opacity:0 takes effect.
+  // The context also uses useLayoutEffect, so both run in the same sync cycle.
+  useLayoutEffect(() => {
     if (isNavigating) {
       setIsCollapsed(false);
       setIsScrolled(false);
