@@ -800,12 +800,25 @@
   box-shadow: none;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
+  /* CRITICAL: Allow clicks to pass through the invisible header area.
+     Without this, the header blocks clicks on content behind it even though
+     it's visually transparent. Re-enable pointer-events on interactive
+     children (.brand-mark, .top-menu.visible) via pointer-events: auto. */
+  pointer-events: none;
 }
 
 /* Hide text and button together with simple opacity fade */
 .top-bar.collapsed .brand-name,
 .top-bar.collapsed .menu-toggle {
   opacity: 0;
+  pointer-events: none;
+}
+
+/* The .header-actions container gets pointer-events: auto from .top-bar-row > *
+   which would override the parent's pointer-events: none. Explicitly disable
+   pointer events on the container so the right side of the header area
+   doesn't block clicks on content behind it when collapsed. */
+.top-bar.collapsed .header-actions {
   pointer-events: none;
 }
 
