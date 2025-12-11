@@ -252,6 +252,67 @@
   overflow: hidden;
   text-overflow: ellipsis;
   min-width: 0; /* Allow shrinking in flex context */
+  position: relative;
+  /* Add slight padding-right to make room for cursor without clipping */
+  padding-right: 0.15em;
+}
+
+/* Typewriter cursor - appears and blinks on interaction
+   Evokes "just finished typing" - retro, nostalgic, unexpected */
+.brand-name::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0.15em;
+  bottom: 0.15em;
+  width: 2px;
+  background: var(--pine);
+  border-radius: 1px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+/* Cursor blink animation */
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Fade in, then start blinking */
+@keyframes cursor-fade-in-then-blink {
+  /* Fade in */
+  0% { opacity: 0; }
+  15% { opacity: 1; }
+  /* Hold visible */
+  40% { opacity: 1; }
+  /* First blink off */
+  50% { opacity: 0; }
+  60% { opacity: 0; }
+  /* Back on */
+  70% { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+/* Show cursor on hover (desktop) - fades in, then blinks steadily */
+@media (hover: hover) {
+  .brand:hover .brand-name::after {
+    /* Fade in over first cycle, then steady blink */
+    animation: 
+      cursor-fade-in-then-blink 1.4s ease-out 1,
+      cursor-blink 1s ease-in-out 1.4s infinite;
+  }
+}
+
+/* Show cursor on press/tap - faster blink for snappy feedback */
+.brand:active .brand-name::after,
+.brand.tap-active .brand-name::after {
+  opacity: 1;
+  animation: cursor-blink 0.5s ease-in-out 1;
+}
+
+/* Hide cursor when header is collapsed (only photo visible) */
+.top-bar.collapsed .brand-name::after {
+  display: none;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
