@@ -20,18 +20,35 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   HEADER EXCLUSION
+   HEADER COORDINATION
    
-   The header must NEVER be affected by page transitions. It's always visible
-   and should not have any opacity changes or animations from page transitions.
-   This prevents jitter when loading or navigating between pages.
+   The header participates in page transitions to prevent flicker:
+   - During init phase: header is hidden (opacity 0)
+   - During ready phase: header fades in with content (first element to animate)
+   
+   This ensures the header doesn't appear, then disappear (due to scroll-collapse
+   triggering), then reappear as the page scrolls to top.
+   
+   The .navigating class on the header indicates scroll behavior is suspended,
+   coordinated via PageTransitionContext.
    ───────────────────────────────────────────────────────────────────────────── */
 
-.page-transition .top-bar,
-.page-transition-init .top-bar,
+/* Header hidden during init phase */
+.page-transition-init .top-bar {
+  opacity: 0;
+}
+
+/* Header fades in first during ready phase */
 .page-transition-ready .top-bar {
-  opacity: 1 !important;
-  animation: none !important;
+  animation: simpleFadeIn 0.24s ease-out both;
+  animation-delay: 0s;
+}
+
+/* Ensure header doesn't get the staggerFadeIn (no transform, just fade) */
+.page-transition-ready .top-bar.navigating {
+  /* While navigating, use simple fade only - no transform */
+  animation: simpleFadeIn 0.24s ease-out both;
+  animation-delay: 0s;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

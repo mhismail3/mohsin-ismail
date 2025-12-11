@@ -23,6 +23,9 @@ const FootnotePopupManager = React.forwardRef((props, ref) => {
   const closeTimeoutRef = useRef(null);
   // Generation counter to invalidate stale handlers/timeouts
   const generationRef = useRef(0);
+  // Cooldown period after show() during which closes are blocked
+  // This handles iOS race conditions with touch events
+  const showCooldownRef = useRef(false);
 
   // Parse content
   const parsedContent = useMemo(() => {
@@ -40,6 +43,8 @@ const FootnotePopupManager = React.forwardRef((props, ref) => {
   // Close handlers - with animation
   // Returns the trigger element that was just closed (for toggle detection)
   const handleClose = useCallback(() => {
+    // Block closes during cooldown period after show()
+    if (showCooldownRef.current) return null;
     if (closingRef.current) return null;
     
     // Capture generation at start of close
@@ -94,6 +99,13 @@ const FootnotePopupManager = React.forwardRef((props, ref) => {
       // Reset closing state
       closingRef.current = false;
       
+      // Enable cooldown to block any stale close attempts
+      // This handles iOS race conditions where events fire between show() and effect cleanup
+      showCooldownRef.current = true;
+      setTimeout(() => {
+        showCooldownRef.current = false;
+      }, 50); // 50ms cooldown - enough for React to process and run effects
+      
       // Clean up old trigger's active class if switching to a different trigger
       if (activeTriggerRef.current && activeTriggerRef.current !== data.triggerElement) {
         activeTriggerRef.current.classList.remove('footnote-trigger--active');
@@ -136,6 +148,8 @@ const FootnotePopupManager = React.forwardRef((props, ref) => {
     const handleKeyDown = (e) => {
       // Ignore if this handler is stale (a new popup was opened)
       if (generationRef.current !== effectGeneration) return;
+      // Also check cooldown (for iOS race conditions)
+      if (showCooldownRef.current) return;
       if (e.key === 'Escape') handleClose();
     };
     document.addEventListener('keydown', handleKeyDown);
@@ -151,6 +165,8 @@ const FootnotePopupManager = React.forwardRef((props, ref) => {
     const handleClickOutside = (e) => {
       // Ignore if this handler is stale (a new popup was opened)
       if (generationRef.current !== effectGeneration) return;
+      // Also check cooldown (for iOS race conditions)
+      if (showCooldownRef.current) return;
       
       if (popupRef.current && !popupRef.current.contains(e.target) && 
           popup.triggerElement && !popup.triggerElement.contains(e.target)) {
@@ -158,10 +174,12 @@ const FootnotePopupManager = React.forwardRef((props, ref) => {
       }
     };
     
+    // Delay adding handlers to avoid the opening tap from triggering close
+    // Use longer delay on touch devices where events can fire in unexpected order
     const timer = setTimeout(() => {
       document.addEventListener('click', handleClickOutside);
       document.addEventListener('touchend', handleClickOutside);
-    }, 10);
+    }, 50); // Increased from 10ms to 50ms for better iOS compatibility
     
     return () => {
       clearTimeout(timer);
@@ -180,13 +198,19 @@ const FootnotePopupManager = React.forwardRef((props, ref) => {
     const handleScroll = () => {
       // Ignore if this handler is stale (a new popup was opened)
       if (generationRef.current !== effectGeneration) return;
+      // Also check cooldown (for iOS race conditions)
+      if (showCooldownRef.current) return;
       handleClose();
     };
     
-    // Use capture phase to catch scroll before it bubbles
-    window.addEventListener('scroll', handleScroll, { capture: true, passive: true });
+    // Delay adding the scroll handler to avoid triggering on popup positioning/switching
+    // This is especially important on iOS where layout changes can trigger scroll events
+    const scrollTimer = setTimeout(() => {
+      window.addEventListener('scroll', handleScroll, { capture: true, passive: true });
+    }, 100); // 100ms delay - matches time for popup to fully render and position
     
     return () => {
+      clearTimeout(scrollTimer);
       window.removeEventListener('scroll', handleScroll, { capture: true });
     };
   }, [popup, handleClose]);

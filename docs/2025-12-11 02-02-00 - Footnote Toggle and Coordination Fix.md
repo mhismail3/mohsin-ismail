@@ -121,6 +121,37 @@ This ensures that when switching from one footnote to another:
 
 7. **Changed click handler to skip hide() when switching** - When clicking a different footnote, we now call show() directly instead of hide() + show(). The show() method handles cleanup of the old popup internally, avoiding race conditions.
 
+8. **Added cooldown period for iOS compatibility** - After `show()` is called, a 50ms cooldown blocks all close attempts:
+
+```javascript
+showCooldownRef.current = true;
+setTimeout(() => {
+  showCooldownRef.current = false;
+}, 50);
+```
+
+This handles iOS race conditions where touch events fire between `show()` being called and React's effect cleanup running.
+
+9. **Delayed scroll handler registration** - The scroll handler is now registered after 100ms (instead of immediately) to avoid triggering on popup positioning/switching:
+
+```javascript
+const scrollTimer = setTimeout(() => {
+  window.addEventListener('scroll', handleScroll, { capture: true, passive: true });
+}, 100);
+```
+
+10. **Increased click/touchend handler delay** - Changed from 10ms to 50ms for better iOS compatibility where touch events can fire in unexpected order.
+
+11. **Added cooldown checks to all handlers** - Every event handler now checks both generation AND the cooldown flag before calling `handleClose()`:
+
+```javascript
+const handleClickOutside = (e) => {
+  if (generationRef.current !== effectGeneration) return;
+  if (showCooldownRef.current) return;  // Added for iOS
+  // ...
+};
+```
+
 ### InlineFootnote.jsx Changes
 
 1. **Switched from pointerdown to click** - More reliable for toggle detection

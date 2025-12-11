@@ -4,21 +4,22 @@ import Header from './Header';
 
 /**
  * Common page layout wrapper.
- * Handles document title, scroll reset, and page structure.
+ * Handles document title and page structure.
+ * 
+ * NOTE: Scroll-to-top is now handled by PageTransitionContext for proper
+ * coordination with page transitions.
  * 
  * @param {Object} props
  * @param {string} props.title - Page title for document.title
  * @param {React.ReactNode} props.children - Page content
  * @param {Function} props.onLogoClick - Optional callback for logo click
- * @param {boolean} props.scrollToTop - Whether to scroll to top on mount (default: true)
  */
 const PageLayout = ({
   title,
   children,
   onLogoClick,
-  scrollToTop = true,
 }) => {
-  usePageTitle(title, { scrollToTop });
+  usePageTitle(title);
 
   return (
     <div className="frame">

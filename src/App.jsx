@@ -9,6 +9,7 @@ import {
   ProjectPage,
 } from './pages';
 import { PageTransition } from './components/layout';
+import { PageTransitionProvider } from './contexts';
 import logoMark from './assets/mohsin.png';
 
 function App() {
@@ -26,38 +27,37 @@ function App() {
     }
   }, []);
 
-  // Reset page and scroll to top when tags change
+  // Reset page when tags change (scroll is handled by PageTransitionContext)
   useEffect(() => {
     setPage(1);
-    if (typeof window !== 'undefined') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
   }, [selectedTags]);
 
   return (
     <Router>
-      <div className="app">
-        <PageTransition>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route
-              path="/blog"
-              element={
-                <BlogPage
-                  selectedTags={selectedTags}
-                  setSelectedTags={setSelectedTags}
-                  page={page}
-                  setPage={setPage}
-                />
-              }
-            />
-            <Route path="/posts/:slug" element={<PostPage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/portfolio" element={<PortfolioPage />} />
-            <Route path="/portfolio/:slug" element={<ProjectPage />} />
-          </Routes>
-        </PageTransition>
-      </div>
+      <PageTransitionProvider>
+        <div className="app">
+          <PageTransition>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route
+                path="/blog"
+                element={
+                  <BlogPage
+                    selectedTags={selectedTags}
+                    setSelectedTags={setSelectedTags}
+                    page={page}
+                    setPage={setPage}
+                  />
+                }
+              />
+              <Route path="/posts/:slug" element={<PostPage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/portfolio" element={<PortfolioPage />} />
+              <Route path="/portfolio/:slug" element={<ProjectPage />} />
+            </Routes>
+          </PageTransition>
+        </div>
+      </PageTransitionProvider>
     </Router>
   );
 }

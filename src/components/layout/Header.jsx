@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from '../../hooks';
+import { usePageTransition } from '../../contexts';
 import useTouchDrag from '../../hooks/useTouchDrag';
 import { Icon } from '../ui';
 import logoMark from '../../assets/mohsin.png';
@@ -36,6 +37,10 @@ const Header = ({ label, onLogoClick }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isDark, toggleTheme } = useTheme();
+  
+  // Get navigation state from PageTransitionContext
+  // During navigation, we suspend scroll-based behavior to prevent flicker
+  const { isNavigating } = usePageTransition();
 
   // Cleanup timeouts on unmount
   useEffect(() => {
@@ -44,8 +49,21 @@ const Header = ({ label, onLogoClick }) => {
     };
   }, []);
 
-  // Simple scroll-based collapse with snap points
+  // Reset collapsed state when navigation starts
+  // This ensures header is in expanded state when new page loads
   useEffect(() => {
+    if (isNavigating) {
+      setIsCollapsed(false);
+      setIsScrolled(false);
+    }
+  }, [isNavigating]);
+
+  // Simple scroll-based collapse with snap points
+  // SUSPENDED during navigation to prevent flicker
+  useEffect(() => {
+    // Don't react to scroll during page transitions
+    if (isNavigating) return;
+    
     const handleScroll = () => {
       const scrollY = window.scrollY;
       
@@ -63,7 +81,7 @@ const Header = ({ label, onLogoClick }) => {
     handleScroll(); // Check initial state
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [isCollapsed]);
+  }, [isCollapsed, isNavigating]);
 
   const closeMenu = useCallback(() => {
     if (!isOpen || isClosing) return;
@@ -123,7 +141,11 @@ const Header = ({ label, onLogoClick }) => {
       navigate('/');
     }
     closeMenu();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Scroll-to-top is handled by PageTransitionContext on navigation
+    // Only scroll if staying on same page
+    if (location.pathname === '/') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }, [onLogoClick, location.pathname, navigate, closeMenu]);
 
   const handleNav = (path) => {
@@ -135,7 +157,11 @@ const Header = ({ label, onLogoClick }) => {
       navigate(path);
     }
     closeMenu();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Scroll-to-top is handled by PageTransitionContext on navigation
+    // Only scroll if staying on same page
+    if (location.pathname === path) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   // Touch handlers for nav buttons - navigate only on touch release (like desktop click)
@@ -275,6 +301,7 @@ const Header = ({ label, onLogoClick }) => {
     isOpen && !isMobile ? 'expanded' : '',
     isMobile ? '' : 'flyout',
     isCollapsed ? 'collapsed' : '',
+    isNavigating ? 'navigating' : '',
   ].filter(Boolean).join(' ');
   
   const menuClass = [
