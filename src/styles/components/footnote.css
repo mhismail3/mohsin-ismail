@@ -212,7 +212,17 @@
 }
 
 .footnote-popup-close:active {
-  transform: scale(0.9);
+  transform: scale(0.85);
+  background: var(--color-surface-warning);
+  color: var(--clay);
+}
+
+/* Pressed state for touch devices - more visible feedback */
+.footnote-popup-close--pressed {
+  transform: scale(0.8) !important;
+  background: var(--clay) !important;
+  color: #ffffff !important;
+  transition: transform 0.08s ease-out, background-color 0.08s ease-out, color 0.08s ease-out !important;
 }
 
 .footnote-popup-close:focus-visible {
@@ -353,6 +363,11 @@
 
 [data-theme="dark"] .footnote-popup-close {
   color: var(--color-text-muted);
+}
+
+[data-theme="dark"] .footnote-popup-close--pressed {
+  background: var(--clay) !important;
+  color: #000000 !important;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

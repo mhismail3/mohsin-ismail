@@ -35,9 +35,13 @@ const FootnotePopupManager = React.forwardRef((props, ref) => {
     });
   }, [popup?.content]);
 
+  // Track if close is in progress to prevent double-triggers
+  const closingRef = useRef(false);
+  
   // Close handlers - with animation
-  const handleClose = useCallback(() => {
-    if (!popup) return;
+  const handleClose = useCallback((skipButtonAnimation = false) => {
+    if (!popup || closingRef.current) return;
+    closingRef.current = true;
     
     if (popup.triggerElement) {
       popup.triggerElement.classList.remove('footnote-trigger--active');
@@ -49,11 +53,31 @@ const FootnotePopupManager = React.forwardRef((props, ref) => {
       // Wait for animation to complete before removing
       setTimeout(() => {
         setPopup(null);
+        closingRef.current = false;
       }, 150); // Match animation duration
     } else {
       setPopup(null);
+      closingRef.current = false;
     }
   }, [popup]);
+
+  // Handle close button tap with visible feedback
+  const closeButtonRef = useRef(null);
+  
+  const handleCloseButtonTap = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Add pressed state immediately for visual feedback
+    if (closeButtonRef.current) {
+      closeButtonRef.current.classList.add('footnote-popup-close--pressed');
+    }
+    
+    // Delay the close slightly so user sees the tap feedback
+    setTimeout(() => {
+      handleClose();
+    }, 100);
+  }, [handleClose]);
 
   useEffect(() => {
     if (!popup) return;
@@ -120,7 +144,18 @@ const FootnotePopupManager = React.forwardRef((props, ref) => {
       >
         <div className="footnote-popup-header">
           <span className="footnote-popup-number">{popup.number}</span>
-          <button className="footnote-popup-close" onClick={handleClose} aria-label="Close">×</button>
+          <button 
+            ref={closeButtonRef}
+            className="footnote-popup-close" 
+            onClick={handleCloseButtonTap}
+            onTouchStart={(e) => {
+              // Add pressed state on touch for immediate feedback
+              e.currentTarget.classList.add('footnote-popup-close--pressed');
+            }}
+            aria-label="Close"
+          >
+            ×
+          </button>
         </div>
         <div className="footnote-popup-content" dangerouslySetInnerHTML={{ __html: parsedContent }} />
       </div>
