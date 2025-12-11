@@ -17,13 +17,12 @@ import { marked } from 'marked';
 const FootnotePopupManager = React.forwardRef((props, ref) => {
   const [popup, setPopup] = useState(null);
   const popupRef = useRef(null);
-
-  // Expose methods to parent via ref
-  React.useImperativeHandle(ref, () => ({
-    show: (data) => setPopup(data),
-    hide: () => setPopup(null),
-    isOpen: () => popup !== null,
-  }));
+  // Track the currently active trigger element for cleanup
+  const activeTriggerRef = useRef(null);
+  // Track close animation timeout so we can cancel it
+  const closeTimeoutRef = useRef(null);
+  // Generation counter to invalidate stale handlers/timeouts
+  const generationRef = useRef(0);
 
   // Parse content
   const parsedContent = useMemo(() => {
@@ -39,27 +38,76 @@ const FootnotePopupManager = React.forwardRef((props, ref) => {
   const closingRef = useRef(false);
   
   // Close handlers - with animation
-  const handleClose = useCallback((skipButtonAnimation = false) => {
-    if (!popup || closingRef.current) return;
-    closingRef.current = true;
+  // Returns the trigger element that was just closed (for toggle detection)
+  const handleClose = useCallback(() => {
+    if (closingRef.current) return null;
     
-    if (popup.triggerElement) {
-      popup.triggerElement.classList.remove('footnote-trigger--active');
+    // Capture generation at start of close
+    const closeGeneration = generationRef.current;
+    
+    // Capture the trigger that's being closed BEFORE clearing state
+    const closedTrigger = activeTriggerRef.current;
+    
+    // Always clean up the active trigger class
+    if (closedTrigger) {
+      closedTrigger.classList.remove('footnote-trigger--active');
+      activeTriggerRef.current = null;
     }
+    
+    if (!popup) return closedTrigger;
+    
+    closingRef.current = true;
     
     // Add closing animation class
     if (popupRef.current) {
       popupRef.current.classList.add('footnote-popup--closing');
       // Wait for animation to complete before removing
-      setTimeout(() => {
+      closeTimeoutRef.current = setTimeout(() => {
+        // Check if this close is still valid (not superseded by a new popup)
+        if (generationRef.current !== closeGeneration) {
+          return; // Stale close, ignore
+        }
         setPopup(null);
         closingRef.current = false;
+        closeTimeoutRef.current = null;
       }, 150); // Match animation duration
     } else {
       setPopup(null);
       closingRef.current = false;
     }
+    
+    return closedTrigger;
   }, [popup]);
+
+  // Expose methods to parent via ref
+  React.useImperativeHandle(ref, () => ({
+    show: (data) => {
+      // Increment generation to invalidate any stale handlers/timeouts
+      generationRef.current += 1;
+      
+      // Cancel any pending close animation
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+        closeTimeoutRef.current = null;
+      }
+      
+      // Reset closing state
+      closingRef.current = false;
+      
+      // Clean up old trigger's active class if switching to a different trigger
+      if (activeTriggerRef.current && activeTriggerRef.current !== data.triggerElement) {
+        activeTriggerRef.current.classList.remove('footnote-trigger--active');
+      }
+      
+      // Track the active trigger for cleanup
+      activeTriggerRef.current = data.triggerElement;
+      setPopup(data);
+    },
+    // hide() now properly cleans up and returns the closed trigger
+    hide: () => handleClose(),
+    isOpen: () => popup !== null,
+    getActiveTrigger: () => activeTriggerRef.current,
+  }), [handleClose]);
 
   // Handle close button tap with visible feedback
   const closeButtonRef = useRef(null);
@@ -82,7 +130,12 @@ const FootnotePopupManager = React.forwardRef((props, ref) => {
   useEffect(() => {
     if (!popup) return;
     
+    // Capture generation at effect creation to detect stale handlers
+    const effectGeneration = generationRef.current;
+    
     const handleKeyDown = (e) => {
+      // Ignore if this handler is stale (a new popup was opened)
+      if (generationRef.current !== effectGeneration) return;
       if (e.key === 'Escape') handleClose();
     };
     document.addEventListener('keydown', handleKeyDown);
@@ -92,7 +145,13 @@ const FootnotePopupManager = React.forwardRef((props, ref) => {
   useEffect(() => {
     if (!popup) return;
     
+    // Capture generation at effect creation to detect stale handlers
+    const effectGeneration = generationRef.current;
+    
     const handleClickOutside = (e) => {
+      // Ignore if this handler is stale (a new popup was opened)
+      if (generationRef.current !== effectGeneration) return;
+      
       if (popupRef.current && !popupRef.current.contains(e.target) && 
           popup.triggerElement && !popup.triggerElement.contains(e.target)) {
         handleClose();
@@ -115,7 +174,12 @@ const FootnotePopupManager = React.forwardRef((props, ref) => {
   useEffect(() => {
     if (!popup) return;
     
+    // Capture generation at effect creation to detect stale handlers
+    const effectGeneration = generationRef.current;
+    
     const handleScroll = () => {
+      // Ignore if this handler is stale (a new popup was opened)
+      if (generationRef.current !== effectGeneration) return;
       handleClose();
     };
     
@@ -310,15 +374,16 @@ const PostContent = ({ html, codeBlocks, images, footnotes, onImageClick }) => {
     const footnote = footnotes?.[index];
     if (!footnote || !popupManagerRef.current) return;
     
-    // If clicking same footnote, close it
-    if (popupManagerRef.current.isOpen()) {
+    // Check if we're clicking the currently active trigger (toggle close)
+    const isClickingActiveTrigger = popupManagerRef.current.getActiveTrigger() === trigger;
+    
+    // If clicking the same trigger that's currently open, just close it
+    if (isClickingActiveTrigger) {
       popupManagerRef.current.hide();
-      // Small delay before potentially opening new one
-      if (trigger.classList.contains('footnote-trigger--active')) {
-        return;
-      }
+      return;
     }
     
+    // Otherwise, open the new popup (show() handles cleanup of any existing popup)
     // Calculate position with iOS Safari safe area support
     const rect = trigger.getBoundingClientRect();
     // Use clientWidth for more reliable viewport width (excludes scrollbar, more consistent on iOS)
