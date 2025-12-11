@@ -329,7 +329,16 @@
   background: var(--color-surface-muted);
 }
 
-/* Toggle icon animation */
+/* Toggle icon animation
+   
+   Both icons (ellipsis and chevron) use symmetrical transitions in both directions
+   for a fluid, elegant feel. Each icon has distinctive motion:
+   - Ellipsis: slides vertically + scales (dots sliding down into place)
+   - Chevron: rotates + scales (arrow unfolding)
+   
+   Key to fluid feel: both enter AND exit use the same smooth easing curve,
+   just with different timing (enter slightly slower for anticipation).
+*/
 .toggle-icon-wrap {
   position: relative;
   display: flex;
@@ -343,39 +352,41 @@
   position: absolute;
   opacity: 0;
   fill: currentColor;
-  -webkit-transform: scale(0.5) rotate(-90deg);
-  transform: scale(0.5) rotate(-90deg);
-  -webkit-transition: opacity var(--duration-normal) ease-out,
-                      -webkit-transform var(--duration-slow) var(--ease-snap);
-  transition: opacity var(--duration-normal) ease-out,
-              transform var(--duration-slow) var(--ease-snap);
+  /* Smooth exit - same easing as enter for consistency */
+  -webkit-transition: opacity 0.18s ease-out,
+                      -webkit-transform 0.32s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: opacity 0.18s ease-out,
+              transform 0.32s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .toggle-icon.visible {
   opacity: 1;
-  -webkit-transform: scale(1) rotate(0deg);
-  transform: scale(1) rotate(0deg);
-  -webkit-transition: opacity var(--duration-normal) ease-out,
-                      -webkit-transform var(--duration-slower) var(--ease-bounce);
-  transition: opacity var(--duration-normal) ease-out,
-              transform var(--duration-slower) var(--ease-bounce);
+  /* Smooth enter with subtle overshoot for organic feel */
+  -webkit-transition: opacity 0.22s ease-out,
+                      -webkit-transform 0.38s cubic-bezier(0.34, 1.4, 0.64, 1);
+  transition: opacity 0.22s ease-out,
+              transform 0.38s cubic-bezier(0.34, 1.4, 0.64, 1);
 }
 
+/* Ellipsis: slides down + scales (hidden state) */
 .toggle-icon.ellipsis {
-  -webkit-transform: scale(0.5);
-  transform: scale(0.5);
+  -webkit-transform: scale(0.6) translateY(-6px);
+  transform: scale(0.6) translateY(-6px);
 }
 
+/* Ellipsis: settled position (visible state) */
 .toggle-icon.ellipsis.visible {
-  -webkit-transform: scale(1);
-  transform: scale(1);
+  -webkit-transform: scale(1) translateY(0);
+  transform: scale(1) translateY(0);
 }
 
+/* Chevron: rotated + scaled down (hidden state) */
 .toggle-icon.chevron-up {
-  -webkit-transform: scale(0.5) rotate(180deg);
-  transform: scale(0.5) rotate(180deg);
+  -webkit-transform: scale(0.6) rotate(180deg);
+  transform: scale(0.6) rotate(180deg);
 }
 
+/* Chevron: unfolded position (visible state) */
 .toggle-icon.chevron-up.visible {
   -webkit-transform: scale(1) rotate(0deg);
   transform: scale(1) rotate(0deg);

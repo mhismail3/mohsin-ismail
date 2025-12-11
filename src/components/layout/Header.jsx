@@ -369,12 +369,12 @@ const Header = ({ label, onLogoClick }) => {
             onClick={toggleMenu}
           >
             <span className="toggle-icon-wrap">
-              <svg className={`icon toggle-icon ellipsis ${!isOpen ? 'visible' : ''}`} viewBox="0 0 32 10" aria-hidden="true" focusable="false">
+              <svg className={`icon toggle-icon ellipsis ${!isOpen || isClosing ? 'visible' : ''}`} viewBox="0 0 32 10" aria-hidden="true" focusable="false">
                 <circle cx="6" cy="5" r="2.1" />
                 <circle cx="16" cy="5" r="2.1" />
                 <circle cx="26" cy="5" r="2.1" />
               </svg>
-              <svg className={`icon toggle-icon chevron-up ${isOpen ? 'visible' : ''}`} viewBox="0 0 20 12" aria-hidden="true" focusable="false">
+              <svg className={`icon toggle-icon chevron-up ${isOpen && !isClosing ? 'visible' : ''}`} viewBox="0 0 20 12" aria-hidden="true" focusable="false">
                 <path d="M3 9L10 2l7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </svg>
             </span>
