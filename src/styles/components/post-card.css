@@ -267,8 +267,8 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
    ───────────────────────────────────────────────────────────────────────────── */
 
 .post-body.full-content {
-  font-size: 1.05rem;
-  line-height: 1.55;
+  font-size: 1.00rem;
+  line-height: 1.5;
   border-top: none;
   margin-top: 0;
   padding-top: 0;
