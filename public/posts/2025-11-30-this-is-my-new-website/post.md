@@ -7,6 +7,7 @@ tags:
   - opus 4.5
   - gemini 3
   - gpt 5.1
+  - website update
 ---
 
 A few weeks ago, I decided that it was time to upgrade my personal website.
