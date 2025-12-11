@@ -2,7 +2,6 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { usePageTitle } from '../hooks';
 import { portfolioProjects } from '../data';
-import { Header } from '../components/layout';
 import { AboutPanel, Carousel, Lightbox } from '../components/features';
 import { Pill, Icon } from '../components/ui';
 
@@ -63,7 +62,7 @@ const ProjectPage = () => {
   if (!project) {
     return (
       <div className="frame">
-        <Header label="Mohsin Ismail" />
+        {/* Header is rendered at App level - outside PageTransition to prevent flicker */}
         <div className="panel" style={{ textAlign: 'center', marginTop: '2rem' }}>
           <h2>Project not found</h2>
           <Link to="/portfolio" className="btn outline">Back to Portfolio</Link>
@@ -74,7 +73,7 @@ const ProjectPage = () => {
 
   return (
     <div className="frame">
-      <Header label="Mohsin Ismail" />
+      {/* Header is rendered at App level - outside PageTransition to prevent flicker */}
       
       {/* Project Info Panel */}
       <section className="panel project-detail-panel">

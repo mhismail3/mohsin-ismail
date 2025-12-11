@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import {
   Home,
@@ -8,7 +8,7 @@ import {
   PortfolioPage,
   ProjectPage,
 } from './pages';
-import { PageTransition } from './components/layout';
+import { PageTransition, Header } from './components/layout';
 import { PageTransitionProvider } from './contexts';
 import logoMark from './assets/mohsin.png';
 
@@ -32,10 +32,18 @@ function App() {
     setPage(1);
   }, [selectedTags]);
 
+  // Callback to reset tags when logo is clicked (for BlogPage)
+  const resetTags = useCallback(() => {
+    setSelectedTags([]);
+  }, []);
+
   return (
     <Router>
       <PageTransitionProvider>
         <div className="app">
+          {/* Header lives OUTSIDE PageTransition so it never remounts on navigation */}
+          {/* This prevents any flash/flicker during page transitions */}
+          <Header label="Mohsin Ismail" onLogoClick={resetTags} />
           <PageTransition>
             <Routes>
               <Route path="/" element={<Home />} />

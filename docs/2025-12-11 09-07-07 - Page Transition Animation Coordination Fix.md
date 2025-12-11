@@ -19,86 +19,88 @@ When navigating between pages while scrolled down, multiple animations would con
    - Header collapse/expand animation overlaps with content animation
    - Smooth scroll animation adds visual noise
 
-3. **Root cause:** No coordination between scroll restoration, header behavior, and content animations.
+3. **Root cause:** Header was rendered inside each page component (and thus inside PageTransition), causing it to remount on every navigation due to `key={location.pathname}`.
 
 ## Solution
 
-Created a unified coordination system using React context:
+Two-part fix for completely seamless page transitions:
 
-### 1. PageTransitionContext (`src/contexts/PageTransitionContext.jsx`)
+### Part 1: Move Header Outside PageTransition
 
-New context that manages navigation state and coordinates all animations:
+**The key insight:** The header was inside the `PageTransition` component which uses `key={location.pathname}` to force remounting on navigation. This caused the header to unmount and remount on every route change, creating a brief flash.
 
-- **`isNavigating`**: True during the entire navigation transition (header should suspend scroll behavior)
+**Solution:** Move the Header to the App level, outside of PageTransition:
+
+```jsx
+// App.jsx
+<Router>
+  <PageTransitionProvider>
+    <div className="app">
+      {/* Header lives OUTSIDE PageTransition - never remounts */}
+      <Header label="Mohsin Ismail" onLogoClick={resetTags} />
+      <PageTransition>
+        <Routes>...</Routes>
+      </PageTransition>
+    </div>
+  </PageTransitionProvider>
+</Router>
+```
+
+### Part 2: Coordinate Visibility via Context
+
+**PageTransitionContext** manages the transition state:
+- **`isNavigating`**: True during navigation (header suspends scroll behavior)
 - **`isReady`**: True when content should animate in
 
 **Flow on navigation:**
 1. Route changes → `isNavigating = true`, `isReady = false`
-2. **Instant scroll to top** (`behavior: 'auto'`) in `useLayoutEffect` - happens BEFORE browser paints
+2. **Instant scroll to top** (`behavior: 'auto'`) in `useLayoutEffect` - before browser paints
 3. Wait for DOM paint (double `requestAnimationFrame`)
 4. `isReady = true` → content and header fade in together
 5. After settling time (350ms) → `isNavigating = false`
 6. Header can now react to scroll normally
 
-### 2. Header Changes (`src/components/layout/Header.jsx`)
+### Header Visibility Classes
 
-- Added `usePageTransition()` hook
-- Header resets to expanded state when navigation starts
-- Scroll-based collapse behavior is **suspended** during `isNavigating = true`
-- Added `.navigating` class for CSS coordination
+Since header is outside PageTransition, it can't rely on parent CSS selectors. Instead, it applies classes directly based on context state:
 
-### 3. CSS Changes (`src/styles/components/page-transition.css`)
+```jsx
+// Header.jsx
+const { isNavigating, isReady } = usePageTransition();
 
-- Header now participates in page transition animation
-- Hidden during `.page-transition-init` (opacity: 0)
-- Fades in with content during `.page-transition-ready`
-- Uses `simpleFadeIn` (no transform) to avoid position issues
-
-### 4. Simplified Scroll Logic
-
-- Removed scroll-to-top from `usePageTitle` hook (now just handles document title)
-- Removed scroll-to-top from `Header.jsx` navigation handlers (only scrolls if staying on same page)
-- Removed scroll-to-top from `App.jsx` tag change handler
-- All navigation scroll is now centralized in `PageTransitionContext`
-
-## Key Implementation Details
-
-**Instant scroll in `useLayoutEffect`:**
-```javascript
-useLayoutEffect(() => {
-  window.scrollTo({ top: 0, behavior: 'auto' });
-  // ... rest of animation setup
-}, [location.pathname]);
+const headerClass = [
+  'top-bar',
+  // ... other classes
+  isReady ? 'transition-ready' : 'transition-init',
+].filter(Boolean).join(' ');
 ```
 
-This is critical because:
-- `useLayoutEffect` runs synchronously before the browser paints
-- `behavior: 'auto'` makes the scroll instant (no animation)
-- User never sees the page at the old scroll position
+```css
+/* page-transition.css */
+.top-bar.transition-init {
+  opacity: 0;
+  pointer-events: none;
+}
 
-**Header suspension:**
-```javascript
-useEffect(() => {
-  if (isNavigating) return; // Don't react to scroll during navigation
-  // ... scroll handler
-}, [isCollapsed, isNavigating]);
+.top-bar.transition-ready {
+  animation: simpleFadeIn 0.24s ease-out both;
+}
 ```
 
 ## Files Changed
 
-- `src/contexts/PageTransitionContext.jsx` (new)
-- `src/contexts/index.js` (export new context)
-- `src/components/layout/PageTransition.jsx` (use context instead of local state)
-- `src/components/layout/Header.jsx` (suspend scroll, add navigating class)
-- `src/components/layout/PageLayout.jsx` (remove scroll option)
-- `src/styles/components/page-transition.css` (include header in transition)
-- `src/hooks/usePageTitle.js` (remove scroll logic)
-- `src/App.jsx` (wrap with PageTransitionProvider, remove scroll from tag change)
+- `src/App.jsx` - Header moved to App level, outside PageTransition
+- `src/pages/*.jsx` - Removed Header from all page components
+- `src/components/layout/Header.jsx` - Uses context for visibility, suspends scroll during navigation
+- `src/contexts/PageTransitionContext.jsx` - Manages navigation state
+- `src/styles/components/page-transition.css` - Direct header classes instead of parent selectors
+- `src/hooks/usePageTitle.js` - Simplified to just set document title
+- `src/components/layout/PageLayout.jsx` - Removed scroll option
 
 ## Result
 
-- No more header flickering on navigation
-- No more visible scroll animation during navigation
-- Header and content fade in together seamlessly
-- Scroll-to-top happens instantly before any render
-- Header resumes normal scroll behavior after animations settle
+- **Zero header flicker** - Header never remounts, just updates its state
+- **Instant scroll** - No visible scroll animation during navigation
+- **Unified fade-in** - Header and content animate in together seamlessly
+- **Proper scroll suspension** - Header doesn't react to scroll during transitions
+- Works identically on fresh page loads and client-side navigation

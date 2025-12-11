@@ -1,6 +1,5 @@
 import React from 'react';
 import { usePageTitle } from '../hooks';
-import { Header } from '../components/layout';
 import { AboutContent, contactLinks } from '../components/features';
 
 const AboutPage = () => {
@@ -8,7 +7,7 @@ const AboutPage = () => {
 
   return (
     <div className="frame">
-      <Header label="Mohsin Ismail" />
+      {/* Header is rendered at App level - outside PageTransition to prevent flicker */}
       <section className="panel about-panel about-page-panel">
         <AboutContent />
       </section>

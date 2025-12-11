@@ -4,7 +4,6 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { usePageTitle, useTouchHover, useTapFeedback } from '../hooks';
 import { posts } from '../data';
 import { formatDateParts } from '../utils/formatDate';
-import { Header } from '../components/layout';
 import { AboutPanel, CodeBlock, Lightbox, PostImage } from '../components/features';
 import { Pill } from '../components/ui';
 import DOMPurify from 'dompurify';
@@ -498,7 +497,7 @@ const PostPage = () => {
   if (!post) {
     return (
       <div className="frame">
-        <Header label="Mohsin Ismail" onLogoClick={() => navigate('/')} />
+        {/* Header is rendered at App level - outside PageTransition to prevent flicker */}
         <section className="panel">
           <div className="eyebrow">404</div>
           <h2>Post not found</h2>
@@ -510,7 +509,7 @@ const PostPage = () => {
 
   return (
     <div className="frame">
-      <Header label="Mohsin Ismail" onLogoClick={() => navigate('/')} />
+      {/* Header is rendered at App level - outside PageTransition to prevent flicker */}
 
       <article className="panel post-page">
         <div className="post-page-head">

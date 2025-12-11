@@ -2,7 +2,6 @@ import React, { useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { usePageTitle } from '../hooks';
 import { posts, uniqueTags } from '../data';
-import { Header } from '../components/layout';
 import { PostCard, Pagination, TagCloud, AboutPanel } from '../components/features';
 import { Button } from '../components/ui';
 
@@ -55,7 +54,7 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
 
   return (
     <div className="frame">
-      <Header label="Mohsin Ismail" onLogoClick={resetTags} />
+      {/* Header is rendered at App level - outside PageTransition to prevent flicker */}
 
       <section className="panel posts-panel">
         <div className="panel-head">

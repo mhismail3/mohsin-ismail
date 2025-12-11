@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { usePageTitle, useTapFeedback } from '../hooks';
 import { posts, portfolioProjects } from '../data';
-import { Header } from '../components/layout';
 import { AboutPanel, PostCard } from '../components/features';
 
 const RECENT_POSTS_COUNT = 3;
@@ -19,7 +18,7 @@ function Home() {
 
   return (
     <div className="frame">
-      <Header label="Mohsin Ismail" />
+      {/* Header is rendered at App level - outside PageTransition to prevent flicker */}
 
       {/* Recent Posts Section */}
       <section className="panel posts-panel recent-posts-panel">

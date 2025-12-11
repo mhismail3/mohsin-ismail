@@ -40,7 +40,8 @@ const Header = ({ label, onLogoClick }) => {
   
   // Get navigation state from PageTransitionContext
   // During navigation, we suspend scroll-based behavior to prevent flicker
-  const { isNavigating } = usePageTransition();
+  // isReady controls the fade-in animation (false = hidden, true = visible)
+  const { isNavigating, isReady } = usePageTransition();
 
   // Cleanup timeouts on unmount
   useEffect(() => {
@@ -302,6 +303,8 @@ const Header = ({ label, onLogoClick }) => {
     isMobile ? '' : 'flyout',
     isCollapsed ? 'collapsed' : '',
     isNavigating ? 'navigating' : '',
+    // Control visibility via context - starts hidden, animates in when ready
+    isReady ? 'transition-ready' : 'transition-init',
   ].filter(Boolean).join(' ');
   
   const menuClass = [

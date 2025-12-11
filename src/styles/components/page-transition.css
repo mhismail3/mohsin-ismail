@@ -22,33 +22,35 @@
 /* ─────────────────────────────────────────────────────────────────────────────
    HEADER COORDINATION
    
-   The header participates in page transitions to prevent flicker:
-   - During init phase: header is hidden (opacity 0)
-   - During ready phase: header fades in with content (first element to animate)
+   The header lives OUTSIDE PageTransition (at App level) to prevent remounting
+   on navigation. This completely eliminates header flicker.
    
-   This ensures the header doesn't appear, then disappear (due to scroll-collapse
-   triggering), then reappear as the page scrolls to top.
+   Visibility is controlled via classes applied directly to the header:
+   - .transition-init: Initial state, hidden (opacity 0)
+   - .transition-ready: Animates in with content
    
-   The .navigating class on the header indicates scroll behavior is suspended,
+   The .navigating class indicates scroll behavior is suspended,
    coordinated via PageTransitionContext.
    ───────────────────────────────────────────────────────────────────────────── */
 
-/* Header hidden during init phase */
-.page-transition-init .top-bar {
+/* Header hidden during init phase - applied directly via isReady state */
+.top-bar.transition-init {
   opacity: 0;
+  /* Prevent interaction while hidden */
+  pointer-events: none;
 }
 
-/* Header fades in first during ready phase */
-.page-transition-ready .top-bar {
+/* Header fades in when ready - applied directly via isReady state */
+.top-bar.transition-ready {
   animation: simpleFadeIn 0.24s ease-out both;
   animation-delay: 0s;
+  /* Re-enable interaction */
+  pointer-events: auto;
 }
 
-/* Ensure header doesn't get the staggerFadeIn (no transform, just fade) */
-.page-transition-ready .top-bar.navigating {
-  /* While navigating, use simple fade only - no transform */
-  animation: simpleFadeIn 0.24s ease-out both;
-  animation-delay: 0s;
+/* Override pointer-events for collapsed state (handled by collapsed styles) */
+.top-bar.transition-ready.collapsed {
+  pointer-events: none;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

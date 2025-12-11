@@ -2,7 +2,6 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { usePageTitle, useTouchHover, useIsMobile } from '../hooks';
 import { portfolioProjects } from '../data';
-import { Header } from '../components/layout';
 import { AboutPanel } from '../components/features';
 
 const INITIAL_ITEMS = 10;
@@ -106,7 +105,7 @@ const PortfolioPage = () => {
 
   return (
     <div className="frame">
-      <Header label="Mohsin Ismail" />
+      {/* Header is rendered at App level - outside PageTransition to prevent flicker */}
       <section className="panel portfolio-panel">
         <div className="panel-head">
           <div>
