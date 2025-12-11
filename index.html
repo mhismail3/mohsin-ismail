@@ -58,6 +58,58 @@
         }
       })();
     </script>
+    <!-- Prevent font loading flash: detect when fonts are ready -->
+    <script>
+      (function() {
+        // Check if fonts are already cached/loaded
+        if (document.fonts && document.fonts.check('1em "DM Serif Display"')) {
+          document.documentElement.classList.add('fonts-ready');
+        } else if (document.fonts) {
+          // Wait for fonts to load
+          document.fonts.ready.then(function() {
+            document.documentElement.classList.add('fonts-ready');
+          });
+        } else {
+          // Fallback: add fonts-ready after a short delay for older browsers
+          setTimeout(function() {
+            document.documentElement.classList.add('fonts-ready');
+          }, 100);
+        }
+      })();
+    </script>
+    <!-- Critical CSS: Hide page content until animations are ready -->
+    <style>
+      /* Prevent FOUC: content starts invisible until JS marks it ready */
+      .page-transition-init .frame > section,
+      .page-transition-init .frame > article,
+      .page-transition-init .post-list > article,
+      .page-transition-init .moodboard-column,
+      .page-transition-init .project-card,
+      .page-transition-init .about-content > *,
+      .page-transition-init .featured-project-card,
+      .page-transition-init .post-page > *,
+      .page-transition-init .project-page > *,
+      .page-transition-init .panel-head,
+      .page-transition-init .filter-row .tag-cloud .pill {
+        opacity: 0;
+      }
+      /* Header must NEVER be hidden - always visible immediately */
+      .top-bar, .page-transition .top-bar, .page-transition-init .top-bar {
+        opacity: 1 !important;
+      }
+      /* Prevent font loading flash in header:
+         Hide brand-name until fonts are ready, then fade in smoothly */
+      html:not(.fonts-ready) .brand-name {
+        opacity: 0;
+      }
+      html.fonts-ready .brand-name {
+        opacity: 1;
+        transition: opacity 0.15s ease-out;
+      }
+    </style>
+    <!-- Preconnect to Google Fonts for faster font loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital,wght@0,400;1,400&family=Newsreader:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap"
       rel="stylesheet"
