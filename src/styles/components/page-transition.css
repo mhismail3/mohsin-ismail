@@ -36,14 +36,32 @@
 /* Header hidden during init phase - applied directly via isReady state */
 .top-bar.transition-init {
   opacity: 0;
+  /* Slight blur when hidden - creates smooth reveal effect */
+  filter: blur(4px);
   /* Prevent interaction while hidden */
   pointer-events: none;
 }
 
+/* Header entrance animation - smooth, elegant reveal */
+@keyframes headerReveal {
+  0% {
+    opacity: 0;
+    filter: blur(4px);
+  }
+  60% {
+    opacity: 0.9;
+    filter: blur(1px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+  }
+}
+
 /* Header fades in when ready - applied directly via isReady state */
 .top-bar.transition-ready {
-  animation: simpleFadeIn 0.24s ease-out both;
-  animation-delay: 0s;
+  animation: headerReveal 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0.02s;
   /* Re-enable interaction */
   pointer-events: auto;
 }
@@ -51,6 +69,18 @@
 /* Override pointer-events for collapsed state (handled by collapsed styles) */
 .top-bar.transition-ready.collapsed {
   pointer-events: none;
+}
+
+/* Reduced motion: simple quick fade, no blur */
+@media (prefers-reduced-motion: reduce) {
+  .top-bar.transition-init {
+    filter: none;
+  }
+  
+  .top-bar.transition-ready {
+    animation: simpleFadeIn 0.2s ease both;
+    animation-delay: 0s;
+  }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

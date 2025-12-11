@@ -52,11 +52,12 @@ const FootnotePopupManager = React.forwardRef((props, ref) => {
     // Capture the trigger that's being closed BEFORE clearing state
     const closedTrigger = activeTriggerRef.current;
     
+    // If there's no active trigger, nothing to close
+    if (!closedTrigger) return null;
+    
     // Always clean up the active trigger class
-    if (closedTrigger) {
-      closedTrigger.classList.remove('footnote-trigger--active');
-      activeTriggerRef.current = null;
-    }
+    closedTrigger.classList.remove('footnote-trigger--active');
+    activeTriggerRef.current = null;
     
     if (!popup) return closedTrigger;
     
@@ -67,10 +68,23 @@ const FootnotePopupManager = React.forwardRef((props, ref) => {
       popupRef.current.classList.add('footnote-popup--closing');
       // Wait for animation to complete before removing
       closeTimeoutRef.current = setTimeout(() => {
-        // Check if this close is still valid (not superseded by a new popup)
+        // Multiple safety checks before actually closing:
+        // 1. Check if generation changed (a new popup was opened via show())
         if (generationRef.current !== closeGeneration) {
+          closingRef.current = false;
           return; // Stale close, ignore
         }
+        // 2. Check cooldown (in case show() was called recently)
+        if (showCooldownRef.current) {
+          closingRef.current = false;
+          return; // show() was just called, ignore
+        }
+        // 3. Check if a new trigger became active (shouldn't happen if above checks pass)
+        if (activeTriggerRef.current !== null) {
+          closingRef.current = false;
+          return; // A new popup is active, ignore
+        }
+        
         setPopup(null);
         closingRef.current = false;
         closeTimeoutRef.current = null;
@@ -100,14 +114,21 @@ const FootnotePopupManager = React.forwardRef((props, ref) => {
       
       // Enable cooldown to block any stale close attempts
       // This handles iOS race conditions where events fire between show() and effect cleanup
+      // The cooldown must be longer than the longest handler registration delay (scroll = 100ms)
+      // plus React's render time (~16-30ms), so we use 250ms to be safe
       showCooldownRef.current = true;
       setTimeout(() => {
         showCooldownRef.current = false;
-      }, 50); // 50ms cooldown - enough for React to process and run effects
+      }, 250); // 250ms cooldown - covers React render + all handler registration delays
       
       // Clean up old trigger's active class if switching to a different trigger
       if (activeTriggerRef.current && activeTriggerRef.current !== data.triggerElement) {
         activeTriggerRef.current.classList.remove('footnote-trigger--active');
+      }
+      
+      // Remove closing animation class if present (from a previous close attempt)
+      if (popupRef.current) {
+        popupRef.current.classList.remove('footnote-popup--closing');
       }
       
       // Track the active trigger for cleanup
@@ -174,16 +195,15 @@ const FootnotePopupManager = React.forwardRef((props, ref) => {
     };
     
     // Delay adding handlers to avoid the opening tap from triggering close
-    // Use longer delay on touch devices where events can fire in unexpected order
+    // Only use click event - touchend can cause duplicate event issues on iOS
+    // The click event is synthesized from touch events, so it's sufficient
     const timer = setTimeout(() => {
       document.addEventListener('click', handleClickOutside);
-      document.addEventListener('touchend', handleClickOutside);
-    }, 50); // Increased from 10ms to 50ms for better iOS compatibility
+    }, 100); // 100ms delay for better iOS compatibility
     
     return () => {
       clearTimeout(timer);
       document.removeEventListener('click', handleClickOutside);
-      document.removeEventListener('touchend', handleClickOutside);
     };
   }, [popup, handleClose]);
 
