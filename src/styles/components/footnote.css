@@ -213,9 +213,11 @@
   font-size: 1.1rem;
   line-height: 1;
   cursor: pointer;
+  box-shadow: 1px 1px 0px var(--retro-shadow-color);
   transition: background-color var(--duration-fast) ease,
               color var(--duration-fast) ease,
-              transform var(--duration-fast) ease;
+              transform var(--duration-fast) ease,
+              box-shadow var(--duration-fast) ease;
 }
 
 @media (hover: hover) {
@@ -378,6 +380,8 @@
 
 [data-theme="dark"] .footnote-popup-close {
   color: var(--color-text-muted);
+  /* More prominent shadow in dark mode for visibility */
+  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 [data-theme="dark"] .footnote-popup-close--pressed {
