@@ -202,18 +202,11 @@
   }
 }
 
-/* Active/pressed state for touch feedback */
+/* Active/pressed state for touch feedback - color change only, no size animation */
 .brand:active,
 .brand.tap-active {
   color: var(--pine);
-  transform: scale(0.98);
-  transition: transform 0.06s ease-out, color 0.06s ease-out;
-}
-
-/* Don't apply scale when collapsed (photo handles its own feedback) */
-.top-bar.collapsed .brand:active,
-.top-bar.collapsed .brand.tap-active {
-  transform: none;
+  transition: color 0.06s ease-out;
 }
 
 .brand:focus-visible {
