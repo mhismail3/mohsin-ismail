@@ -213,7 +213,7 @@
   font-size: 1.1rem;
   line-height: 1;
   cursor: pointer;
-  box-shadow: 1px 1px 0px var(--retro-shadow-color);
+  box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.15);
   transition: background-color var(--duration-fast) ease,
               color var(--duration-fast) ease,
               transform var(--duration-fast) ease,
