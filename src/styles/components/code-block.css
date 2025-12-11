@@ -235,7 +235,7 @@ html:not(.theme-ready) .code-block-fade {
    ───────────────────────────────────────────────────────────────────────────── */
 
 .post-body .code-block {
-  margin: 1rem 0;
+  margin: 1rem 0 1.5rem 0;
 }
 
 .post-body .code-block pre {
