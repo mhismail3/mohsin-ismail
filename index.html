@@ -97,12 +97,14 @@
       .top-bar, .page-transition .top-bar, .page-transition-init .top-bar {
         opacity: 1 !important;
       }
-      /* Prevent font loading flash in header:
-         Hide brand-name until fonts are ready, then fade in smoothly */
-      html:not(.fonts-ready) .brand-name {
+      /* Prevent font/image loading flash in header:
+         Hide brand-name and brand-mark until ready, then fade in smoothly */
+      html:not(.fonts-ready) .brand-name,
+      html:not(.fonts-ready) .brand-mark {
         opacity: 0;
       }
-      html.fonts-ready .brand-name {
+      html.fonts-ready .brand-name,
+      html.fonts-ready .brand-mark {
         opacity: 1;
         transition: opacity 0.15s ease-out;
       }
