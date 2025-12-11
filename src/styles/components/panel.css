@@ -67,6 +67,16 @@
   display: flex;
   flex-direction: column;
   gap: 0;
+  /* Needed for absolute-positioned exit clones during list animations */
+  position: relative;
+  isolation: isolate;
+}
+
+.post-list-anim-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

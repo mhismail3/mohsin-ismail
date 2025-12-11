@@ -5,7 +5,13 @@ import { useTapFeedback } from '../../hooks';
 import { Icon } from '../ui';
 import Pill from '../ui/Pill';
 
-const PostCard = ({ post, onTagClick, selectedTags = [] }) => {
+const PostCard = React.forwardRef(({
+  post,
+  onTagClick,
+  selectedTags = [],
+  className = '',
+  ...props
+}, ref) => {
   const [showToast, setShowToast] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
   const excerptRef = useRef(null);
@@ -57,7 +63,11 @@ const PostCard = ({ post, onTagClick, selectedTags = [] }) => {
   };
 
   return (
-    <article className="post-card">
+    <article
+      ref={ref}
+      className={['post-card', className].filter(Boolean).join(' ')}
+      {...props}
+    >
       <div className="post-head">
         <div className="post-meta">
           <div className="eyebrow">
@@ -104,7 +114,9 @@ const PostCard = ({ post, onTagClick, selectedTags = [] }) => {
       </div>
     </article>
   );
-};
+});
+
+PostCard.displayName = 'PostCard';
 
 export default PostCard;
 

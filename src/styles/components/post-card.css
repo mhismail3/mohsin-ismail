@@ -5,6 +5,7 @@
 
 .post-card {
   position: relative;
+  will-change: transform, opacity;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
