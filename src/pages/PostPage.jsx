@@ -110,7 +110,11 @@ const FootnotePopupManager = React.forwardRef((props, ref) => {
       <div
         ref={popupRef}
         className={`footnote-popup footnote-popup--${popup.position.placement}`}
-        style={{ top: `${popup.position.top}px`, left: `${popup.position.left}px` }}
+        style={{ 
+          top: `${popup.position.top}px`, 
+          left: `${popup.position.left}px`,
+          width: `${popup.position.width}px`,
+        }}
         onClick={(e) => e.stopPropagation()}
         role="tooltip"
       >
@@ -249,15 +253,31 @@ const PostContent = ({ html, codeBlocks, images, footnotes, onImageClick }) => {
       }
     }
     
-    // Calculate position
+    // Calculate position with iOS Safari safe area support
     const rect = trigger.getBoundingClientRect();
-    const viewportWidth = window.innerWidth;
+    // Use clientWidth for more reliable viewport width (excludes scrollbar, more consistent on iOS)
+    const viewportWidth = document.documentElement.clientWidth;
     const viewportHeight = window.innerHeight;
     
-    let left = rect.left + rect.width / 2;
-    const popupWidth = Math.min(320, viewportWidth - 32);
-    left = Math.max(popupWidth / 2 + 16, Math.min(viewportWidth - popupWidth / 2 - 16, left));
+    // Get safe area insets from CSS custom properties (set in tokens.css)
+    const computedStyle = getComputedStyle(document.documentElement);
+    const safeLeft = parseInt(computedStyle.getPropertyValue('--safe-area-inset-left') || '0', 10) || 0;
+    const safeRight = parseInt(computedStyle.getPropertyValue('--safe-area-inset-right') || '0', 10) || 0;
     
+    // Available width accounting for safe areas and padding
+    const padding = 12;
+    const availableWidth = viewportWidth - safeLeft - safeRight - (padding * 2);
+    const popupWidth = Math.min(320, availableWidth);
+    
+    // Calculate left position - center on trigger, then constrain to viewport
+    const triggerCenter = rect.left + rect.width / 2;
+    const minLeft = safeLeft + padding;
+    const maxLeft = viewportWidth - safeRight - padding - popupWidth;
+    
+    // Constrain left position so popup stays within bounds
+    let left = Math.max(minLeft, Math.min(maxLeft, triggerCenter - popupWidth / 2));
+    
+    // Vertical positioning
     const spaceBelow = viewportHeight - rect.bottom;
     let placement = 'below';
     let top = rect.bottom + 8;
@@ -275,7 +295,7 @@ const PostContent = ({ html, codeBlocks, images, footnotes, onImageClick }) => {
       index,
       content: footnote.content,
       number: footnote.number,
-      position: { top, left, placement },
+      position: { top, left, placement, width: popupWidth },
       triggerElement: trigger,
     });
   }, [footnotes]);

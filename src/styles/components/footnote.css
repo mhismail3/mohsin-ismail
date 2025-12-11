@@ -125,12 +125,9 @@
   position: fixed;
   z-index: var(--z-modal);
   
-  /* Sizing */
-  width: 320px;
-  max-width: calc(100vw - 32px);
-  
-  /* Positioning - centered horizontally via transform */
-  transform: translateX(-50%);
+  /* Width is set via inline style from JS for precise control */
+  /* This ensures proper positioning on iOS Safari with safe areas */
+  max-width: 320px;
   
   /* Card styling - matches site's panel/lightbox aesthetic */
   background: var(--panel-bg);
@@ -151,9 +148,9 @@
   transform-origin: top center;
 }
 
-/* Popup appears above trigger */
+/* Popup appears above trigger - shift up by full height */
 .footnote-popup--above {
-  transform: translateX(-50%) translateY(-100%);
+  transform: translateY(-100%);
   transform-origin: bottom center;
 }
 
@@ -279,14 +276,14 @@
 @keyframes footnote-popIn {
   0% {
     opacity: 0;
-    transform: translateX(-50%) scale(0.85);
+    transform: scale(0.85);
   }
   50% {
     opacity: 1;
   }
   100% {
     opacity: 1;
-    transform: translateX(-50%) scale(1);
+    transform: scale(1);
   }
 }
 
@@ -298,14 +295,14 @@
 @keyframes footnote-popInAbove {
   0% {
     opacity: 0;
-    transform: translateX(-50%) translateY(-100%) scale(0.85);
+    transform: translateY(-100%) scale(0.85);
   }
   50% {
     opacity: 1;
   }
   100% {
     opacity: 1;
-    transform: translateX(-50%) translateY(-100%) scale(1);
+    transform: translateY(-100%) scale(1);
   }
 }
 
@@ -321,22 +318,22 @@
 @keyframes footnote-popOut {
   from {
     opacity: 1;
-    transform: translateX(-50%) scale(1);
+    transform: scale(1);
   }
   to {
     opacity: 0;
-    transform: translateX(-50%) scale(0.9);
+    transform: scale(0.9);
   }
 }
 
 @keyframes footnote-popOutAbove {
   from {
     opacity: 1;
-    transform: translateX(-50%) translateY(-100%) scale(1);
+    transform: translateY(-100%) scale(1);
   }
   to {
     opacity: 0;
-    transform: translateX(-50%) translateY(-100%) scale(0.9);
+    transform: translateY(-100%) scale(0.9);
   }
 }
 
@@ -363,11 +360,7 @@
    ───────────────────────────────────────────────────────────────────────────── */
 
 @media (max-width: 480px) {
-  .footnote-popup {
-    width: calc(100vw - 24px);
-    max-width: none;
-  }
-  
+  /* Width is controlled by JS inline style for iOS Safari compatibility */
   .footnote-popup-content {
     font-size: 0.9rem;
     padding: var(--space-base);
