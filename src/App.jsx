@@ -9,8 +9,52 @@ import {
   ProjectPage,
 } from './pages';
 import { PageTransition, Header } from './components/layout';
-import { PageTransitionProvider } from './contexts';
+import { PageTransitionProvider, usePageTransition } from './contexts';
 import logoMark from './assets/mohsin.png';
+
+/**
+ * AppContent - Inner component that uses the page transition context
+ * 
+ * The animation trigger class is applied to the .app container, which is
+ * the common parent of both Header and PageTransition. This ensures both
+ * animate together from a single source of truth.
+ */
+function AppContent({ selectedTags, setSelectedTags, page, setPage, resetTags }) {
+  const { isReady } = usePageTransition();
+  
+  // Single animation class on the common parent ensures synchronized animation
+  const appClassName = isReady 
+    ? 'app app-transition-ready' 
+    : 'app app-transition-init';
+
+  return (
+    <div className={appClassName}>
+      {/* Header lives OUTSIDE PageTransition so it never remounts on navigation */}
+      {/* Animation is triggered via parent .app class for perfect sync with content */}
+      <Header label="Mohsin Ismail" onLogoClick={resetTags} />
+      <PageTransition>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route
+            path="/blog"
+            element={
+              <BlogPage
+                selectedTags={selectedTags}
+                setSelectedTags={setSelectedTags}
+                page={page}
+                setPage={setPage}
+              />
+            }
+          />
+          <Route path="/posts/:slug" element={<PostPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/portfolio" element={<PortfolioPage />} />
+          <Route path="/portfolio/:slug" element={<ProjectPage />} />
+        </Routes>
+      </PageTransition>
+    </div>
+  );
+}
 
 function App() {
   const [selectedTags, setSelectedTags] = useState([]);
@@ -40,31 +84,13 @@ function App() {
   return (
     <Router>
       <PageTransitionProvider>
-        <div className="app">
-          {/* Header lives OUTSIDE PageTransition so it never remounts on navigation */}
-          {/* This prevents any flash/flicker during page transitions */}
-          <Header label="Mohsin Ismail" onLogoClick={resetTags} />
-          <PageTransition>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route
-                path="/blog"
-                element={
-                  <BlogPage
-                    selectedTags={selectedTags}
-                    setSelectedTags={setSelectedTags}
-                    page={page}
-                    setPage={setPage}
-                  />
-                }
-              />
-              <Route path="/posts/:slug" element={<PostPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/portfolio" element={<PortfolioPage />} />
-              <Route path="/portfolio/:slug" element={<ProjectPage />} />
-            </Routes>
-          </PageTransition>
-        </div>
+        <AppContent
+          selectedTags={selectedTags}
+          setSelectedTags={setSelectedTags}
+          page={page}
+          setPage={setPage}
+          resetTags={resetTags}
+        />
       </PageTransitionProvider>
     </Router>
   );

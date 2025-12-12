@@ -12,80 +12,69 @@
    
    FOUC Prevention:
    - .page-transition-init: Initial state, content hidden, waiting for mount
-   - .page-transition-ready: Animations trigger, content fades in
+   - .app-transition-ready: Animations trigger, content fades in
    ───────────────────────────────────────────────────────────────────────────── */
 
 .page-transition {
-  /* No animation on container - children animate individually */
+  /* No animation on container - children animate individually.
+     Minimal property to satisfy linting (empty rulesets are invalid). */
+  contain: layout;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   HEADER COORDINATION
+   UNIFIED ANIMATION SYSTEM
    
-   The header lives OUTSIDE PageTransition (at App level) to prevent remounting
-   on navigation. This completely eliminates header flicker.
+   ARCHITECTURE:
+   Both header and content animations are triggered by a SINGLE class on their
+   common parent (.app). This guarantees perfect synchronization because:
    
-   Visibility is controlled via classes applied directly to the header:
-   - .transition-init: Initial state, hidden (opacity 0)
-   - .transition-ready: Animates in with content
+   1. One class change (.app-transition-init → .app-transition-ready)
+   2. Both animations reference this parent class
+   3. No timing differences between separate component re-renders
    
-   The .navigating class indicates scroll behavior is suspended,
-   coordinated via PageTransitionContext.
+   The .app div gets app-transition-init/app-transition-ready from AppContent
+   component, which reads isReady from PageTransitionContext.
+   
+   HEADER:
+   Lives OUTSIDE PageTransition to avoid remounting, but its animation is
+   triggered via the parent .app class, not its own state.
+   
+   CONTENT:
+   Lives INSIDE PageTransition. The key={pathname} causes remounting, but
+   animations only start when the parent .app class changes.
    ───────────────────────────────────────────────────────────────────────────── */
 
-/* Header hidden during init phase - applied directly via isReady state */
-.top-bar.transition-init {
+/* Header hidden during init phase - controlled via parent .app class.
+   IMPORTANT: Initial state must match animation's 0% keyframe exactly
+   to prevent visual jump when animation begins. */
+.app-transition-init .top-bar {
   opacity: 0;
-  /* visibility: hidden provides a robust fallback - even if CSS transitions
-     or animation state cause brief visual artifacts, the header is truly hidden */
-  visibility: hidden;
-  /* No animation in init state - clear any previous animation to prevent
-     animation-fill-mode from keeping old values */
-  animation: none;
+  transform: translateY(10px);
   /* Prevent interaction while hidden */
   pointer-events: none;
 }
 
-/* Header entrance animation - smooth, elegant fade
-   Fixed elements like headers should feel anchored, so we use a pure opacity
-   fade rather than translateY which can feel like a "press/release" motion.
-   Slightly longer duration with refined easing for a polished feel. */
-@keyframes headerFadeIn {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-/* Header fades in when ready - runs BEFORE content animation
-   Uses a gentle ease-out curve for a natural appearance.
-   The longer duration (0.35s) creates a more elegant reveal. */
-.top-bar.transition-ready {
-  /* Make visible (overrides visibility: hidden from init state) */
-  visibility: visible;
-  animation: headerFadeIn 0.35s cubic-bezier(0.25, 0.1, 0.25, 1) both;
+/* Header animates in sync with content - both triggered by same parent class.
+   This ensures truly identical animation timing. */
+.app-transition-ready .top-bar {
+  animation: staggerFadeIn 0.32s ease-in-out both;
   animation-delay: 0s;
   /* Re-enable interaction */
   pointer-events: auto;
 }
 
 /* Override pointer-events for collapsed state (handled by collapsed styles) */
-.top-bar.transition-ready.collapsed {
+.app-transition-ready .top-bar.collapsed {
   pointer-events: none;
 }
 
-/* Reduced motion: simple quick fade */
+/* Reduced motion: simple quick fade, still unified */
 @media (prefers-reduced-motion: reduce) {
-  .top-bar.transition-init {
-    visibility: hidden;
+  .app-transition-init .top-bar {
     opacity: 0;
-    animation: none;
   }
   
-  .top-bar.transition-ready {
-    visibility: visible;
+  .app-transition-ready .top-bar {
     animation: simpleFadeIn 0.2s ease both;
     animation-delay: 0s;
   }
@@ -96,24 +85,31 @@
    
    Hide all animatable content immediately. This prevents the flash where
    content briefly appears before animations kick in.
+   
+   IMPORTANT: Initial state must match animation's 0% keyframe exactly
+   (opacity: 0, transform: translateY(10px)) to prevent visual jump.
+   
+   Uses .app-transition-init as the trigger (shared with header) to ensure
+   both header and content are hidden/shown from the same source of truth.
    ───────────────────────────────────────────────────────────────────────────── */
 
-.page-transition-init .frame > section,
-.page-transition-init .frame > article,
-.page-transition-init .post-list > article,
-.page-transition-init .moodboard-column,
-.page-transition-init .moodboard-column .project-card,
-.page-transition-init .about-content > *,
-.page-transition-init .featured-project-card,
-.page-transition-init .post-page .post-page-head,
-.page-transition-init .post-page .post-body,
-.page-transition-init .post-page .post-tags,
-.page-transition-init .post-page .post-footer,
-.page-transition-init .project-page .project-hero,
-.page-transition-init .project-page .project-content,
-.page-transition-init .panel-head,
-.page-transition-init .filter-row .tag-cloud .pill {
+.app-transition-init .frame > section,
+.app-transition-init .frame > article,
+.app-transition-init .post-list > article,
+.app-transition-init .moodboard-column,
+.app-transition-init .moodboard-column .project-card,
+.app-transition-init .about-content > *,
+.app-transition-init .featured-project-card,
+.app-transition-init .post-page .post-page-head,
+.app-transition-init .post-page .post-body,
+.app-transition-init .post-page .post-tags,
+.app-transition-init .post-page .post-footer,
+.app-transition-init .project-page .project-hero,
+.app-transition-init .project-page .project-content,
+.app-transition-init .panel-head,
+.app-transition-init .filter-row .tag-cloud .pill {
   opacity: 0;
+  transform: translateY(10px);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -144,173 +140,173 @@
    SECTION-LEVEL STAGGER
    
    Each major section/panel fades in sequentially.
-   Using nth-of-type(section) to skip the fixed header element.
-   Animations only trigger when .page-transition-ready is applied.
+   Animations only trigger when .app-transition-ready is applied (shared parent).
    
    TIMING COORDINATION:
-   - Header animation: starts at 0s, duration 0.28s
-   - Content: starts at 0.08s so header is ~30% into its animation
-   - This creates an elegant "header leads, content follows" sequence
+   - Header and first section start together at 0s for unified column feel
+   - Subsequent sections have minimal stagger (50ms) for subtle depth
+   - All use same duration and easing for visual cohesion
    ───────────────────────────────────────────────────────────────────────────── */
 
-.page-transition-ready .frame > section,
-.page-transition-ready .frame > article {
+.app-transition-ready .frame > section,
+.app-transition-ready .frame > article {
   animation: staggerFadeIn 0.32s ease-in-out both;
 }
 
-/* Stagger timing for sections (70ms apart, starting after header begins)
-   First section starts at 0.08s so header animation is underway */
-.page-transition-ready .frame > section:nth-of-type(1),
-.page-transition-ready .frame > article:nth-of-type(1) { animation-delay: 0.08s; }
+/* First section syncs with header (0s delay) for unified entrance
+   Subsequent sections have minimal stagger for subtle layering */
+.app-transition-ready .frame > section:nth-of-type(1),
+.app-transition-ready .frame > article:nth-of-type(1) { animation-delay: 0s; }
 
-.page-transition-ready .frame > section:nth-of-type(2),
-.page-transition-ready .frame > article:nth-of-type(2) { animation-delay: 0.15s; }
+.app-transition-ready .frame > section:nth-of-type(2),
+.app-transition-ready .frame > article:nth-of-type(2) { animation-delay: 0.05s; }
 
-.page-transition-ready .frame > section:nth-of-type(3),
-.page-transition-ready .frame > article:nth-of-type(3) { animation-delay: 0.22s; }
+.app-transition-ready .frame > section:nth-of-type(3),
+.app-transition-ready .frame > article:nth-of-type(3) { animation-delay: 0.10s; }
 
-.page-transition-ready .frame > section:nth-of-type(4),
-.page-transition-ready .frame > article:nth-of-type(4) { animation-delay: 0.29s; }
+.app-transition-ready .frame > section:nth-of-type(4),
+.app-transition-ready .frame > article:nth-of-type(4) { animation-delay: 0.15s; }
 
-.page-transition-ready .frame > section:nth-of-type(5),
-.page-transition-ready .frame > article:nth-of-type(5) { animation-delay: 0.36s; }
+.app-transition-ready .frame > section:nth-of-type(5),
+.app-transition-ready .frame > article:nth-of-type(5) { animation-delay: 0.20s; }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    PORTFOLIO MOODBOARD STAGGER
    
    Moodboard columns animate in sequence (left to right).
-   Timing starts after section begins (0.08s).
+   Tighter stagger for unified feel with header.
    ───────────────────────────────────────────────────────────────────────────── */
 
-.page-transition-ready .moodboard-column {
+.app-transition-ready .moodboard-column {
   animation: staggerFadeIn 0.32s ease-in-out both;
 }
 
-.page-transition-ready .moodboard-column:nth-child(1) { animation-delay: 0.12s; }
-.page-transition-ready .moodboard-column:nth-child(2) { animation-delay: 0.18s; }
-.page-transition-ready .moodboard-column:nth-child(3) { animation-delay: 0.24s; }
+.app-transition-ready .moodboard-column:nth-child(1) { animation-delay: 0s; }
+.app-transition-ready .moodboard-column:nth-child(2) { animation-delay: 0.04s; }
+.app-transition-ready .moodboard-column:nth-child(3) { animation-delay: 0.08s; }
 
 /* Project cards within moodboard columns */
-.page-transition-ready .moodboard-column .project-card {
-  animation: staggerFadeIn 0.28s ease-in-out both;
+.app-transition-ready .moodboard-column .project-card {
+  animation: staggerFadeIn 0.32s ease-in-out both;
 }
 
-.page-transition-ready .moodboard-column:nth-child(1) .project-card:nth-child(1) { animation-delay: 0.15s; }
-.page-transition-ready .moodboard-column:nth-child(1) .project-card:nth-child(2) { animation-delay: 0.22s; }
-.page-transition-ready .moodboard-column:nth-child(1) .project-card:nth-child(3) { animation-delay: 0.29s; }
+.app-transition-ready .moodboard-column:nth-child(1) .project-card:nth-child(1) { animation-delay: 0.02s; }
+.app-transition-ready .moodboard-column:nth-child(1) .project-card:nth-child(2) { animation-delay: 0.06s; }
+.app-transition-ready .moodboard-column:nth-child(1) .project-card:nth-child(3) { animation-delay: 0.10s; }
 
-.page-transition-ready .moodboard-column:nth-child(2) .project-card:nth-child(1) { animation-delay: 0.20s; }
-.page-transition-ready .moodboard-column:nth-child(2) .project-card:nth-child(2) { animation-delay: 0.27s; }
-.page-transition-ready .moodboard-column:nth-child(2) .project-card:nth-child(3) { animation-delay: 0.34s; }
+.app-transition-ready .moodboard-column:nth-child(2) .project-card:nth-child(1) { animation-delay: 0.05s; }
+.app-transition-ready .moodboard-column:nth-child(2) .project-card:nth-child(2) { animation-delay: 0.09s; }
+.app-transition-ready .moodboard-column:nth-child(2) .project-card:nth-child(3) { animation-delay: 0.13s; }
 
-.page-transition-ready .moodboard-column:nth-child(3) .project-card:nth-child(1) { animation-delay: 0.25s; }
-.page-transition-ready .moodboard-column:nth-child(3) .project-card:nth-child(2) { animation-delay: 0.32s; }
-.page-transition-ready .moodboard-column:nth-child(3) .project-card:nth-child(3) { animation-delay: 0.39s; }
+.app-transition-ready .moodboard-column:nth-child(3) .project-card:nth-child(1) { animation-delay: 0.08s; }
+.app-transition-ready .moodboard-column:nth-child(3) .project-card:nth-child(2) { animation-delay: 0.12s; }
+.app-transition-ready .moodboard-column:nth-child(3) .project-card:nth-child(3) { animation-delay: 0.16s; }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    ABOUT PAGE CONTENT STAGGER
    
    About content paragraphs and gallery animate in sequence.
-   Timing starts after section begins (0.08s).
+   Tighter stagger for unified feel with header.
    ───────────────────────────────────────────────────────────────────────────── */
 
-.page-transition-ready .about-content > * {
-  animation: staggerFadeIn 0.28s ease-in-out both;
+.app-transition-ready .about-content > * {
+  animation: staggerFadeIn 0.32s ease-in-out both;
 }
 
-.page-transition-ready .about-content > *:nth-child(1) { animation-delay: 0.12s; }
-.page-transition-ready .about-content > *:nth-child(2) { animation-delay: 0.18s; }
-.page-transition-ready .about-content > *:nth-child(3) { animation-delay: 0.24s; }
-.page-transition-ready .about-content > *:nth-child(4) { animation-delay: 0.30s; }
-.page-transition-ready .about-content > *:nth-child(5) { animation-delay: 0.36s; }
+.app-transition-ready .about-content > *:nth-child(1) { animation-delay: 0s; }
+.app-transition-ready .about-content > *:nth-child(2) { animation-delay: 0.04s; }
+.app-transition-ready .about-content > *:nth-child(3) { animation-delay: 0.08s; }
+.app-transition-ready .about-content > *:nth-child(4) { animation-delay: 0.12s; }
+.app-transition-ready .about-content > *:nth-child(5) { animation-delay: 0.16s; }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    FEATURED PROJECT (Home Page)
    
    The featured project card on the home page.
+   Syncs with header and content.
    ───────────────────────────────────────────────────────────────────────────── */
 
-.page-transition-ready .featured-project-card {
+.app-transition-ready .featured-project-card {
   animation: staggerFadeIn 0.32s ease-in-out both;
-  animation-delay: 0.18s;
+  animation-delay: 0.05s;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    POST PAGE CONTENT
    
    The article content on individual post pages.
-   Timing starts after header animation (0.08s).
+   Syncs with header (0s delay for first element), minimal stagger for rest.
    ───────────────────────────────────────────────────────────────────────────── */
 
-.page-transition-ready .post-page .post-page-head {
-  animation: staggerFadeIn 0.28s ease-in-out both;
+.app-transition-ready .post-page .post-page-head {
+  animation: staggerFadeIn 0.32s ease-in-out both;
+  animation-delay: 0s;
+}
+
+.app-transition-ready .post-page .post-body {
+  animation: staggerFadeIn 0.32s ease-in-out both;
+  animation-delay: 0.05s;
+}
+
+.app-transition-ready .post-page .post-tags {
+  animation: staggerFadeIn 0.32s ease-in-out both;
   animation-delay: 0.10s;
 }
 
-.page-transition-ready .post-page .post-body {
+.app-transition-ready .post-page .post-footer {
   animation: staggerFadeIn 0.32s ease-in-out both;
-  animation-delay: 0.18s;
-}
-
-.page-transition-ready .post-page .post-tags {
-  animation: staggerFadeIn 0.28s ease-in-out both;
-  animation-delay: 0.26s;
-}
-
-.page-transition-ready .post-page .post-footer {
-  animation: staggerFadeIn 0.28s ease-in-out both;
-  animation-delay: 0.32s;
+  animation-delay: 0.15s;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    PROJECT PAGE CONTENT
    
    The project detail page elements.
-   Timing starts after header animation (0.08s).
+   Syncs with header (0s delay for first element), minimal stagger for rest.
    ───────────────────────────────────────────────────────────────────────────── */
 
-.page-transition-ready .project-page .project-hero {
+.app-transition-ready .project-page .project-hero {
   animation: staggerFadeIn 0.32s ease-in-out both;
-  animation-delay: 0.10s;
+  animation-delay: 0s;
 }
 
-.page-transition-ready .project-page .project-content {
+.app-transition-ready .project-page .project-content {
   animation: staggerFadeIn 0.32s ease-in-out both;
-  animation-delay: 0.18s;
+  animation-delay: 0.05s;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    PANEL HEADERS
    
-   Panel headers (eyebrow + title) get a subtle early entrance.
-   Starts just after header begins for nice layered effect.
+   Panel headers (eyebrow + title) animate with the same unified timing.
+   Uses same animation as content for visual consistency.
    ───────────────────────────────────────────────────────────────────────────── */
 
-.page-transition-ready .panel-head {
-  animation: simpleFadeIn 0.25s ease-in-out both;
-  animation-delay: 0.06s;
+.app-transition-ready .panel-head {
+  animation: staggerFadeIn 0.32s ease-in-out both;
+  animation-delay: 0s;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    TAG CLOUD STAGGER
    
    Filter tags animate with slight stagger.
-   These appear in a later section, so delays are appropriately later.
+   Tighter timing for unified entrance with header and content.
    ───────────────────────────────────────────────────────────────────────────── */
 
-.page-transition-ready .filter-row .tag-cloud .pill {
-  animation: simpleFadeIn 0.22s ease-in-out both;
+.app-transition-ready .filter-row .tag-cloud .pill {
+  animation: staggerFadeIn 0.32s ease-in-out both;
 }
 
-.page-transition-ready .filter-row .tag-cloud .pill:nth-child(1) { animation-delay: 0.28s; }
-.page-transition-ready .filter-row .tag-cloud .pill:nth-child(2) { animation-delay: 0.30s; }
-.page-transition-ready .filter-row .tag-cloud .pill:nth-child(3) { animation-delay: 0.32s; }
-.page-transition-ready .filter-row .tag-cloud .pill:nth-child(4) { animation-delay: 0.34s; }
-.page-transition-ready .filter-row .tag-cloud .pill:nth-child(5) { animation-delay: 0.36s; }
-.page-transition-ready .filter-row .tag-cloud .pill:nth-child(6) { animation-delay: 0.38s; }
-.page-transition-ready .filter-row .tag-cloud .pill:nth-child(7) { animation-delay: 0.40s; }
-.page-transition-ready .filter-row .tag-cloud .pill:nth-child(8) { animation-delay: 0.42s; }
-.page-transition-ready .filter-row .tag-cloud .pill:nth-child(n+9) { animation-delay: 0.44s; }
+.app-transition-ready .filter-row .tag-cloud .pill:nth-child(1) { animation-delay: 0.08s; }
+.app-transition-ready .filter-row .tag-cloud .pill:nth-child(2) { animation-delay: 0.09s; }
+.app-transition-ready .filter-row .tag-cloud .pill:nth-child(3) { animation-delay: 0.10s; }
+.app-transition-ready .filter-row .tag-cloud .pill:nth-child(4) { animation-delay: 0.11s; }
+.app-transition-ready .filter-row .tag-cloud .pill:nth-child(5) { animation-delay: 0.12s; }
+.app-transition-ready .filter-row .tag-cloud .pill:nth-child(6) { animation-delay: 0.13s; }
+.app-transition-ready .filter-row .tag-cloud .pill:nth-child(7) { animation-delay: 0.14s; }
+.app-transition-ready .filter-row .tag-cloud .pill:nth-child(8) { animation-delay: 0.15s; }
+.app-transition-ready .filter-row .tag-cloud .pill:nth-child(n+9) { animation-delay: 0.16s; }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    REDUCED MOTION
@@ -319,20 +315,20 @@
    ───────────────────────────────────────────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
-  .page-transition-ready .frame > section,
-  .page-transition-ready .frame > article,
-  .page-transition-ready .moodboard-column,
-  .page-transition-ready .moodboard-column .project-card,
-  .page-transition-ready .about-content > *,
-  .page-transition-ready .featured-project-card,
-  .page-transition-ready .post-page .post-page-head,
-  .page-transition-ready .post-page .post-body,
-  .page-transition-ready .post-page .post-tags,
-  .page-transition-ready .post-page .post-footer,
-  .page-transition-ready .project-page .project-hero,
-  .page-transition-ready .project-page .project-content,
-  .page-transition-ready .panel-head,
-  .page-transition-ready .filter-row .tag-cloud .pill {
+  .app-transition-ready .frame > section,
+  .app-transition-ready .frame > article,
+  .app-transition-ready .moodboard-column,
+  .app-transition-ready .moodboard-column .project-card,
+  .app-transition-ready .about-content > *,
+  .app-transition-ready .featured-project-card,
+  .app-transition-ready .post-page .post-page-head,
+  .app-transition-ready .post-page .post-body,
+  .app-transition-ready .post-page .post-tags,
+  .app-transition-ready .post-page .post-footer,
+  .app-transition-ready .project-page .project-hero,
+  .app-transition-ready .project-page .project-content,
+  .app-transition-ready .panel-head,
+  .app-transition-ready .filter-row .tag-cloud .pill {
     animation: simpleFadeIn 0.2s ease both;
     animation-delay: 0s;
   }
