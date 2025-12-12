@@ -111,15 +111,6 @@ const ProjectPage = () => {
               )}
             </div>
           </div>
-          {project.tags && project.tags.length > 0 && (
-            <div className="tag-row">
-              {project.tags.map((tag) => (
-                <Pill key={tag} size="small" variant="disabled" as="span">
-                  {tag}
-                </Pill>
-              ))}
-            </div>
-          )}
         </div>
 
         <div className="project-content">
@@ -137,6 +128,17 @@ const ProjectPage = () => {
           altPrefix={project.title}
           renderBadge={renderBadge}
         />
+
+        {/* Tags */}
+        {project.tags && project.tags.length > 0 && (
+          <div className="project-tags">
+            {project.tags.map((tag) => (
+              <Pill key={tag} size="small" variant="disabled" as="span">
+                {tag}
+              </Pill>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Lightbox Modal */}

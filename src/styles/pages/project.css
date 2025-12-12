@@ -45,9 +45,17 @@
   flex-wrap: wrap;
 }
 
-.project-header .tag-row {
-  margin-top: 0.5rem;
-  margin-bottom: 0;
+/* ─────────────────────────────────────────────────────────────────────────────
+   PROJECT TAGS (Below Carousel)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  padding-top: var(--space-lg);
+  border-top: 1px dashed var(--line);
+  transition: border-color var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
