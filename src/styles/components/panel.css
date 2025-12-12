@@ -67,16 +67,69 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  /* Needed for absolute-positioned exit clones during list animations */
   position: relative;
-  isolation: isolate;
 }
 
-.post-list-anim-layer {
-  position: absolute;
-  inset: 0;
+/* ─────────────────────────────────────────────────────────────────────────────
+   POST LIST FILTER TRANSITIONS
+   
+   Clean, phased transition for filtering/pagination:
+   1. List fades out quickly (opacity transition)
+   2. Content updates (React)
+   3. List fades in with staggered card reveal
+   
+   The .filter-changed class is only added after the first filter operation,
+   so initial page load uses the page-transition stagger instead.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Transitioning state: fade out */
+.post-list.transitioning {
+  opacity: 0;
+  transition: opacity 120ms ease-out;
   pointer-events: none;
-  z-index: 2;
+}
+
+/* Visible state: base styles */
+.post-list.visible {
+  opacity: 1;
+  transition: opacity 100ms ease-out;
+}
+
+/* Staggered card reveal - only for filter changes (not initial page load) */
+@keyframes filterCardReveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.post-list.visible.filter-changed > .post-card {
+  animation: filterCardReveal var(--fade-in-duration, 180ms) var(--ease-out) both;
+  animation-delay: calc(var(--card-index, 0) * var(--stagger-delay, 30ms));
+}
+
+/* Empty state also gets fade animation */
+.post-list.visible.filter-changed > .empty-state {
+  animation: filterCardReveal 200ms var(--ease-out) both;
+}
+
+/* Reduced motion: instant transitions */
+@media (prefers-reduced-motion: reduce) {
+  .post-list.transitioning,
+  .post-list.visible {
+    transition: none;
+  }
+  
+  .post-list.visible.filter-changed > .post-card,
+  .post-list.visible.filter-changed > .empty-state {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
