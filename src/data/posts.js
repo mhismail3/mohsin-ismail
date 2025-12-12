@@ -117,7 +117,109 @@ const rawPosts = import.meta.glob('../../public/posts/*/post.md', {
 
 const sanitizeConfig = {
   ADD_TAGS: ['iframe', 'div', 'figure', 'figcaption', 'footer', 'cite', 'span', 'button'],
-  ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'loading', 'src', 'title', 'data-code', 'data-language', 'data-codeblock', 'data-postimage', 'data-src', 'data-caption', 'data-footnote', 'data-content', 'data-number', 'class', 'aria-label', 'type'],
+  ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'loading', 'src', 'title', 'data-code', 'data-language', 'data-codeblock', 'data-postimage', 'data-src', 'data-caption', 'data-footnote', 'data-content', 'data-number', 'class', 'aria-label', 'type', 'id'],
+};
+
+/**
+ * Generate a URL-friendly slug from heading text.
+ * Handles special characters, emojis, and multiple headings with same text.
+ */
+const generateHeadingId = (text, existingIds = new Set()) => {
+  // Strip markdown formatting from heading text
+  const cleanText = text
+    .replace(/\[([^\]]*)\]\([^)]+\)/g, '$1') // Links → just the link text
+    .replace(/`([^`]*)`/g, '$1')              // Inline code → just the code text
+    .replace(/[*_~]/g, '')                    // Remove emphasis markers
+    .trim();
+  
+  // Generate base slug
+  let baseSlug = cleanText
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '')  // Remove non-word chars except spaces and hyphens
+    .replace(/\s+/g, '-')       // Replace spaces with hyphens
+    .replace(/-+/g, '-')        // Collapse multiple hyphens
+    .replace(/^-|-$/g, '');     // Trim leading/trailing hyphens
+  
+  // Fallback for empty slugs (e.g., emoji-only headings)
+  if (!baseSlug) {
+    baseSlug = 'section';
+  }
+  
+  // Ensure uniqueness by appending number if needed
+  let slug = baseSlug;
+  let counter = 1;
+  while (existingIds.has(slug)) {
+    slug = `${baseSlug}-${counter}`;
+    counter++;
+  }
+  existingIds.add(slug);
+  
+  return slug;
+};
+
+/**
+ * Extract headings from markdown content for Table of Contents.
+ * Only extracts headings from main content, skipping:
+ * - Fenced code blocks (```...```)
+ * - Blockquotes (lines starting with >)
+ * - Indented code blocks (4+ spaces at start)
+ * Returns array of { level, text, id } objects.
+ */
+const extractHeadings = (markdown) => {
+  const headings = [];
+  const existingIds = new Set();
+  
+  // First, remove fenced code blocks to avoid matching headings inside them
+  // This handles ```language ... ``` blocks
+  let cleanedMarkdown = markdown.replace(/```[\s\S]*?```/g, '');
+  
+  // Remove indented code blocks (lines starting with 4+ spaces or tab)
+  // Process line by line to handle this correctly
+  cleanedMarkdown = cleanedMarkdown
+    .split('\n')
+    .filter(line => {
+      // Skip lines that are part of blockquotes (start with >)
+      if (line.trimStart().startsWith('>')) return false;
+      // Skip indented code blocks (4+ spaces or tab at start)
+      if (/^(\s{4,}|\t)/.test(line)) return false;
+      return true;
+    })
+    .join('\n');
+  
+  // Match markdown headings: ## Heading or ### Heading
+  // Only match h2 and h3 for TOC (h1 is the post title)
+  const headingRegex = /^(#{2,3})\s+(.+)$/gm;
+  
+  let match;
+  while ((match = headingRegex.exec(cleanedMarkdown)) !== null) {
+    const level = match[1].length; // 2 for ##, 3 for ###
+    const text = match[2].trim();
+    const id = generateHeadingId(text, existingIds);
+    
+    headings.push({ level, text, id });
+  }
+  
+  return headings;
+};
+
+/**
+ * Add ID attributes to heading elements in parsed HTML.
+ * Uses the pre-extracted headings to ensure consistent IDs.
+ */
+const addHeadingIds = (html, headings) => {
+  if (!headings.length) return html;
+  
+  let headingIndex = 0;
+  
+  // Replace h2 and h3 tags with versions that include id attribute
+  return html.replace(/<(h[23])>([^<]+)<\/h[23]>/g, (match, tag, content) => {
+    if (headingIndex >= headings.length) return match;
+    
+    const heading = headings[headingIndex];
+    headingIndex++;
+    
+    return `<${tag} id="${heading.id}">${content}</${tag}>`;
+  });
 };
 
 /**
@@ -326,6 +428,9 @@ const posts = Object.entries(rawPosts).map(([path, raw]) => {
   // Base path for resolving relative images in this post
   const basePath = `/posts/${slug}`;
   
+  // Extract headings for Table of Contents (before any processing)
+  const headings = extractHeadings(content);
+  
   // Extract code blocks before parsing markdown
   const { processedContent: contentAfterCode, codeBlocks } = extractCodeBlocks(content);
   
@@ -336,7 +441,10 @@ const posts = Object.entries(rawPosts).map(([path, raw]) => {
   const { processedContent: contentAfterFootnotes, footnotes } = extractFootnotes(contentAfterImages);
   
   // Parse markdown (code blocks, images, and footnotes are now placeholders)
-  const html = DOMPurify.sanitize(marked.parse(contentAfterFootnotes), sanitizeConfig);
+  let html = DOMPurify.sanitize(marked.parse(contentAfterFootnotes), sanitizeConfig);
+  
+  // Add IDs to headings for anchor linking
+  html = addHeadingIds(html, headings);
 
   return {
     slug,
@@ -349,6 +457,8 @@ const posts = Object.entries(rawPosts).map(([path, raw]) => {
     codeBlocks,
     images,
     footnotes,
+    headings,
+    enableTableOfContents: data.enableTableOfContents === true,
     basePath,
   };
 }).sort((a, b) => b.dateValue.getTime() - a.dateValue.getTime());

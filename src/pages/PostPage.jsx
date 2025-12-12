@@ -4,7 +4,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { usePageTitle, useTouchHover, useTapFeedback } from '../hooks';
 import { posts } from '../data';
 import { formatDateParts } from '../utils/formatDate';
-import { AboutPanel, CodeBlock, Lightbox, PostImage } from '../components/features';
+import { AboutPanel, CodeBlock, Lightbox, PostImage, TableOfContents } from '../components/features';
 import { Pill } from '../components/ui';
 import DOMPurify from 'dompurify';
 import { marked } from 'marked';
@@ -533,7 +533,7 @@ const PostPage = () => {
 
       <article className="panel post-page">
         <div className="post-page-head">
-          <Link to="/" className="back-link" {...getTapProps()}>← All Posts</Link>
+          <Link to="/blog" className="back-link" {...getTapProps()}>← All Posts</Link>
           <div className="eyebrow">
             {(() => {
               const { datePart, timePart } = formatDateParts(post.date);
@@ -541,6 +541,9 @@ const PostPage = () => {
             })()}
           </div>
           <h1 className="post-title">{post.title}</h1>
+          
+          {/* Table of Contents - only shown if explicitly enabled in frontmatter */}
+          {post.enableTableOfContents && <TableOfContents headings={post.headings} />}
         </div>
 
         <PostContent

@@ -1,0 +1,342 @@
+/* =============================================================================
+   TABLE OF CONTENTS COMPONENT
+   Expandable/collapsible TOC for blog posts with smooth scroll navigation
+   ============================================================================= */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   CONTAINER
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.toc {
+  margin: 1.25rem 0 1.5rem;
+  border: var(--border-retro);
+  border-radius: var(--radius-sm);
+  background: var(--bg-white);
+  box-shadow: var(--shadow-retro-sm);
+  overflow: hidden;
+  font-family: var(--font-body);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TOGGLE BUTTON (Header)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.toc-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--color-code-header);
+  border: none;
+  border-bottom: 1px solid transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color var(--duration-fast) ease,
+              border-color var(--duration-normal) ease;
+}
+
+.toc-toggle--expanded {
+  border-bottom-color: var(--color-border);
+}
+
+@media (hover: hover) {
+  .toc-toggle:hover {
+    background: var(--color-code-hover);
+  }
+}
+
+.toc-toggle:active {
+  background: var(--color-surface-active);
+}
+
+.toc-toggle:focus-visible {
+  outline: 2px dashed var(--clay);
+  outline-offset: -2px;
+}
+
+/* Chevron icon */
+.toc-toggle-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: var(--color-text-muted);
+  transition: color var(--duration-fast) ease;
+}
+
+.toc-chevron {
+  transition: transform 0.25s var(--ease-bounce);
+}
+
+.toc-toggle--expanded .toc-chevron {
+  transform: rotate(180deg);
+}
+
+@media (hover: hover) {
+  .toc-toggle:hover .toc-toggle-icon {
+    color: var(--pine);
+  }
+}
+
+/* Label text */
+.toc-toggle-label {
+  flex: 1;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: 0.01em;
+  /* Optical adjustment to center with chevron and badge */
+  position: relative;
+  top: 1.5px;
+}
+
+/* Section count badge */
+.toc-toggle-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: var(--aero);
+  border: 1.5px solid var(--pine);
+  border-radius: var(--radius-full);
+  box-shadow: 0.5px 0.5px 0px var(--retro-shadow-color);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   EXPANDABLE CONTENT AREA
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.toc-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toc-content--expanded {
+  /* max-height is set dynamically via inline style */
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   LIST STRUCTURE
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.toc-list {
+  list-style: none;
+  list-style-type: none;
+  margin: 0;
+  padding: 8px 14px 8px 14px;
+}
+
+.toc-item {
+  list-style: none;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.toc-item + .toc-item {
+  margin-top: 2px;
+}
+
+/* Indent h3 headings for visual hierarchy */
+.toc-item--h3 {
+  padding-left: 1.25rem;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TOC LINKS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.toc-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 4px 10px 4px 0;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--duration-fast) ease,
+              color var(--duration-fast) ease,
+              transform var(--duration-fast) ease;
+  position: relative;
+}
+
+@media (hover: hover) {
+  .toc-link:hover {
+    background: var(--color-surface-muted);
+    color: var(--pine);
+    transform: translateX(4px);
+  }
+
+  .toc-link:hover .toc-link-number {
+    background: var(--pine);
+    border-color: var(--pine);
+    color: #ffffff;
+  }
+}
+
+.toc-link:active {
+  background: var(--color-surface-active);
+  transform: translateX(2px);
+}
+
+.toc-link:focus-visible {
+  outline: 2px dashed var(--clay);
+  outline-offset: 1px;
+}
+
+/* Numbered circle */
+.toc-link-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  background: var(--color-ghost-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  transition: background-color var(--duration-fast) ease,
+              border-color var(--duration-fast) ease,
+              color var(--duration-fast) ease;
+}
+
+/* Link text */
+.toc-link-text {
+  font-size: 0.88rem;
+  line-height: 1;
+  color: var(--color-text);
+  transition: color var(--duration-fast) ease;
+  /* Optical adjustment to center text with bubble */
+  position: relative;
+  top: 1px;
+}
+
+.toc-item--h3 .toc-link-text {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  top: 1px;
+}
+
+@media (hover: hover) {
+  .toc-link:hover .toc-link-text {
+    color: var(--pine);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   STAGGERED REVEAL ANIMATION
+   Items fade in sequentially when TOC expands
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.toc-content--expanded .toc-item {
+  animation: tocItemReveal 0.25s ease-out both;
+  animation-delay: calc(var(--item-index, 0) * 40ms);
+}
+
+@keyframes tocItemReveal {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TARGET HEADING HIGHLIGHT
+   Brief highlight effect when scrolling to a heading
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.toc-target-highlight {
+  animation: tocTargetPulse 2s ease-out;
+}
+
+@keyframes tocTargetPulse {
+  0% {
+    background: var(--color-surface-active);
+    border-radius: var(--radius-sm);
+    box-shadow: 0 0 0 4px var(--color-surface-active);
+  }
+  100% {
+    background: transparent;
+    box-shadow: 0 0 0 4px transparent;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   DARK THEME ADJUSTMENTS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .toc-toggle-count {
+  box-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   RESPONSIVE - MOBILE
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 480px) {
+  .toc {
+    margin: 1rem 0 1.25rem;
+  }
+
+  .toc-toggle {
+    padding: 12px 12px;
+  }
+
+  .toc-list {
+    padding: 6px 12px 6px 12px;
+  }
+
+  .toc-link {
+    padding: 4px 8px 4px 0;
+  }
+
+  .toc-item--h3 {
+    padding-left: 1rem;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   REDUCED MOTION
+   Respect user preference for reduced motion
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .toc-content {
+    transition: none;
+  }
+
+  .toc-chevron {
+    transition: none;
+  }
+
+  .toc-link {
+    transition: none;
+  }
+
+  .toc-content--expanded .toc-item {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .toc-target-highlight {
+    animation: none;
+  }
+}
+
