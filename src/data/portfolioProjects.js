@@ -1,26 +1,5 @@
-import DOMPurify from 'dompurify';
-import matter from 'gray-matter';
-import { marked } from 'marked';
-import { Buffer } from 'buffer';
 import { parseDate, formatShortDate } from '../utils/formatDate';
-
-// Polyfill Buffer for gray-matter in browser
-if (typeof globalThis !== 'undefined' && !globalThis.Buffer) {
-  globalThis.Buffer = Buffer;
-}
-
-// Configure marked for project descriptions
-marked.setOptions({
-  gfm: true,
-  breaks: true,
-  mangle: false,
-  headerIds: false,
-});
-
-const sanitizeConfig = {
-  ADD_TAGS: ['iframe'],
-  ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'loading', 'src', 'title'],
-};
+import { parseFrontmatter, parseMarkdown, SANITIZE_CONFIG_BASIC } from '../utils/markdown';
 
 // Import all project.md files from public/projects/{slug}/ directories
 const rawProjects = import.meta.glob('../../public/projects/*/project.md', {
@@ -30,7 +9,7 @@ const rawProjects = import.meta.glob('../../public/projects/*/project.md', {
 });
 
 const portfolioProjects = Object.entries(rawProjects).map(([path, raw]) => {
-  const { data, content } = matter(raw);
+  const { data, content } = parseFrontmatter(raw);
   
   // Extract slug from path: ../../public/projects/{slug}/project.md
   const pathParts = path.split('/');
@@ -39,7 +18,7 @@ const portfolioProjects = Object.entries(rawProjects).map(([path, raw]) => {
   const slug = data.slug || fileSlug;
   
   // Parse markdown content to HTML
-  const description = DOMPurify.sanitize(marked.parse(content), sanitizeConfig);
+  const description = parseMarkdown(content, SANITIZE_CONFIG_BASIC);
   
   // Build image paths from the /projects/{slug}/ directory (served from public)
   const basePath = `/projects/${slug}`;
@@ -85,6 +64,3 @@ const portfolioProjects = Object.entries(rawProjects).map(([path, raw]) => {
 });
 
 export default portfolioProjects;
-
-
-

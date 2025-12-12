@@ -24,6 +24,3 @@ const usePageTitle = (title, options = {}) => {
 };
 
 export default usePageTitle;
-
-
-

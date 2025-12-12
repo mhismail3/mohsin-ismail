@@ -30,6 +30,3 @@ const AboutPanel = () => (
 );
 
 export default AboutPanel;
-
-
-

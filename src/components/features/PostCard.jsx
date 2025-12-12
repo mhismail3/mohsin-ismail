@@ -2,8 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { formatDateParts } from '../../utils/formatDate';
 import { useTapFeedback } from '../../hooks';
-import { Icon } from '../ui';
-import Pill from '../ui/Pill';
+import { Icon, Pill } from '../ui';
 
 const PostCard = React.forwardRef(({
   post,
@@ -119,4 +118,3 @@ const PostCard = React.forwardRef(({
 PostCard.displayName = 'PostCard';
 
 export default PostCard;
-

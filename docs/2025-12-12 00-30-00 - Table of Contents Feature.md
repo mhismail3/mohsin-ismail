@@ -39,3 +39,4 @@ The TOC uses the site's retro aesthetic:
 - Badge showing total section count
 - Chevron icon that rotates when expanded
 
+

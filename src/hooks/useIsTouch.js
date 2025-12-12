@@ -29,6 +29,3 @@ const useIsTouch = () => {
 };
 
 export default useIsTouch;
-
-
-

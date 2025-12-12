@@ -119,5 +119,3 @@ export const usePageTransition = () => {
 export { PageTransitionContext };
 
 export default PageTransitionContext;
-
-

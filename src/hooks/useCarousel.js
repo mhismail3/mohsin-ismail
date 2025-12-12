@@ -97,6 +97,3 @@ const useCarousel = ({ items = [] } = {}) => {
 };
 
 export default useCarousel;
-
-
-

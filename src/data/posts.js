@@ -1,19 +1,11 @@
-import DOMPurify from 'dompurify';
-import matter from 'gray-matter';
-import { marked } from 'marked';
-import { Buffer } from 'buffer';
 import { parseDate } from '../utils/formatDate';
-
-if (typeof globalThis !== 'undefined' && !globalThis.Buffer) {
-  globalThis.Buffer = Buffer;
-}
-
-marked.setOptions({
-  gfm: true,
-  breaks: true,
-  mangle: false,
-  headerIds: false,
-});
+import {
+  parseFrontmatter,
+  stripMarkdown,
+  DOMPurify,
+  marked,
+  SANITIZE_CONFIG_POSTS,
+} from '../utils/markdown';
 
 /**
  * Custom blockquote renderer that detects and styles attributions.
@@ -114,11 +106,6 @@ const rawPosts = import.meta.glob('../../public/posts/*/post.md', {
   import: 'default',
   eager: true,
 });
-
-const sanitizeConfig = {
-  ADD_TAGS: ['iframe', 'div', 'figure', 'figcaption', 'footer', 'cite', 'span', 'button'],
-  ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'loading', 'src', 'title', 'data-code', 'data-language', 'data-codeblock', 'data-postimage', 'data-src', 'data-caption', 'data-footnote', 'data-content', 'data-number', 'class', 'aria-label', 'type', 'id'],
-};
 
 /**
  * Generate a URL-friendly slug from heading text.
@@ -221,47 +208,6 @@ const addHeadingIds = (html, headings) => {
     return `<${tag} id="${heading.id}">${content}</${tag}>`;
   });
 };
-
-/**
- * Remove footnotes from text using bracket balancing.
- * Handles nested brackets like ^[text with [link](url)]
- */
-const stripFootnotes = (text) => {
-  let result = '';
-  let i = 0;
-  
-  while (i < text.length) {
-    if (text[i] === '^' && text[i + 1] === '[') {
-      // Found footnote start, skip to matching ]
-      let depth = 1;
-      let j = i + 2;
-      
-      while (j < text.length && depth > 0) {
-        if (text[j] === '[') depth++;
-        else if (text[j] === ']') depth--;
-        j++;
-      }
-      
-      // Skip the entire footnote
-      i = j;
-    } else {
-      result += text[i];
-      i++;
-    }
-  }
-  
-  return result;
-};
-
-const stripMarkdown = (text = '') =>
-  stripFootnotes(text)                         // Remove footnotes first (handles nested brackets)
-    .replace(/```[\s\S]*?```/g, ' ')           // Remove code blocks
-    .replace(/`([^`]*)`/g, '$1')               // Inline code → just the code text
-    .replace(/!\[[^\]]*]\([^)]+\)/g, ' ')      // Remove images entirely
-    .replace(/\[([^\]]*)\]\([^)]+\)/g, '$1')   // Links → just the link text (not URL)
-    .replace(/[#>*_~\-]/g, ' ')                // Remove markdown syntax chars
-    .replace(/\s+/g, ' ')                      // Collapse whitespace
-    .trim();
 
 /**
  * Build an excerpt from post content for 4-line preview.
@@ -419,7 +365,7 @@ const extractFootnotes = (markdown) => {
 };
 
 const posts = Object.entries(rawPosts).map(([path, raw]) => {
-  const { data, content } = matter(raw);
+  const { data, content } = parseFrontmatter(raw);
   
   // Extract slug from folder name: ../../public/posts/{slug}/post.md
   const pathParts = path.split('/');
@@ -441,7 +387,7 @@ const posts = Object.entries(rawPosts).map(([path, raw]) => {
   const { processedContent: contentAfterFootnotes, footnotes } = extractFootnotes(contentAfterImages);
   
   // Parse markdown (code blocks, images, and footnotes are now placeholders)
-  let html = DOMPurify.sanitize(marked.parse(contentAfterFootnotes), sanitizeConfig);
+  let html = DOMPurify.sanitize(marked.parse(contentAfterFootnotes), SANITIZE_CONFIG_POSTS);
   
   // Add IDs to headings for anchor linking
   html = addHeadingIds(html, headings);
@@ -468,6 +414,3 @@ export const uniqueTags = Array.from(new Set(posts.flatMap((post) => post.tags))
 );
 
 export default posts;
-
-
-

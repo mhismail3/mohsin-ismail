@@ -1,8 +1,7 @@
 import React, { useEffect, useLayoutEffect, useState, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useTheme } from '../../hooks';
+import { useTheme, useTouchDrag } from '../../hooks';
 import { usePageTransition } from '../../contexts';
-import useTouchDrag from '../../hooks/useTouchDrag';
 import { Icon } from '../ui';
 import logoMark from '../../assets/mohsin.png';
 
@@ -433,6 +432,3 @@ const Header = ({ label, onLogoClick }) => {
 };
 
 export default Header;
-
-
-

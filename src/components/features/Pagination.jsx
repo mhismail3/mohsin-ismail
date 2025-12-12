@@ -1,5 +1,5 @@
 import React from 'react';
-import Button from '../ui/Button';
+import { Button } from '../ui';
 
 /**
  * Pagination component for navigating through pages.
@@ -46,6 +46,3 @@ const Pagination = ({ page, totalPages, onPrev, onNext }) => {
 };
 
 export default Pagination;
-
-
-

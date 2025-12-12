@@ -111,4 +111,3 @@ const TableOfContents = ({ headings }) => {
 };
 
 export default TableOfContents;
-

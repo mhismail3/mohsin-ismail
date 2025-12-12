@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Carousel from './Carousel';
 import Lightbox from './Lightbox';
-import aboutContent from '../../data/about';
+import { aboutContent } from '../../data';
 
 const contactLinks = [
   {

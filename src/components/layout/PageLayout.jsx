@@ -3,6 +3,10 @@ import { usePageTitle } from '../../hooks';
 import Header from './Header';
 
 /**
+ * @deprecated This component is currently unused. Header is now rendered at the App
+ * level outside PageTransition to prevent remounting on navigation.
+ * Kept for backwards compatibility and potential future use.
+ * 
  * Common page layout wrapper.
  * Handles document title and page structure.
  * 
@@ -30,6 +34,3 @@ const PageLayout = ({
 };
 
 export default PageLayout;
-
-
-

@@ -39,6 +39,3 @@ const Pill = ({
 };
 
 export default Pill;
-
-
-

@@ -1,6 +1,10 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 
 /**
+ * @deprecated This component is currently unused. Footnotes are now handled by
+ * FootnotePopupManager in PostPage.jsx which provides better iOS Safari support.
+ * Kept for backwards compatibility and potential future use.
+ * 
  * InlineFootnote renders a small circular bubble (superscript-style) that
  * expands into a popover with additional inline context. Designed for use
  * inside post bodies where markdown footnotes are converted into placeholders.
@@ -115,6 +119,3 @@ const InlineFootnote = ({ content, index }) => {
 };
 
 export default InlineFootnote;
-
-
-

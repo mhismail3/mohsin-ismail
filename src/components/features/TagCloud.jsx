@@ -1,6 +1,5 @@
 import React from 'react';
-import Pill from '../ui/Pill';
-import Button from '../ui/Button';
+import { Pill, Button } from '../ui';
 
 /**
  * TagCloud component for displaying and filtering by tags.
@@ -43,6 +42,3 @@ const TagCloud = ({
 );
 
 export default TagCloud;
-
-
-
