@@ -22,9 +22,11 @@
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   z-index: var(--z-fixed);
-  transition: padding var(--duration-normal) ease, 
+  transition: padding var(--duration-normal) ease,
+              opacity 0.32s ease-in-out,
+              transform 0.32s ease-in-out,
               box-shadow var(--theme-transition-duration) var(--theme-transition-ease),
-              background-color var(--theme-transition-duration) var(--theme-transition-ease), 
+              background-color var(--theme-transition-duration) var(--theme-transition-ease),
               border-color var(--theme-transition-duration) var(--theme-transition-ease);
   overflow-anchor: none;
 }
@@ -864,7 +866,10 @@
     border-color var(--collapse-duration) var(--collapse-ease),
     box-shadow var(--collapse-duration) var(--collapse-ease),
     backdrop-filter var(--collapse-duration) var(--collapse-ease),
-    -webkit-backdrop-filter var(--collapse-duration) var(--collapse-ease);
+    -webkit-backdrop-filter var(--collapse-duration) var(--collapse-ease),
+    /* Needed for unified page-enter transition (iOS Safari-friendly) */
+    opacity 0.32s ease-in-out,
+    transform 0.32s ease-in-out;
 }
 
 /* Collapsed state - container stays in place, visuals fade */

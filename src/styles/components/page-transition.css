@@ -49,18 +49,25 @@
    to prevent visual jump when animation begins. */
 .app-transition-init .top-bar {
   opacity: 0;
-  transform: translateY(10px);
+  /* iOS Safari: prefer translate3d for more reliable compositor behavior */
+  transform: translate3d(0, 10px, 0);
   /* Prevent interaction while hidden */
   pointer-events: none;
+  /* Encourage Safari to keep the header on its own layer */
+  will-change: opacity, transform;
 }
 
 /* Header animates in sync with content - both triggered by same parent class.
    This ensures truly identical animation timing. */
 .app-transition-ready .top-bar {
-  animation: staggerFadeIn 0.32s ease-in-out both;
-  animation-delay: 0s;
+  /* Avoid keyframe animations on fixed + backdrop-filter (glitches on iOS Safari).
+     Use transitions on opacity/transform instead; still triggered by the same
+     .app class flip, so cadence stays unified with the content. */
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
   /* Re-enable interaction */
   pointer-events: auto;
+  will-change: auto;
 }
 
 /* Override pointer-events for collapsed state (handled by collapsed styles) */
@@ -75,8 +82,8 @@
   }
   
   .app-transition-ready .top-bar {
-    animation: simpleFadeIn 0.2s ease both;
-    animation-delay: 0s;
+    opacity: 1;
+    transform: none;
   }
 }
 
