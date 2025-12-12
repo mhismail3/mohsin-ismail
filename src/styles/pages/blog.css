@@ -18,6 +18,13 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-sm);
+  align-items: center;
+}
+
+/* Scaled tag cloud: compact gaps, center-aligned for visual balance */
+.tag-cloud--scaled {
+  gap: var(--space-xs) var(--space-sm);
+  align-items: center;
 }
 
 .active-tags {

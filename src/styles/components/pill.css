@@ -198,6 +198,42 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   PROPORTIONAL SCALING (tag cloud)
+   
+   Tags scale based on --tag-scale (0-1) using logarithmic distribution.
+   Scale range: 0.82rem (min) to 1.1rem (max) for readable proportions.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.pill.tag-scaled {
+  /* 
+   * Font scale: interpolate between min (0.78rem) and max (1.08rem)
+   * Formula: min + (max - min) * scale = 0.78 + 0.30 * scale
+   */
+  --font-min: 0.78;
+  --font-range: 0.30;
+  --computed-font: calc(var(--font-min) * 1rem + var(--font-range) * var(--tag-scale) * 1rem);
+  
+  /*
+   * Padding scale: compact padding for tag cloud
+   * Horizontal: 0.45rem to 0.65rem
+   * Vertical top: 0.26rem to 0.34rem
+   * Vertical bottom: 0.12rem to 0.18rem
+   */
+  --pad-h-min: 0.45;
+  --pad-h-range: 0.20;
+  --pad-v-top-min: 0.26;
+  --pad-v-top-range: 0.08;
+  --pad-v-bot-min: 0.12;
+  --pad-v-bot-range: 0.06;
+  
+  font-size: var(--computed-font);
+  padding: 
+    calc(var(--pad-v-top-min) * 1rem + var(--pad-v-top-range) * var(--tag-scale) * 1rem)
+    calc(var(--pad-h-min) * 1rem + var(--pad-h-range) * var(--tag-scale) * 1rem)
+    calc(var(--pad-v-bot-min) * 1rem + var(--pad-v-bot-range) * var(--tag-scale) * 1rem);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    FOCUS STATES
    ───────────────────────────────────────────────────────────────────────────── */
 
