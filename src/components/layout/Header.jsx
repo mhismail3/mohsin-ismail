@@ -31,6 +31,8 @@ const Header = ({ label, onLogoClick }) => {
   const [touchPressedPath, setTouchPressedPath] = useState(null);
   // Remember the collapsed state when menu was opened (for smooth close animations)
   const [openedWhileCollapsed, setOpenedWhileCollapsed] = useState(false);
+  // When true, menu hides instantly without CSS transitions (prevents phantom buttons during navigation)
+  const [instantHide, setInstantHide] = useState(false);
   
   const closeTimeoutRef = useRef(null);
   const touchStartRef = useRef(null); // Track touch start position
@@ -89,6 +91,7 @@ const Header = ({ label, onLogoClick }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [isCollapsed, isNavigating]);
 
+  // Close menu with animation (for non-navigation closures like scroll, tap outside, etc.)
   const closeMenu = useCallback(() => {
     if (!isOpen || isClosing) return;
     
@@ -107,9 +110,29 @@ const Header = ({ label, onLogoClick }) => {
     }, CLOSE_ANIMATION_DURATION);
   }, [isOpen, isClosing]);
 
+  // Close menu instantly without animation (for navigation - prevents phantom button artifacts)
+  const closeMenuInstantly = useCallback(() => {
+    if (!isOpen) return;
+    
+    // Clear any pending close animation
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+    
+    // Set instant-hide flag to disable CSS transitions, then close
+    setInstantHide(true);
+    setIsOpen(false);
+    setIsClosing(false);
+    // Also reset openedWhileCollapsed to prevent stale from-collapsed class
+    setOpenedWhileCollapsed(false);
+  }, [isOpen]);
+
+  // Close menu instantly on any location change (fallback for browser back/forward, etc.)
+  // This uses instant close to prevent phantom button artifacts during page transitions
   useEffect(() => {
     if (isOpen) {
-      closeMenu();
+      closeMenuInstantly();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
@@ -144,15 +167,15 @@ const Header = ({ label, onLogoClick }) => {
       onLogoClick();
     }
     if (location.pathname !== '/') {
+      // Navigating to a different page - close instantly to prevent phantom buttons
+      closeMenuInstantly();
       navigate('/');
-    }
-    closeMenu();
-    // Scroll-to-top is handled by PageTransitionContext on navigation
-    // Only scroll if staying on same page
-    if (location.pathname === '/') {
+    } else {
+      // Staying on same page - use animated close
+      closeMenu();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }, [onLogoClick, location.pathname, navigate, closeMenu]);
+  }, [onLogoClick, location.pathname, navigate, closeMenu, closeMenuInstantly]);
 
   const handleNav = (path) => {
     if (path === '/') {
@@ -160,12 +183,12 @@ const Header = ({ label, onLogoClick }) => {
       return;
     }
     if (location.pathname !== path) {
+      // Navigating to a different page - close instantly to prevent phantom buttons
+      closeMenuInstantly();
       navigate(path);
-    }
-    closeMenu();
-    // Scroll-to-top is handled by PageTransitionContext on navigation
-    // Only scroll if staying on same page
-    if (location.pathname === path) {
+    } else {
+      // Staying on same page - use animated close
+      closeMenu();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -218,6 +241,8 @@ const Header = ({ label, onLogoClick }) => {
         closeTimeoutRef.current = null;
       }
       setIsClosing(false);
+      // Clear instant-hide flag so transitions work normally
+      setInstantHide(false);
       // Remember the collapsed state when opening - this determines menu position
       // throughout the open/close cycle, avoiding position jumps during scroll
       setOpenedWhileCollapsed(isCollapsed);
@@ -320,6 +345,8 @@ const Header = ({ label, onLogoClick }) => {
     // Use the remembered state from when menu was opened, not current state
     // This prevents the menu from jumping position if header collapses during close animation
     openedWhileCollapsed ? 'from-collapsed' : '',
+    // Instant hide disables CSS transitions to prevent phantom buttons during navigation
+    instantHide ? 'instant-hide' : '',
   ].filter(Boolean).join(' ');
   
   const brandMarkClass = [

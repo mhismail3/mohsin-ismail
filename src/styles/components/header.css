@@ -412,6 +412,18 @@
    TOP MENU
    ───────────────────────────────────────────────────────────────────────────── */
 
+/* Instant hide - disables all transitions to prevent phantom buttons during navigation.
+   When navigating to a new page, buttons must disappear immediately without animating. */
+.top-menu.instant-hide,
+.top-menu.instant-hide .btn,
+.top-menu.instant-hide .top-menu-content {
+  transition: none !important;
+  -webkit-transition: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
 .top-menu {
   position: absolute;
   top: calc(100% + 8px);
