@@ -1,7 +1,7 @@
 import React, { useEffect, useLayoutEffect, useState, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTheme, useTouchDrag } from '../../hooks';
-import { usePageTransition } from '../../contexts';
+import { usePageTransition, useFilterTransition } from '../../contexts';
 import { Icon } from '../ui';
 import logoMark from '../../assets/mohsin.png';
 
@@ -43,6 +43,13 @@ const Header = ({ label, onLogoClick }) => {
   // During navigation, we suspend scroll-based behavior to prevent flicker
   // Animation is now controlled via parent .app class (see App.jsx)
   const { isNavigating } = usePageTransition();
+  
+  // Get filter transition state - during filtering, we suspend scroll reactions
+  // but we DON'T immediately reset collapsed state (header stays as-is during fade-out)
+  const { isFiltering, filterPhase } = useFilterTransition();
+  
+  // Suspend scroll reactions during navigation OR filtering
+  const isSuspended = isNavigating || isFiltering;
 
   // Cleanup timeouts on unmount
   useEffect(() => {
@@ -51,25 +58,40 @@ const Header = ({ label, onLogoClick }) => {
     };
   }, []);
 
-  // Reset collapsed state when navigation starts
-  // This ensures header is in expanded state when new page loads
+  // Reset collapsed state when NAVIGATION starts (not filtering)
+  // For filtering, we let the header stay as-is during fade-out, then
+  // the scroll listener will naturally update state after the invisible scroll
   // 
   // CRITICAL: Must use useLayoutEffect (not useEffect) to ensure state changes
   // happen synchronously BEFORE the browser paints. This prevents a visual flash
   // where the collapsed header briefly expands before opacity:0 takes effect.
-  // The context also uses useLayoutEffect, so both run in the same sync cycle.
   useLayoutEffect(() => {
     if (isNavigating) {
       setIsCollapsed(false);
       setIsScrolled(false);
     }
   }, [isNavigating]);
+  
+  // When filter transition starts fading out, the invisible scroll has just happened.
+  // Check scroll position IMMEDIATELY so header can start expanding right away,
+  // rather than waiting for the entire transition to complete.
+  // This makes the header feel much more responsive when clicking tags from bottom of page.
+  useEffect(() => {
+    if (filterPhase === 'out') {
+      // The invisible scroll just happened - check position and expand if needed
+      const scrollY = window.scrollY;
+      setIsScrolled(scrollY > 10);
+      if (scrollY <= EXPAND_THRESHOLD) {
+        setIsCollapsed(false);
+      }
+    }
+  }, [filterPhase]);
 
   // Simple scroll-based collapse with snap points
-  // SUSPENDED during navigation to prevent flicker
+  // SUSPENDED during navigation and filtering to prevent flicker
   useEffect(() => {
-    // Don't react to scroll during page transitions
-    if (isNavigating) return;
+    // Don't react to scroll during page transitions or filter transitions
+    if (isSuspended) return;
     
     const handleScroll = () => {
       const scrollY = window.scrollY;
@@ -88,7 +110,7 @@ const Header = ({ label, onLogoClick }) => {
     handleScroll(); // Check initial state
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [isCollapsed, isNavigating]);
+  }, [isCollapsed, isSuspended]);
 
   // Close menu with animation (for non-navigation closures like scroll, tap outside, etc.)
   const closeMenu = useCallback(() => {
@@ -331,7 +353,7 @@ const Header = ({ label, onLogoClick }) => {
     isOpen && !isMobile ? 'expanded' : '',
     isMobile ? '' : 'flyout',
     isCollapsed ? 'collapsed' : '',
-    isNavigating ? 'navigating' : '',
+    isSuspended ? 'suspended' : '',
     // Animation is now controlled via parent .app class for perfect sync with content
   ].filter(Boolean).join(' ');
   

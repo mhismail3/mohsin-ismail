@@ -100,11 +100,15 @@
   color: var(--ink);
   cursor: pointer;
   box-shadow: var(--shadow-retro-sm);
+  /* Explicit opacity for transition to work in both directions */
+  opacity: 1;
   transition: transform var(--duration-fast) ease, 
               box-shadow var(--theme-transition-duration) var(--theme-transition-ease),
               background-color var(--theme-transition-duration) var(--theme-transition-ease),
               border-color var(--theme-transition-duration) var(--theme-transition-ease),
-              color var(--duration-fast) ease;
+              color var(--duration-fast) ease,
+              /* Include opacity transition so collapse/expand animates smoothly */
+              opacity var(--collapse-duration) var(--collapse-ease);
 }
 
 /* 3D Press Effect for theme toggle (2px shadow):
@@ -844,8 +848,10 @@
 
 /* Unified transition timing for smooth, synchronized animation */
 .top-bar {
-  --collapse-duration: 0.3s;
-  --collapse-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  /* Snappy duration - quick but not jarring */
+  --collapse-duration: 0.18s;
+  /* Snappy easing - quick start, gentle settle */
+  --collapse-ease: cubic-bezier(0.2, 0, 0.1, 1);
 }
 
 /* Elements that fade out during collapse - all use same timing */

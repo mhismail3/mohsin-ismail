@@ -9,7 +9,7 @@ import {
   ProjectPage,
 } from './pages';
 import { PageTransition, Header } from './components/layout';
-import { PageTransitionProvider, usePageTransition } from './contexts';
+import { PageTransitionProvider, FilterTransitionProvider, usePageTransition } from './contexts';
 import logoMark from './assets/mohsin.png';
 
 /**
@@ -84,13 +84,15 @@ function App() {
   return (
     <Router>
       <PageTransitionProvider>
-        <AppContent
-          selectedTags={selectedTags}
-          setSelectedTags={setSelectedTags}
-          page={page}
-          setPage={setPage}
-          resetTags={resetTags}
-        />
+        <FilterTransitionProvider>
+          <AppContent
+            selectedTags={selectedTags}
+            setSelectedTags={setSelectedTags}
+            page={page}
+            setPage={setPage}
+            resetTags={resetTags}
+          />
+        </FilterTransitionProvider>
       </PageTransitionProvider>
     </Router>
   );

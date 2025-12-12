@@ -35,6 +35,40 @@
   flex-wrap: wrap;
 }
 
+/* During filter transition, just disable interaction (no fade-out) */
+.active-tags.fading-out {
+  pointer-events: none;
+}
+
+/* Staggered fade-in animation for active tag pills - elegant with subtle scale */
+@keyframes activeTagFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.active-tags:not(.fading-out) .pill {
+  opacity: 0; /* Prevent flash before animation */
+  animation: activeTagFadeIn 260ms cubic-bezier(0.33, 0, 0.2, 1) both;
+}
+
+/* Gentle stagger for smooth feel */
+.active-tags:not(.fading-out) .pill:nth-child(1) { animation-delay: 0ms; }
+.active-tags:not(.fading-out) .pill:nth-child(2) { animation-delay: 50ms; }
+.active-tags:not(.fading-out) .pill:nth-child(3) { animation-delay: 100ms; }
+.active-tags:not(.fading-out) .pill:nth-child(n+4) { animation-delay: 150ms; }
+
+.active-tags:not(.fading-out) .btn {
+  opacity: 0; /* Prevent flash before animation */
+  animation: activeTagFadeIn 260ms cubic-bezier(0.33, 0, 0.2, 1) both;
+  animation-delay: 60ms;
+}
+
 /* ─────────────────────────────────────────────────────────────────────────────
    PAGINATION
    ───────────────────────────────────────────────────────────────────────────── */

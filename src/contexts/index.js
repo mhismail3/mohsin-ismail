@@ -5,3 +5,8 @@ export {
   PageTransitionProvider,
   usePageTransition,
 } from './PageTransitionContext';
+export {
+  FilterTransitionContext,
+  FilterTransitionProvider,
+  useFilterTransition,
+} from './FilterTransitionContext';

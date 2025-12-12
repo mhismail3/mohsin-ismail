@@ -1,48 +1,31 @@
 import React, { useMemo, useEffect, useRef, useCallback, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { usePageTitle } from '../hooks';
-import { usePageTransition } from '../contexts';
+import { usePageTransition, useFilterTransition } from '../contexts';
 import { posts, uniqueTags } from '../data';
 import { PostCard, Pagination, TagCloud, AboutPanel } from '../components/features';
 import { Button } from '../components/ui';
 
 const POSTS_PER_PAGE = 10;
 
-// Animation timing (keep short for snappy feel)
-const FADE_OUT_MS = 120;
-const FADE_IN_MS = 180;
-const STAGGER_MS = 30;
+// Animation timing for CSS custom properties - elegant, intentional feel
+const FADE_IN_MS = 280;
+const STAGGER_MS = 50;
 
 function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const { isReady } = usePageTransition();
+  const { isFiltering, filterPhase, startFilterTransition } = useFilterTransition();
   usePageTitle('Blog - Mohsin Ismail');
 
   const postListRef = useRef(null);
-  const reduceMotionRef = useRef(false);
   const isFirstRenderRef = useRef(true);
   
-  // Track transition state for CSS-driven animations
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  // Track if we've ever filtered (to enable stagger animations on filter changes)
   const [hasFiltered, setHasFiltered] = useState(false);
-  const pendingUpdateRef = useRef(null);
-
-  // Respect reduced motion preference
-  useEffect(() => {
-    if (typeof window === 'undefined' || !window.matchMedia) return undefined;
-    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const sync = () => {
-      reduceMotionRef.current = media.matches;
-    };
-    sync();
-
-    if (typeof media.addEventListener === 'function') {
-      media.addEventListener('change', sync);
-      return () => media.removeEventListener('change', sync);
-    }
-    media.addListener(sync);
-    return () => media.removeListener(sync);
-  }, []);
+  
+  // Snapshot of selected tags to show during fade-out (prevents immediate UI change)
+  const [displayTags, setDisplayTags] = useState(selectedTags);
 
   // Initialize selected tags from URL search params on mount
   useEffect(() => {
@@ -50,6 +33,7 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
     if (tagFromUrl && uniqueTags.includes(tagFromUrl)) {
       setPage(1);
       setSelectedTags([tagFromUrl]);
+      setDisplayTags([tagFromUrl]);
       setSearchParams({}, { replace: true });
     }
   }, []);
@@ -64,6 +48,21 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
       return () => clearTimeout(timer);
     }
   }, [isReady]);
+  
+  // Sync displayTags with selectedTags when not filtering
+  // During filtering, we keep the old displayTags until fade-in starts
+  useEffect(() => {
+    if (!isFiltering && filterPhase === 'idle') {
+      setDisplayTags(selectedTags);
+    }
+  }, [selectedTags, isFiltering, filterPhase]);
+  
+  // Update displayTags when entering the 'in' phase (fade-in starting)
+  useEffect(() => {
+    if (filterPhase === 'in') {
+      setDisplayTags(selectedTags);
+    }
+  }, [filterPhase, selectedTags]);
 
   const filteredPosts = useMemo(
     () =>
@@ -90,56 +89,20 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
     [filteredPosts, startIndex],
   );
 
-  // Check if scrolled down
-  const isScrolledDown = useCallback(() => {
-    if (typeof window === 'undefined') return false;
-    return window.scrollY > 100;
-  }, []);
-
-  // Orchestrated transition: fade out → update → fade in
+  // Orchestrated transition using context
   const performTransition = useCallback((updateFn) => {
-    // Skip animation on first render or if reduced motion
-    if (isFirstRenderRef.current || reduceMotionRef.current) {
+    // Skip animation on first render
+    if (isFirstRenderRef.current) {
       updateFn();
       return;
     }
 
-    // If already transitioning, queue the update
-    if (isTransitioning) {
-      pendingUpdateRef.current = updateFn;
-      return;
-    }
-
-    // Phase 1: Scroll to top instantly if needed (before animation starts)
-    if (isScrolledDown()) {
-      window.scrollTo({ top: 0, behavior: 'instant' });
-    }
-
-    // Phase 2: Fade out
-    setIsTransitioning(true);
-
-    // Phase 3: After fade out, apply the update
-    setTimeout(() => {
-      updateFn();
-      setHasFiltered(true); // Enable stagger animations for filter changes
-
-      // Phase 4: Fade in (handled by CSS, just remove transitioning state)
-      // Small delay to ensure React has rendered new content
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          setIsTransitioning(false);
-
-          // Handle any queued updates
-          if (pendingUpdateRef.current) {
-            const pending = pendingUpdateRef.current;
-            pendingUpdateRef.current = null;
-            // Use setTimeout to avoid state update during render
-            setTimeout(() => performTransition(pending), 50);
-          }
-        });
-      });
-    }, FADE_OUT_MS);
-  }, [isTransitioning, isScrolledDown]);
+    // Mark that we've filtered at least once
+    setHasFiltered(true);
+    
+    // Use the centralized filter transition
+    startFilterTransition(updateFn);
+  }, [startFilterTransition]);
 
   const handlePrev = useCallback(() => {
     performTransition(() => {
@@ -176,20 +139,48 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
     '--stagger-delay': `${STAGGER_MS}ms`,
     '--fade-in-duration': `${FADE_IN_MS}ms`,
   };
+  
+  // Determine post list classes based on filter phase
+  const getPostListClass = () => {
+    const classes = ['post-list'];
+    
+    if (filterPhase === 'out' || filterPhase === 'update') {
+      classes.push('transitioning');
+    } else {
+      classes.push('visible');
+    }
+    
+    if (hasFiltered) {
+      classes.push('filter-changed');
+    }
+    
+    return classes.join(' ');
+  };
+  
+  // Determine panel classes for coordinated fade
+  const getPanelClass = () => {
+    const classes = ['panel', 'posts-panel'];
+    
+    if (filterPhase === 'out' || filterPhase === 'update') {
+      classes.push('filter-transitioning');
+    }
+    
+    return classes.join(' ');
+  };
 
   return (
     <div className="frame">
-      <section className="panel posts-panel">
+      <section className={getPanelClass()}>
         <div className="panel-head">
           <div>
             <div className="eyebrow">All Posts</div>
           </div>
-          <div className="active-tags">
-            {selectedTags.length > 0 && (
+          <div className={`active-tags${filterPhase === 'out' || filterPhase === 'update' ? ' fading-out' : ''}`}>
+            {displayTags.length > 0 && (
               <>
                 <TagCloud
-                  tags={selectedTags}
-                  selectedTags={selectedTags}
+                  tags={displayTags}
+                  selectedTags={displayTags}
                   onToggle={handleTagToggle}
                   showClear={false}
                 />
@@ -202,7 +193,7 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
         </div>
 
         <div 
-          className={`post-list ${isTransitioning ? 'transitioning' : 'visible'}${hasFiltered ? ' filter-changed' : ''}`}
+          className={getPostListClass()}
           ref={postListRef}
           style={listStyle}
         >

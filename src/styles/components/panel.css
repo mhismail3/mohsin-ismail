@@ -63,6 +63,15 @@
   gap: var(--space-base);
 }
 
+/* Posts panel header: give eyebrow container a min-height matching button height
+   so the eyebrow stays vertically centered at the same position whether or not
+   filter buttons are present. This prevents the visual "nudge" when filtering. */
+.posts-panel .panel-head > div:first-child {
+  min-height: 34px; /* Matches .btn.small height */
+  display: flex;
+  align-items: center;
+}
+
 .post-list {
   display: flex;
   flex-direction: column;
@@ -80,19 +89,33 @@
    
    The .filter-changed class is only added after the first filter operation,
    so initial page load uses the page-transition stagger instead.
+   
+   COORDINATED SYSTEM:
+   FilterTransitionContext orchestrates all animations via filterPhase:
+   - 'out': Everything fades out together (panel header + post list)
+   - 'update': State changes, content hidden
+   - 'in': Everything fades in together with stagger
    ───────────────────────────────────────────────────────────────────────────── */
 
-/* Transitioning state: fade out */
+/* Panel transitions during filtering - NO fade-out for snappy feel */
+.posts-panel.filter-transitioning {
+  /* Content stays visible during transition - no flickery fade-out */
+  pointer-events: none; /* Just disable interaction during transition */
+}
+
+/* Post list base styles */
+.post-list.visible {
+  opacity: 1;
+}
+
+/* During 'out' phase, content stays visible (no fade-out) */
 .post-list.transitioning {
-  opacity: 0;
-  transition: opacity 120ms ease-out;
   pointer-events: none;
 }
 
-/* Visible state: base styles */
-.post-list.visible {
-  opacity: 1;
-  transition: opacity 100ms ease-out;
+/* Hide cards during transition to prevent flicker before animation starts */
+.post-list.transitioning.filter-changed > .post-card {
+  opacity: 0;
 }
 
 /* Staggered card reveal - only for filter changes (not initial page load) */
@@ -107,14 +130,18 @@
   }
 }
 
+/* Cards start invisible to prevent flash before animation starts */
 .post-list.visible.filter-changed > .post-card {
-  animation: filterCardReveal var(--fade-in-duration, 180ms) var(--ease-out) both;
-  animation-delay: calc(var(--card-index, 0) * var(--stagger-delay, 30ms));
+  opacity: 0;
+  /* Elegant reveal with smooth easing - slower for refined feel */
+  animation: filterCardReveal var(--fade-in-duration, 280ms) cubic-bezier(0.33, 0, 0.2, 1) both;
+  animation-delay: calc(var(--card-index, 0) * var(--stagger-delay, 50ms));
 }
 
 /* Empty state also gets fade animation */
 .post-list.visible.filter-changed > .empty-state {
-  animation: filterCardReveal 200ms var(--ease-out) both;
+  opacity: 0;
+  animation: filterCardReveal 320ms cubic-bezier(0.33, 0, 0.2, 1) both;
 }
 
 /* Reduced motion: instant transitions */
