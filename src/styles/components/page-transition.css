@@ -45,26 +45,30 @@
    ───────────────────────────────────────────────────────────────────────────── */
 
 /* Header hidden during init phase - controlled via parent .app class.
-   IMPORTANT: Initial state must match animation's 0% keyframe exactly
-   to prevent visual jump when animation begins. */
+   
+   CRITICAL: The header is a FIXTURE - it does NOT move on page load.
+   Only content below animates with staggered transforms. The header
+   fades in at its final position to provide visual stability and
+   avoid the "jittery" appearance of a fixed element moving.
+   
+   Why no transform:
+   1. Fixed elements should feel anchored, not animated into place
+   2. Transform animations on fixed + backdrop-filter can glitch on iOS Safari
+   3. User perception: the header is the stable reference point
+*/
 .app-transition-init .top-bar {
   opacity: 0;
-  /* iOS Safari: prefer translate3d for more reliable compositor behavior */
-  transform: translate3d(0, 10px, 0);
+  /* NO transform - header stays at final position, only fades in */
   /* Prevent interaction while hidden */
   pointer-events: none;
   /* Encourage Safari to keep the header on its own layer */
-  will-change: opacity, transform;
+  will-change: opacity;
 }
 
-/* Header animates in sync with content - both triggered by same parent class.
-   This ensures truly identical animation timing. */
+/* Header fades in - triggered by same parent class as content.
+   No transform animation - header appears at its fixed position. */
 .app-transition-ready .top-bar {
-  /* Avoid keyframe animations on fixed + backdrop-filter (glitches on iOS Safari).
-     Use transitions on opacity/transform instead; still triggered by the same
-     .app class flip, so cadence stays unified with the content. */
   opacity: 1;
-  transform: translate3d(0, 0, 0);
   /* Re-enable interaction */
   pointer-events: auto;
   will-change: auto;
@@ -83,7 +87,6 @@
   
   .app-transition-ready .top-bar {
     opacity: 1;
-    transform: none;
   }
 }
 
