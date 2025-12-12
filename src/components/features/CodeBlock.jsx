@@ -9,6 +9,7 @@ const CodeBlock = ({ code, language = 'javascript', maxLines = 10 }) => {
   const lines = useMemo(() => code.split('\n'), [code]);
   const totalLines = lines.length;
   const needsExpand = totalLines > maxLines;
+  const lineLabel = totalLines === 1 ? 'line' : 'lines';
   
   const displayedCode = useMemo(() => {
     if (!needsExpand || expanded) return code;
@@ -45,7 +46,7 @@ const CodeBlock = ({ code, language = 'javascript', maxLines = 10 }) => {
         <span className="code-block-lang">{language.toUpperCase()}</span>
         <div className="code-block-actions">
           <span className="code-block-lines">
-            {totalLines} lines
+            {totalLines} {lineLabel}
           </span>
           <button
             type="button"
