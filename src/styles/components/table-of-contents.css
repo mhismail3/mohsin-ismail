@@ -26,7 +26,7 @@
   align-items: center;
   gap: var(--space-sm);
   width: 100%;
-  padding: 12px 14px;
+  padding: 6px 14px;
   background: var(--color-code-header);
   border: none;
   border-bottom: 1px solid transparent;
@@ -292,7 +292,7 @@
   }
 
   .toc-toggle {
-    padding: 12px 12px;
+    padding: 5px 12px;
   }
 
   .toc-list {

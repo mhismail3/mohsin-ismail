@@ -72,13 +72,29 @@
   gap: var(--space-sm);
 }
 
-/* Main row: eyebrow left, clear button right - never wraps */
+/* Main row: eyebrow left, clear button right - never wraps
+   Eyebrow aligned to top by default for consistency with other pages;
+   smoothly animates down to center when clear button appears */
 .panel-head-main {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-base);
-  min-height: 34px; /* Matches .btn.small height */
+  min-height: 34px; /* Reserves space for button to prevent layout shift */
+}
+
+.panel-head-main .eyebrow {
+  transition: transform 0.26s cubic-bezier(0.33, 0, 0.2, 1);
+}
+
+/* When button appears, slide eyebrow down to center-align with it */
+.panel-head-main:has(.btn) .eyebrow {
+  /* (34px button height - ~16px eyebrow height) / 2 ≈ 9px */
+  transform: translateY(9px);
+}
+
+.panel-head-main .btn {
+  align-self: center;
 }
 
 .post-list {
