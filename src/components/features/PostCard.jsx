@@ -61,13 +61,21 @@ const PostCard = React.forwardRef(({
     }
   };
 
+  // Navigate to post when clicking anywhere in the post-head area
+  const handlePostHeadClick = (e) => {
+    // Don't navigate if clicking on interactive elements (handled by their own handlers)
+    // The copy button already has stopPropagation, but we also check for links
+    if (e.target.closest('a')) return;
+    navigate(`/posts/${post.slug}`);
+  };
+
   return (
     <article
       ref={ref}
       className={['post-card', className].filter(Boolean).join(' ')}
       {...props}
     >
-      <div className="post-head">
+      <div className="post-head" onClick={handlePostHeadClick} role="link" tabIndex={-1}>
         <div className="post-meta">
           <div className="eyebrow">
             {(() => {

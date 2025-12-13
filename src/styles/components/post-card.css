@@ -58,6 +58,10 @@
   column-gap: var(--space-base);
   row-gap: var(--space-sm);
   align-items: flex-start;
+  /* Position context for stretched link overlay */
+  position: relative;
+  /* Indicate the entire area is clickable */
+  cursor: pointer;
 }
 
 .post-meta {
@@ -70,6 +74,7 @@
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.08em;
+  transition: color var(--duration-normal) var(--ease-out);
 }
 
 .eyebrow-dot {
@@ -104,6 +109,9 @@
   
   /* Position context for fade overlay */
   position: relative;
+  
+  /* Smooth color transition for hover feedback */
+  transition: color var(--duration-normal) var(--ease-out);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -159,6 +167,9 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
 
 /* ─────────────────────────────────────────────────────────────────────────────
    POST TITLE LINK
+   
+   The entire .post-head area is clickable via JavaScript onClick handler.
+   The title link provides semantic markup and keyboard navigation.
    ───────────────────────────────────────────────────────────────────────────── */
 
 .post-title-link {
@@ -173,6 +184,21 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
   .post-title-link:hover {
     color: var(--pine);
   }
+  
+  /* When hovering the clickable post-head area, also style the title */
+  .post-head:hover .post-title-link {
+    color: var(--pine);
+  }
+  
+  /* When hovering the post-head, also style the excerpt */
+  .post-head:hover .post-excerpt {
+    color: var(--color-text);
+  }
+  
+  /* Subtle indicator for the clickable area */
+  .post-head:hover .eyebrow {
+    color: var(--pine);
+  }
 }
 
 /* Active/pressed state for touch feedback */
@@ -181,6 +207,35 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
   color: var(--pine);
   transform: scale(0.99);
   transition: transform 0.06s ease-out, color 0.06s ease-out;
+}
+
+/* Active state feedback for entire post-head area */
+.post-head:active .post-title-link {
+  color: var(--pine);
+}
+
+.post-head:active .post-excerpt {
+  color: var(--color-text);
+}
+
+.post-head:active .eyebrow {
+  color: var(--pine);
+}
+
+/* Focus-visible state for keyboard navigation */
+.post-title-link:focus-visible {
+  color: var(--pine);
+  outline: 2px dashed var(--clay);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.post-head:has(.post-title-link:focus-visible) .post-excerpt {
+  color: var(--color-text);
+}
+
+.post-head:has(.post-title-link:focus-visible) .eyebrow {
+  color: var(--pine);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
