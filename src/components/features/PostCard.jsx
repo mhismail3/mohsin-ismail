@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { formatDateParts } from '../../utils/formatDate';
-import { useTapFeedback } from '../../hooks';
+import { useTapFeedback, useShimmerFollow } from '../../hooks';
 import { Icon, Pill } from '../ui';
 
 const PostCard = React.forwardRef(({
@@ -16,6 +16,7 @@ const PostCard = React.forwardRef(({
   const excerptRef = useRef(null);
   const navigate = useNavigate();
   const { getTapProps } = useTapFeedback();
+  const { shimmerRef, shimmerHandlers } = useShimmerFollow();
 
   // Detect if excerpt content overflows (needs truncation)
   useEffect(() => {
@@ -84,7 +85,13 @@ const PostCard = React.forwardRef(({
             })()}
           </div>
           <h3>
-            <Link to={`/posts/${post.slug}`} className="post-title-link" {...getTapProps()}>
+            <Link 
+              ref={shimmerRef}
+              to={`/posts/${post.slug}`} 
+              className="post-title-link" 
+              {...getTapProps()}
+              {...shimmerHandlers}
+            >
               {post.title}
             </Link>
           </h3>

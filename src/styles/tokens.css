@@ -30,6 +30,52 @@
   initial-value: rgba(255, 254, 251, 0);
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   SHIMMER EFFECT COLORS (@property)
+   
+   Registered for smooth animation during theme transitions.
+   The shimmer effect on post titles uses these for the gradient.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Shimmer base color - matches text color, changes with theme */
+@property --shimmer-base {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #1f1a14;
+}
+
+/* Shimmer accent color - the green highlight that follows cursor */
+@property --shimmer-accent {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #0f7363;
+}
+
+/* Shimmer shadow colors for letterpress effect */
+@property --shimmer-highlight {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: rgba(255, 255, 255, 0.5);
+}
+
+@property --shimmer-shadow-1 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: rgba(31, 26, 20, 0.12);
+}
+
+@property --shimmer-shadow-2 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: rgba(31, 26, 20, 0.08);
+}
+
+@property --shimmer-shadow-3 {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: rgba(31, 26, 20, 0.04);
+}
+
 :root {
   /* Color Scheme */
   color-scheme: light;
@@ -103,6 +149,14 @@
   /* Animatable gradient colors (registered with @property above) */
   --gradient-fade-end: #fffefb;
   --gradient-fade-start: rgba(255, 254, 251, 0);
+  
+  /* Shimmer effect colors (registered with @property for smooth theme transitions) */
+  --shimmer-base: #1f1a14;
+  --shimmer-accent: #0a8a6e;  /* Brighter, more saturated green for visibility */
+  --shimmer-highlight: rgba(255, 255, 255, 0.5);
+  --shimmer-shadow-1: rgba(31, 26, 20, 0.12);
+  --shimmer-shadow-2: rgba(31, 26, 20, 0.08);
+  --shimmer-shadow-3: rgba(31, 26, 20, 0.04);
   
   /* Shadow colors */
   --shadow-color: rgba(31, 26, 20, 0.15);
@@ -324,6 +378,14 @@
   /* Animatable gradient colors (registered with @property at top of file) */
   --gradient-fade-end: #24221e;
   --gradient-fade-start: rgba(36, 34, 30, 0);
+  
+  /* Shimmer effect colors for dark mode - inverted for visibility */
+  --shimmer-base: #f0ebe3;
+  --shimmer-accent: #2c8f7a;
+  --shimmer-highlight: rgba(255, 255, 255, 0.12);
+  --shimmer-shadow-1: rgba(0, 0, 0, 0.25);
+  --shimmer-shadow-2: rgba(0, 0, 0, 0.18);
+  --shimmer-shadow-3: rgba(0, 0, 0, 0.10);
   
   /* Shadow colors - darker shadows for dark mode */
   --shadow-color: rgba(0, 0, 0, 0.3);

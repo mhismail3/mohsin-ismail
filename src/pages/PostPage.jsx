@@ -1,6 +1,6 @@
 import React, { useState, useRef, useMemo, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { usePageTitle, useTouchHover, useTapFeedback, useInternalLinkNavigation } from '../hooks';
+import { usePageTitle, useTouchHover, useTapFeedback, useInternalLinkNavigation, useShimmerFollow } from '../hooks';
 import { posts } from '../data';
 import { formatDateParts } from '../utils/formatDate';
 import { AboutPanel, CodeBlock, FootnotePopupManager, Lightbox, PostImage, TableOfContents } from '../components/features';
@@ -213,6 +213,7 @@ const PostPage = () => {
   const post = postIndex !== -1 ? posts[postIndex] : null;
   const [selectedImage, setSelectedImage] = useState(null);
   const { getTapProps } = useTapFeedback();
+  const { shimmerRef, shimmerHandlers } = useShimmerFollow();
 
   const prevPost = postIndex !== -1 && postIndex < posts.length - 1 ? posts[postIndex + 1] : null;
   const nextPost = postIndex !== -1 && postIndex > 0 ? posts[postIndex - 1] : null;
@@ -248,7 +249,11 @@ const PostPage = () => {
               return <>{datePart}<span className="eyebrow-dot">•</span>{timePart}</>;
             })()}
           </div>
-          <h1 className="post-title">{post.title}</h1>
+          <h1 
+            ref={shimmerRef}
+            className="post-title"
+            {...shimmerHandlers}
+          >{post.title}</h1>
           
           {/* Table of Contents - only shown if explicitly enabled in frontmatter */}
           {post.enableTableOfContents && <TableOfContents headings={post.headings} />}

@@ -23,9 +23,13 @@ function AppContent({ selectedTags, setSelectedTags, page, setPage, resetTags })
   const { isReady } = usePageTransition();
   
   // Single animation class on the common parent ensures synchronized animation
+  // Title style toggle: 'title-style-letterpress' or 'title-style-shimmer'
+  // Change this to compare the two title styling options
+  const titleStyle = 'title-style-shimmer'; // or 'title-style-letterpress'
+  
   const appClassName = isReady 
-    ? 'app app-transition-ready' 
-    : 'app app-transition-init';
+    ? `app app-transition-ready ${titleStyle}` 
+    : `app app-transition-init ${titleStyle}`;
 
   return (
     <div className={appClassName}>

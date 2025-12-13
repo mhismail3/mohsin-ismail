@@ -180,6 +180,75 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
   display: inline-block; /* Required for transform to work on inline element */
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   POST CARD TITLE - COMBINED LETTERPRESS + SHIMMER EFFECT
+   
+   Combines two effects for maximum elegance:
+   1. Letterpress: 3D embossed depth using drop-shadow (always visible)
+   2. Shimmer: Cursor-following green highlight on hover
+   
+   Uses filter: drop-shadow() instead of text-shadow because it works
+   correctly with background-clip: text (which makes text transparent).
+   
+   Uses @property registered colors from tokens.css for smooth theme transitions.
+   
+   At rest: Text appears solid with subtle depth
+   On hover: Green shimmer follows cursor across the embossed text
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.post-title-link.title-style-shimmer,
+.title-style-shimmer .post-title-link {
+  /* CSS variable for cursor-following shimmer position (set by JS) */
+  /* Start at 120% so shimmer is completely off-screen when not hovering */
+  --shimmer-x: 120%;
+  
+  /* Gradient using semantic color variables that animate with theme changes
+     When shimmer is at 120%, the visible area is solid base color
+     Wider band (20%) for more prominent shimmer effect */
+  background: linear-gradient(
+    90deg,
+    var(--shimmer-base) 0%,
+    var(--shimmer-base) calc(var(--shimmer-x) - 20%),
+    var(--shimmer-accent) var(--shimmer-x),
+    var(--shimmer-base) calc(var(--shimmer-x) + 20%),
+    var(--shimmer-base) 100%
+  );
+  background-size: 100% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  
+  /* LETTERPRESS: Layered drop-shadows using semantic variables
+     These animate smoothly during theme transitions */
+  filter: 
+    drop-shadow(-0.5px -0.5px 0 var(--shimmer-highlight))
+    drop-shadow(1px 1px 0 var(--shimmer-shadow-1))
+    drop-shadow(1px 1px 0 var(--shimmer-shadow-2));
+  
+  /* Smooth transitions for shimmer position and all @property colors */
+  transition: 
+    --shimmer-x 0.12s ease-out,
+    --shimmer-base var(--theme-transition-duration) var(--theme-transition-ease),
+    --shimmer-accent var(--theme-transition-duration) var(--theme-transition-ease),
+    --shimmer-highlight var(--theme-transition-duration) var(--theme-transition-ease),
+    --shimmer-shadow-1 var(--theme-transition-duration) var(--theme-transition-ease),
+    --shimmer-shadow-2 var(--theme-transition-duration) var(--theme-transition-ease),
+    filter var(--theme-transition-duration) var(--theme-transition-ease),
+    transform 0.08s ease-out;
+}
+
+/* Hover - subtle shadow shift for "lifting" feel */
+@media (hover: hover) {
+  .post-title-link.title-style-shimmer:hover,
+  .title-style-shimmer .post-title-link:hover,
+  .title-style-shimmer .post-head:hover .post-title-link {
+    filter: 
+      drop-shadow(-0.5px -0.5px 0 var(--shimmer-highlight))
+      drop-shadow(0.5px 0.5px 0 var(--shimmer-accent))
+      drop-shadow(0.5px 0.5px 0 transparent);
+  }
+}
+
 @media (hover: hover) {
   .post-title-link:hover {
     color: var(--pine);

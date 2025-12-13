@@ -147,6 +147,68 @@
   line-height: var(--leading-tight);
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   POST TITLE STYLES - COMBINED LETTERPRESS + SHIMMER EFFECT
+   
+   Combines two effects for maximum elegance:
+   1. Letterpress: 3D embossed depth using drop-shadow (always visible)
+   2. Shimmer: Cursor-following green highlight on hover
+   
+   Uses filter: drop-shadow() instead of text-shadow because it works
+   correctly with background-clip: text (which makes text transparent).
+   
+   Uses @property registered colors from tokens.css for smooth theme transitions.
+   
+   At rest: Text appears solid with bold depth
+   On hover: Green shimmer follows cursor across the embossed text
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.post-page .post-title.title-style-shimmer,
+.title-style-shimmer .post-page .post-title,
+.title-style-shimmer article.post-page .post-title {
+  /* CSS variable for cursor-following shimmer position (set by JS) */
+  /* Start at 120% so shimmer is completely off-screen when not hovering */
+  --shimmer-x: 120%;
+  
+  /* Gradient using semantic color variables that animate with theme changes
+     When shimmer is at 120%, the visible area is solid base color */
+  background: linear-gradient(
+    90deg,
+    var(--shimmer-base) 0%,
+    var(--shimmer-base) calc(var(--shimmer-x) - 12%),
+    var(--shimmer-accent) var(--shimmer-x),
+    var(--shimmer-base) calc(var(--shimmer-x) + 12%),
+    var(--shimmer-base) 100%
+  ) !important;
+  background-size: 100% 100% !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  
+  /* LETTERPRESS: Layered drop-shadows using semantic variables
+     These animate smoothly during theme transitions
+     Larger shadows for the bigger post page title */
+  filter: 
+    drop-shadow(-1px -1px 0 var(--shimmer-highlight))
+    drop-shadow(1px 1px 0 var(--shimmer-shadow-1))
+    drop-shadow(2px 2px 0 var(--shimmer-shadow-2))
+    drop-shadow(2px 2px 0 var(--shimmer-shadow-3)) !important;
+  
+  /* Prevent text clipping at bottom */
+  padding-bottom: 0.15em !important;
+  
+  /* Smooth transitions for shimmer position and all @property colors */
+  transition: 
+    --shimmer-x 0.15s ease-out,
+    --shimmer-base var(--theme-transition-duration) var(--theme-transition-ease),
+    --shimmer-accent var(--theme-transition-duration) var(--theme-transition-ease),
+    --shimmer-highlight var(--theme-transition-duration) var(--theme-transition-ease),
+    --shimmer-shadow-1 var(--theme-transition-duration) var(--theme-transition-ease),
+    --shimmer-shadow-2 var(--theme-transition-duration) var(--theme-transition-ease),
+    --shimmer-shadow-3 var(--theme-transition-duration) var(--theme-transition-ease),
+    filter var(--theme-transition-duration) var(--theme-transition-ease) !important;
+}
+
 .post-tags {
   margin-top: 1.5rem;
   margin-bottom: 0.75rem;
