@@ -33,7 +33,7 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
   
   // Track which posts were visible before filter (for selective card animation)
   const [newlyVisibleSlugs, setNewlyVisibleSlugs] = useState(new Set());
-  const prevVisibleSlugsRef = useRef(new Set());
+  const prevVisibleSlugsRef = useRef(null); // Initialized lazily after visiblePosts is computed
 
   // Initialize selected tags from URL search params on mount
   useEffect(() => {
@@ -87,10 +87,6 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
       }
     }
   }, [filterPhase, selectedTags]);
-  
-  // Track which posts are newly visible for selective card animation
-  // This runs after visiblePosts is computed, so we need to define visiblePosts first
-  // We'll use a separate effect that runs after the memos below
 
   const filteredPosts = useMemo(
     () =>
@@ -117,11 +113,34 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
     [filteredPosts, startIndex],
   );
   
-  // Track which posts are newly visible for selective card animation
+  // Buffered posts for display - only updates at controlled times to prevent flash
+  // Similar pattern to displayTags: keeps old content during transition, updates on 'in' phase
+  const [displayPosts, setDisplayPosts] = useState(visiblePosts);
+  
+  // Initialize prevVisibleSlugsRef on first render and keep it updated when not filtering
+  // This ensures we correctly track which posts were visible before any filter operation
+  useEffect(() => {
+    if (!hasFiltered) {
+      prevVisibleSlugsRef.current = new Set(visiblePosts.map(p => p.slug));
+    }
+  }, [visiblePosts, hasFiltered]);
+  
+  // Sync displayPosts when not filtering (idle state)
+  // This keeps displayPosts in sync during normal navigation/initial load
+  useEffect(() => {
+    if (!isFiltering && filterPhase === 'idle') {
+      setDisplayPosts(visiblePosts);
+      prevVisibleSlugsRef.current = new Set(visiblePosts.map(p => p.slug));
+    }
+  }, [visiblePosts, isFiltering, filterPhase]);
+  
+  // Update displayPosts when entering 'in' phase - this is the key fix!
+  // By updating displayPosts and newlyVisibleSlugs together in the same effect,
+  // React batches them into a single render, so new posts always have the correct class
   useEffect(() => {
     if (filterPhase === 'in') {
       const currentSlugs = new Set(visiblePosts.map(p => p.slug));
-      const prevSlugs = prevVisibleSlugsRef.current;
+      const prevSlugs = prevVisibleSlugsRef.current || new Set();
       
       // Find posts that weren't visible before
       const newSlugs = new Set();
@@ -131,13 +150,16 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
         }
       });
       
+      // Update displayPosts and newlyVisibleSlugs TOGETHER (React batches these)
+      // This ensures new posts render with card-entering class from the start
+      setDisplayPosts(visiblePosts);
+      setNewlyVisibleSlugs(newSlugs);
+      
       // Update ref for next comparison
       prevVisibleSlugsRef.current = currentSlugs;
       
-      // Mark new posts for animation (only if there are new ones)
+      // Clear after animation completes (base duration + stagger for all cards)
       if (newSlugs.size > 0) {
-        setNewlyVisibleSlugs(newSlugs);
-        // Clear after animation completes (base duration + stagger for all cards)
         const timer = setTimeout(() => {
           setNewlyVisibleSlugs(new Set());
         }, FADE_IN_MS + (visiblePosts.length * STAGGER_MS));
@@ -258,7 +280,7 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
           ref={postListRef}
           style={listStyle}
         >
-          {visiblePosts.map((post, index) => {
+          {displayPosts.map((post, index) => {
             const isNewlyVisible = newlyVisibleSlugs.has(post.slug);
             const cardClass = hasFiltered 
               ? (isNewlyVisible ? 'card-entering' : 'card-stable')
@@ -276,7 +298,7 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
               />
             );
           })}
-          {visiblePosts.length === 0 && (
+          {displayPosts.length === 0 && (
             <div className="empty-state">
               <p>No posts match these tags yet.</p>
             </div>
