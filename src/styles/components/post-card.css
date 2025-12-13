@@ -198,19 +198,22 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
 
 .post-title-link.title-style-shimmer,
 .title-style-shimmer .post-title-link {
-  /* CSS variable for cursor-following shimmer position (set by JS) */
-  /* Start at 120% so shimmer is completely off-screen when not hovering */
-  --shimmer-x: 120%;
+  /* CSS variables for cursor-following shimmer (set by JS)
+     --shimmer-x: horizontal position of shimmer center
+     --shimmer-width: band width (0% = hidden, 25% = visible) for fade in/out */
+  --shimmer-x: 50%;
+  --shimmer-width: 0%;
   
-  /* Gradient using semantic color variables that animate with theme changes
-     When shimmer is at 120%, the visible area is solid base color
-     Wider band (20%) for more prominent shimmer effect */
+  /* Gradient with extra color stops for a softer, more blended shimmer
+     Uses symmetric fade: base → mid-blend → accent → mid-blend → base */
   background: linear-gradient(
     90deg,
     var(--shimmer-base) 0%,
-    var(--shimmer-base) calc(var(--shimmer-x) - 20%),
+    var(--shimmer-base) calc(var(--shimmer-x) - var(--shimmer-width) - 8%),
+    color-mix(in srgb, var(--shimmer-accent) 30%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width)),
     var(--shimmer-accent) var(--shimmer-x),
-    var(--shimmer-base) calc(var(--shimmer-x) + 20%),
+    color-mix(in srgb, var(--shimmer-accent) 30%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width)),
+    var(--shimmer-base) calc(var(--shimmer-x) + var(--shimmer-width) + 8%),
     var(--shimmer-base) 100%
   );
   background-size: 100% 100%;
@@ -225,9 +228,10 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
     drop-shadow(1px 1px 0 var(--shimmer-shadow-1))
     drop-shadow(1px 1px 0 var(--shimmer-shadow-2));
   
-  /* Smooth transitions for shimmer position and all @property colors */
+  /* Gradual transitions - slower easing for a dreamy, blended feel */
   transition: 
-    --shimmer-x 0.12s ease-out,
+    --shimmer-x 0.15s cubic-bezier(0.25, 0.1, 0.25, 1),
+    --shimmer-width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
     --shimmer-base var(--theme-transition-duration) var(--theme-transition-ease),
     --shimmer-accent var(--theme-transition-duration) var(--theme-transition-ease),
     --shimmer-highlight var(--theme-transition-duration) var(--theme-transition-ease),

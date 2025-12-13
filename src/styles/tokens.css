@@ -31,11 +31,25 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   SHIMMER EFFECT COLORS (@property)
+   SHIMMER EFFECT PROPERTIES (@property)
    
-   Registered for smooth animation during theme transitions.
+   Registered for smooth animation during theme transitions and hover effects.
    The shimmer effect on post titles uses these for the gradient.
    ───────────────────────────────────────────────────────────────────────────── */
+
+/* Shimmer position - horizontal position of the shimmer center (set by JS) */
+@property --shimmer-x {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 50%;
+}
+
+/* Shimmer width - controls fade in/out by growing/shrinking the band */
+@property --shimmer-width {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 0%;
+}
 
 /* Shimmer base color - matches text color, changes with theme */
 @property --shimmer-base {
