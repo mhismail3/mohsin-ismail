@@ -12,9 +12,9 @@ const NAV_LINKS = [
 ];
 
 // Duration for the longest close animation (matches CSS)
-// Mobile: 0.24s transform + 80ms stagger = ~320ms
-// Desktop: 0.22s transform + 80ms stagger = ~300ms
-const CLOSE_ANIMATION_DURATION = 350;
+// Mobile/Desktop: 0.24s transform + 120ms stagger = ~360ms
+// Using 400ms to ensure all 4 buttons complete their animations
+const CLOSE_ANIMATION_DURATION = 400;
 
 // Scroll thresholds for snap-point behavior
 const COLLAPSE_THRESHOLD = 80;  // Collapse when scrolled past this
@@ -28,8 +28,6 @@ const Header = ({ label, onLogoClick }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   // Track which nav button is being touch-pressed (by path)
   const [touchPressedPath, setTouchPressedPath] = useState(null);
-  // Remember the collapsed state when menu was opened (for smooth close animations)
-  const [openedWhileCollapsed, setOpenedWhileCollapsed] = useState(false);
   // When true, menu hides instantly without CSS transitions (prevents phantom buttons during navigation)
   const [instantHide, setInstantHide] = useState(false);
   
@@ -145,8 +143,6 @@ const Header = ({ label, onLogoClick }) => {
     setInstantHide(true);
     setIsOpen(false);
     setIsClosing(false);
-    // Also reset openedWhileCollapsed to prevent stale from-collapsed class
-    setOpenedWhileCollapsed(false);
   }, [isOpen]);
 
   // Close menu instantly on any location change (fallback for browser back/forward, etc.)
@@ -264,24 +260,15 @@ const Header = ({ label, onLogoClick }) => {
       setIsClosing(false);
       // Clear instant-hide flag so transitions work normally
       setInstantHide(false);
-      // Remember the collapsed state when opening - this determines menu position
-      // throughout the open/close cycle, avoiding position jumps during scroll
-      setOpenedWhileCollapsed(isCollapsed);
       setIsOpen(true);
     }
-  }, [isOpen, isCollapsed, closeMenu]);
+  }, [isOpen, closeMenu]);
 
   // Callback for when photo icon is tapped/clicked (without dragging)
-  // Behavior depends on header state:
-  // - Collapsed: toggle the navigation menu
-  // - Expanded: go to home page
+  // Always toggles the navigation menu - photo is the singular menu trigger
   const handlePhotoTap = useCallback(() => {
-    if (isCollapsed) {
-      toggleMenu();
-    } else {
-      handleHome();
-    }
-  }, [isCollapsed, toggleMenu, handleHome]);
+    toggleMenu();
+  }, [toggleMenu]);
 
   // Drag hook for photo icon - works on ALL devices (touch + mouse)
   // Enables playful drag-and-release interaction with snap-back animation
@@ -322,10 +309,8 @@ const Header = ({ label, onLogoClick }) => {
     // but this is a safety fallback if the event somehow fires.
   }, [isCollapsed, handleHome]);
 
-  // Build nav links - add Home option when collapsed
-  const navLinks = isCollapsed
-    ? [{ label: 'Home', path: '/' }, ...NAV_LINKS]
-    : NAV_LINKS;
+  // Build nav links - always include Home since photo is now the menu trigger
+  const navLinks = [{ label: 'Home', path: '/' }, ...NAV_LINKS];
 
   // Determine if a nav link should be active
   // - Home: exact match on '/'
@@ -362,9 +347,9 @@ const Header = ({ label, onLogoClick }) => {
     isOpen ? 'visible' : '',
     isClosing ? 'closing' : '',
     isMobile ? 'mobile' : 'desktop',
-    // Use the remembered state from when menu was opened, not current state
-    // This prevents the menu from jumping position if header collapses during close animation
-    openedWhileCollapsed ? 'from-collapsed' : '',
+    // Always include from-collapsed since photo is always the menu trigger.
+    // This ensures wide desktop slide animation styles are in effect from first render.
+    'from-collapsed',
     // Instant hide disables CSS transitions to prevent phantom buttons during navigation
     instantHide ? 'instant-hide' : '',
   ].filter(Boolean).join(' ');
@@ -372,7 +357,7 @@ const Header = ({ label, onLogoClick }) => {
   const brandMarkClass = [
     'brand-mark',
     'draggable', // Always draggable now
-    isCollapsed ? 'clickable' : '',
+    'clickable', // Always clickable - photo is the menu trigger in all states
     isDragging ? 'dragging' : '',
     isSnapping ? 'snapping' : '',
   ].filter(Boolean).join(' ');
@@ -384,7 +369,7 @@ const Header = ({ label, onLogoClick }) => {
           className="brand" 
           type="button" 
           onClick={handleBrandClick} 
-          aria-label={isCollapsed ? 'Open navigation menu' : 'Go to home'}
+          aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
         >
           <span className={brandMarkClass}>
             <span 
@@ -406,24 +391,6 @@ const Header = ({ label, onLogoClick }) => {
             <span className="theme-toggle-icon-wrap">
               <Icon name="sun" size={18} className={`theme-icon sun ${!isDark ? 'visible' : ''}`} />
               <Icon name="moon" size={18} className={`theme-icon moon ${isDark ? 'visible' : ''}`} />
-            </span>
-          </button>
-          <button
-            type="button"
-            className={`btn outline small menu-toggle ${isOpen ? 'active' : ''}`}
-            aria-expanded={isOpen}
-            aria-label={isOpen ? 'Hide navigation' : 'Show navigation'}
-            onClick={toggleMenu}
-          >
-            <span className="toggle-icon-wrap">
-              <svg className={`icon toggle-icon ellipsis ${!isOpen || isClosing ? 'visible' : ''}`} viewBox="0 0 32 10" aria-hidden="true" focusable="false">
-                <circle cx="6" cy="5" r="2.1" />
-                <circle cx="16" cy="5" r="2.1" />
-                <circle cx="26" cy="5" r="2.1" />
-              </svg>
-              <svg className={`icon toggle-icon chevron-up ${isOpen && !isClosing ? 'visible' : ''}`} viewBox="0 0 20 12" aria-hidden="true" focusable="false">
-                <path d="M3 9L10 2l7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              </svg>
             </span>
           </button>
         </div>

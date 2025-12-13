@@ -578,6 +578,7 @@
 .top-menu.desktop .btn:nth-child(1) { --btn-stagger: 20ms; }
 .top-menu.desktop .btn:nth-child(2) { --btn-stagger: 70ms; }
 .top-menu.desktop .btn:nth-child(3) { --btn-stagger: 120ms; }
+.top-menu.desktop .btn:nth-child(4) { --btn-stagger: 170ms; }
 
 /* Desktop menu button hover state
    3D Press Effect (3px shadow when visible):
@@ -616,9 +617,10 @@
   transition-delay: var(--btn-stagger-close, 0ms);
 }
 
-.top-menu.desktop.visible.closing .btn:nth-child(1) { --btn-stagger-close: 80ms; }
-.top-menu.desktop.visible.closing .btn:nth-child(2) { --btn-stagger-close: 40ms; }
-.top-menu.desktop.visible.closing .btn:nth-child(3) { --btn-stagger-close: 0ms; }
+.top-menu.desktop.visible.closing .btn:nth-child(1) { --btn-stagger-close: 120ms; }
+.top-menu.desktop.visible.closing .btn:nth-child(2) { --btn-stagger-close: 80ms; }
+.top-menu.desktop.visible.closing .btn:nth-child(3) { --btn-stagger-close: 40ms; }
+.top-menu.desktop.visible.closing .btn:nth-child(4) { --btn-stagger-close: 0ms; }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    MOBILE NAV
@@ -684,6 +686,7 @@
 .top-menu.mobile .btn:nth-child(1) { --btn-stagger: 20ms; }
 .top-menu.mobile .btn:nth-child(2) { --btn-stagger: 70ms; }
 .top-menu.mobile .btn:nth-child(3) { --btn-stagger: 120ms; }
+.top-menu.mobile .btn:nth-child(4) { --btn-stagger: 170ms; }
 
 /* Mobile menu button hover state
    3D Press Effect (3px shadow when visible):
@@ -722,9 +725,10 @@
   transition-delay: var(--btn-stagger-close, 0ms);
 }
 
-.top-menu.mobile.visible.closing .btn:nth-child(1) { --btn-stagger-close: 80ms; }
-.top-menu.mobile.visible.closing .btn:nth-child(2) { --btn-stagger-close: 40ms; }
-.top-menu.mobile.visible.closing .btn:nth-child(3) { --btn-stagger-close: 0ms; }
+.top-menu.mobile.visible.closing .btn:nth-child(1) { --btn-stagger-close: 120ms; }
+.top-menu.mobile.visible.closing .btn:nth-child(2) { --btn-stagger-close: 80ms; }
+.top-menu.mobile.visible.closing .btn:nth-child(3) { --btn-stagger-close: 40ms; }
+.top-menu.mobile.visible.closing .btn:nth-child(4) { --btn-stagger-close: 0ms; }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    RESPONSIVE
@@ -1061,6 +1065,33 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   PHOTO HOVER & ACTIVE - EXPANDED HEADER
+   Subtle visual feedback when hovering/clicking photo in non-collapsed state
+   to indicate it's interactive (menu trigger)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Desktop hover - photo gets drop shadow to hint at interactivity */
+@media (hover: hover) {
+  .top-bar:not(.collapsed) .brand-mark:hover .brand-mark-inner {
+    box-shadow:
+      var(--avatar-ring),
+      var(--avatar-shadow-hover-contact),
+      var(--avatar-shadow-hover-ambient);
+    transition: box-shadow 0.15s ease;
+  }
+}
+
+/* Active/pressed state - depression effect on click */
+.top-bar:not(.collapsed) .brand-mark:active .brand-mark-inner {
+  transform: translateY(2px) scale(0.97);
+  box-shadow:
+    var(--avatar-ring),
+    var(--avatar-shadow-active-contact),
+    var(--avatar-shadow-active-ambient);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    MENU FROM COLLAPSED STATE
    Replicates mobile menu animation exactly, but left-aligned with icon.
    
@@ -1280,36 +1311,50 @@
   }
   
   /* 
-   * Menu positioning: right edge aligns with photo's right edge.
-   * Using right positioning instead of transform so button right edges align.
-   * right: calc(100% + 20px) places menu right edge 20px left of header's left edge,
-   * which aligns with the photo's right edge position.
-   *
-   * IMPORTANT: Using .from-collapsed WITHOUT .top-bar.collapsed dependency so
-   * the menu maintains its position during close animations even if the header
-   * un-collapses mid-animation (user scrolling up quickly).
-   *
-   * NOTE: Must use same specificity (.desktop/.mobile) as the 840px rules above
-   * to ensure these styles win due to cascade order.
+   * Wide desktop: horizontal slide animation for ALL menu states.
+   * Buttons slide in from right instead of dropping from above.
    */
-  .top-menu.desktop.from-collapsed,
-  .top-menu.mobile.from-collapsed {
-    transform: none;
+  .top-menu.from-collapsed .btn {
+    -webkit-transform: translateX(16px) scale(0.92);
+    transform: translateX(16px) scale(0.92);
+    -webkit-transform-origin: right center;
+    transform-origin: right center;
+  }
+  
+  .top-menu.from-collapsed.visible .btn {
+    -webkit-transform: translateX(0) scale(1);
+    transform: translateX(0) scale(1);
+  }
+  
+  .top-menu.from-collapsed.visible.closing .btn {
+    -webkit-transform: translateX(18px) scale(0.88);
+    transform: translateX(18px) scale(0.88);
+  }
+  
+  /* Right-align menu buttons for horizontal slide effect */
+  .top-menu.from-collapsed .top-menu-content {
+    align-items: flex-end;
+  }
+  
+  /* 
+   * Wide desktop when NOT COLLAPSED (header visible):
+   * Menu appears to left of header, aligned with header top.
+   */
+  .top-bar:not(.collapsed) .top-menu.from-collapsed {
+    top: 14px; /* Align with header top */
     left: auto;
     right: calc(100% + 20px);
   }
   
-  /* Right-align menu buttons so their right edges align with photo's right edge */
-  .top-menu.desktop.from-collapsed .top-menu-content,
-  .top-menu.mobile.from-collapsed .top-menu-content {
-    align-items: flex-end;
-  }
-  
-  /* Update button transform-origin to right for wide desktop */
-  .top-menu.desktop.from-collapsed .btn,
-  .top-menu.mobile.from-collapsed .btn {
-    -webkit-transform-origin: right center;
-    transform-origin: right center;
+  /* 
+   * Wide desktop when COLLAPSED (photo floating):
+   * Menu appears below photo, to the left (aligned with slid-left photo).
+   * Uses default top from base .from-collapsed styles (below header).
+   */
+  .top-bar.collapsed .top-menu.from-collapsed {
+    left: auto;
+    right: calc(100% + 20px);
+    /* top is NOT overridden - uses calc(100% + 8px) from base styles */
   }
   
   /* Ensure non-collapsed state has identity transform for smooth transition back */
