@@ -53,6 +53,7 @@
 
 /* ─────────────────────────────────────────────────────────────────────────────
    PROJECT CARD
+   Multi-layer shadow system with spring physics for realistic hover/press
    ───────────────────────────────────────────────────────────────────────────── */
 
 .project-card {
@@ -60,17 +61,27 @@
   border: var(--border-retro);
   border-radius: var(--radius-sm);
   background: var(--bg-card);
-  box-shadow: var(--shadow-retro-sm);
+  /* Layered shadows: edge + contact + ambient for physical depth */
+  box-shadow: 
+    var(--card-shadow-edge),
+    var(--card-shadow-contact),
+    var(--card-shadow-ambient);
   overflow: hidden;
   display: block;
   width: 100%;
   height: auto;
-  transition: transform 0.32s var(--ease-out), 
-              box-shadow var(--theme-transition-duration) var(--theme-transition-ease),
-              background-color var(--theme-transition-duration) var(--theme-transition-ease),
-              border-color var(--theme-transition-duration) var(--theme-transition-ease);
+  /* Separate transitions: transform springs, shadow follows slightly behind */
+  transition: 
+    transform 0.32s var(--ease-spring-settle),
+    box-shadow 0.38s var(--ease-spring-settle),
+    background-color var(--theme-transition-duration) var(--theme-transition-ease),
+    border-color var(--theme-transition-duration) var(--theme-transition-ease);
   isolation: isolate;
-  transform: translateZ(0);
+  /* NOTE: Base transform intentionally minimal to match page-entrance animation.
+     The staggerFadeIn animation ends at translateY(0). Using a different transform
+     here (like scale(1) or translateZ(0)) causes iOS Safari to "jump" when the 
+     animation completes. Scale is only applied in :hover/:active states. */
+  transform-origin: center center;
 }
 
 .project-media {
@@ -118,22 +129,70 @@
   line-height: var(--leading-tight);
 }
 
-/* Desktop hover */
+/* Desktop hover - card lifts off with spring overshoot */
 @media (hover: hover) and (pointer: fine) {
   .project-card:hover {
-    transform: translateY(-5px) translateZ(0);
-    box-shadow: var(--shadow-hover);
+    transform: translateY(-10px) translateZ(0) scale(1.035);
+    box-shadow: 
+      var(--card-shadow-hover-edge),
+      var(--card-shadow-hover-contact),
+      var(--card-shadow-hover-ambient);
+    /* Snappy spring for hover-in */
+    transition: 
+      transform 0.28s var(--ease-spring-out),
+      box-shadow 0.32s var(--ease-spring-out),
+      background-color var(--theme-transition-duration) var(--theme-transition-ease),
+      border-color var(--theme-transition-duration) var(--theme-transition-ease);
+  }
+  
+  /* Active/pressed state - card compresses toward surface */
+  .project-card:active {
+    transform: translateY(-2px) translateZ(0) scale(0.98);
+    box-shadow: 
+      var(--card-shadow-active-edge),
+      var(--card-shadow-active-contact),
+      var(--card-shadow-active-ambient);
+    /* Quick tactile response */
+    transition: 
+      transform 0.1s var(--ease-snap),
+      box-shadow 0.1s var(--ease-snap),
+      background-color var(--theme-transition-duration) var(--theme-transition-ease),
+      border-color var(--theme-transition-duration) var(--theme-transition-ease);
   }
 }
 
-/* Touch hover */
+/* Touch hover - same lifted state as desktop */
 .project-card.touch-hover {
-  transform: translateY(-5px) translateZ(0);
-  box-shadow: var(--shadow-hover);
+  transform: translateY(-10px) translateZ(0) scale(1.035);
+  box-shadow: 
+    var(--card-shadow-hover-edge),
+    var(--card-shadow-hover-contact),
+    var(--card-shadow-hover-ambient);
+  transition: 
+    transform 0.28s var(--ease-spring-out),
+    box-shadow 0.32s var(--ease-spring-out),
+    background-color var(--theme-transition-duration) var(--theme-transition-ease),
+    border-color var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+/* Touch active - pressed state for tap feedback */
+.project-card.touch-hover:active,
+.project-card:active {
+  transform: translateY(-2px) translateZ(0) scale(0.98);
+  box-shadow: 
+    var(--card-shadow-active-edge),
+    var(--card-shadow-active-contact),
+    var(--card-shadow-active-ambient);
+  transition: 
+    transform 0.1s var(--ease-snap),
+    box-shadow 0.1s var(--ease-snap),
+    background-color var(--theme-transition-duration) var(--theme-transition-ease),
+    border-color var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    FEATURED PROJECT
+   Uses same multi-layer shadow system as project cards
    ───────────────────────────────────────────────────────────────────────────── */
 
 .featured-project-card {
@@ -142,15 +201,24 @@
   border: var(--border-retro);
   border-radius: var(--radius-sm);
   background: var(--bg-card);
-  box-shadow: var(--shadow-retro-sm);
+  /* Layered shadows: edge + contact + ambient for physical depth */
+  box-shadow: 
+    var(--card-shadow-edge),
+    var(--card-shadow-contact),
+    var(--card-shadow-ambient);
   overflow: hidden;
   width: 100%;
-  transition: transform 0.32s var(--ease-out), 
-              box-shadow var(--theme-transition-duration) var(--theme-transition-ease),
-              background-color var(--theme-transition-duration) var(--theme-transition-ease),
-              border-color var(--theme-transition-duration) var(--theme-transition-ease);
+  /* Separate transitions: transform springs, shadow follows slightly behind */
+  transition: 
+    transform 0.32s var(--ease-spring-settle),
+    box-shadow 0.38s var(--ease-spring-settle),
+    background-color var(--theme-transition-duration) var(--theme-transition-ease),
+    border-color var(--theme-transition-duration) var(--theme-transition-ease);
   isolation: isolate;
-  transform: translateZ(0);
+  /* NOTE: Base transform intentionally minimal to match page-entrance animation.
+     The staggerFadeIn animation ends at translateY(0). Using a different transform
+     here causes iOS Safari to "jump" when the animation completes. */
+  transform-origin: center center;
 }
 
 .featured-project-media {
@@ -170,11 +238,50 @@
   display: block;
 }
 
+/* Desktop hover - card lifts off with spring overshoot */
 @media (hover: hover) and (pointer: fine) {
   .featured-project-card:hover {
-    transform: translateY(-5px) translateZ(0);
-    box-shadow: var(--shadow-hover);
+    transform: translateY(-10px) translateZ(0) scale(1.025);
+    box-shadow: 
+      var(--card-shadow-hover-edge),
+      var(--card-shadow-hover-contact),
+      var(--card-shadow-hover-ambient);
+    /* Snappy spring for hover-in */
+    transition: 
+      transform 0.28s var(--ease-spring-out),
+      box-shadow 0.32s var(--ease-spring-out),
+      background-color var(--theme-transition-duration) var(--theme-transition-ease),
+      border-color var(--theme-transition-duration) var(--theme-transition-ease);
   }
+  
+  /* Active/pressed state - card compresses toward surface */
+  .featured-project-card:active {
+    transform: translateY(-2px) translateZ(0) scale(0.98);
+    box-shadow: 
+      var(--card-shadow-active-edge),
+      var(--card-shadow-active-contact),
+      var(--card-shadow-active-ambient);
+    /* Quick tactile response */
+    transition: 
+      transform 0.1s var(--ease-snap),
+      box-shadow 0.1s var(--ease-snap),
+      background-color var(--theme-transition-duration) var(--theme-transition-ease),
+      border-color var(--theme-transition-duration) var(--theme-transition-ease);
+  }
+}
+
+/* Touch active - pressed state for tap feedback */
+.featured-project-card:active {
+  transform: translateY(-2px) translateZ(0) scale(0.98);
+  box-shadow: 
+    var(--card-shadow-active-edge),
+    var(--card-shadow-active-contact),
+    var(--card-shadow-active-ambient);
+  transition: 
+    transform 0.1s var(--ease-snap),
+    box-shadow 0.1s var(--ease-snap),
+    background-color var(--theme-transition-duration) var(--theme-transition-ease),
+    border-color var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
 @media (max-width: 640px) {

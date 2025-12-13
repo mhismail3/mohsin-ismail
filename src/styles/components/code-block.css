@@ -76,7 +76,7 @@
               border-color var(--theme-transition-duration) var(--theme-transition-ease),
               color var(--duration-fast) ease, 
               -webkit-text-fill-color var(--duration-fast) ease;
-  box-shadow: 1px 1px 0px var(--retro-shadow-color);
+  box-shadow: 1.5px 1.5px 0px var(--retro-shadow-color);
   min-width: 64px;
   justify-content: center;
 }
@@ -85,7 +85,7 @@
   .code-block-copy:hover {
     background: var(--color-surface-hover);
     transform: translate(1px, 1px);
-    box-shadow: 0px 0px 0px var(--retro-shadow-color);
+    box-shadow: 1px 1px 0px var(--retro-shadow-color);
     color: var(--pine);
     -webkit-text-fill-color: var(--pine);
   }
@@ -93,11 +93,13 @@
 
 .code-block-copy:active {
   transform: translate(2px, 2px);
-  box-shadow: none;
+  box-shadow: 0px 0px 0px var(--retro-shadow-color);
 }
 
 .code-block-copy svg {
   flex-shrink: 0;
+  position: relative;
+  top: 1px;
 }
 
 .code-block-copy .copy-icon,

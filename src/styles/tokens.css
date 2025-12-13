@@ -119,6 +119,21 @@
   --avatar-shadow-active-contact: 0 1px 2px rgba(31, 26, 20, 0.42);
   --avatar-shadow-active-ambient: 0 3px 8px rgba(31, 26, 20, 0.16);
   
+  /* Project card shadow system - layered for physical realism */
+  --card-shadow-contact: 0 2px 4px rgba(31, 26, 20, 0.18);
+  --card-shadow-ambient: 0 8px 16px rgba(31, 26, 20, 0.12);
+  --card-shadow-edge: 0 0 0 1px rgba(31, 26, 20, 0.06);
+  
+  /* Card hover state - lifts off, shadows expand and soften */
+  --card-shadow-hover-contact: 0 8px 12px rgba(31, 26, 20, 0.18);
+  --card-shadow-hover-ambient: 0 24px 48px rgba(31, 26, 20, 0.16);
+  --card-shadow-hover-edge: 0 0 0 1px rgba(31, 26, 20, 0.08);
+  
+  /* Card active/pressed state - compresses toward surface */
+  --card-shadow-active-contact: 0 2px 3px rgba(31, 26, 20, 0.22);
+  --card-shadow-active-ambient: 0 4px 8px rgba(31, 26, 20, 0.14);
+  --card-shadow-active-edge: 0 0 0 1px rgba(31, 26, 20, 0.10);
+  
   /* Project pill glass effect */
   --color-pill-glass-bg: rgba(255, 255, 255, 0.65);
   --color-pill-glass-border: rgba(255, 255, 255, 0.2);
@@ -224,6 +239,8 @@
   --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-snap: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring-out: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --ease-spring-settle: cubic-bezier(0.25, 0.1, 0.25, 1);
   
   --duration-fast: 0.1s;
   --duration-normal: 0.2s;
@@ -322,6 +339,21 @@
   --avatar-shadow-hover-ambient: 0 8px 18px rgba(0, 0, 0, 0.38);
   --avatar-shadow-active-contact: 0 1px 3px rgba(0, 0, 0, 0.60);
   --avatar-shadow-active-ambient: 0 3px 10px rgba(0, 0, 0, 0.28);
+  
+  /* Project card shadow system - darker for dark mode */
+  --card-shadow-contact: 0 2px 4px rgba(0, 0, 0, 0.35);
+  --card-shadow-ambient: 0 8px 16px rgba(0, 0, 0, 0.28);
+  --card-shadow-edge: 0 0 0 1px rgba(255, 255, 255, 0.06);
+  
+  /* Card hover state - lifts off, shadows expand and soften */
+  --card-shadow-hover-contact: 0 8px 12px rgba(0, 0, 0, 0.38);
+  --card-shadow-hover-ambient: 0 24px 48px rgba(0, 0, 0, 0.35);
+  --card-shadow-hover-edge: 0 0 0 1px rgba(255, 255, 255, 0.10);
+  
+  /* Card active/pressed state - compresses toward surface */
+  --card-shadow-active-contact: 0 2px 3px rgba(0, 0, 0, 0.42);
+  --card-shadow-active-ambient: 0 4px 8px rgba(0, 0, 0, 0.28);
+  --card-shadow-active-edge: 0 0 0 1px rgba(255, 255, 255, 0.12);
   
   /* Project pill glass effect */
   --color-pill-glass-bg: rgba(44, 42, 37, 0.75);

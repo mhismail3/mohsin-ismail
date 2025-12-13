@@ -103,11 +103,10 @@
   font-family: var(--font-mono);
   font-size: 0.7rem;
   font-weight: 700;
-  color: #ffffff;
-  background: var(--aero);
-  border: 1.5px solid var(--pine);
+  color: var(--color-text-muted);
+  background: var(--color-ghost-bg);
+  border: 1.5px solid var(--color-border);
   border-radius: var(--radius-full);
-  box-shadow: 0.5px 0.5px 0px var(--retro-shadow-color);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -281,9 +280,7 @@
    DARK THEME ADJUSTMENTS
    ───────────────────────────────────────────────────────────────────────────── */
 
-[data-theme="dark"] .toc-toggle-count {
-  box-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.5);
-}
+/* Dark theme uses semantic tokens which automatically adjust */
 
 /* ─────────────────────────────────────────────────────────────────────────────
    RESPONSIVE - MOBILE
