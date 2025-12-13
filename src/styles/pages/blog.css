@@ -214,6 +214,22 @@
     filter var(--theme-transition-duration) var(--theme-transition-ease) !important;
 }
 
+/* Touch sweep animation - disable --shimmer-x transition during JS-driven animation */
+.post-page .post-title.title-style-shimmer.shimmer-sweeping,
+.title-style-shimmer .post-page .post-title.shimmer-sweeping,
+.title-style-shimmer article.post-page .post-title.shimmer-sweeping {
+  transition:
+    --shimmer-width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    --shimmer-base var(--theme-transition-duration) var(--theme-transition-ease),
+    --shimmer-accent var(--theme-transition-duration) var(--theme-transition-ease),
+    --shimmer-highlight var(--theme-transition-duration) var(--theme-transition-ease),
+    --shimmer-shadow-1 var(--theme-transition-duration) var(--theme-transition-ease),
+    --shimmer-shadow-2 var(--theme-transition-duration) var(--theme-transition-ease),
+    --shimmer-shadow-3 var(--theme-transition-duration) var(--theme-transition-ease),
+    filter var(--theme-transition-duration) var(--theme-transition-ease) !important;
+  /* Note: --shimmer-x transition is removed so JS animation is smooth */
+}
+
 .post-tags {
   margin-top: 1.5rem;
   margin-bottom: 0.75rem;
