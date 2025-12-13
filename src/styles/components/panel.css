@@ -63,16 +63,17 @@
   gap: var(--space-base);
 }
 
-/* Posts panel header: uses flex-column layout for the panel-head
-   so tags can wrap to their own row while eyebrow + clear stay together. */
-.posts-panel .panel-head {
+/* Posts panel header on blog page: uses flex-column layout when filtering
+   so tags can wrap to their own row while eyebrow + clear stay together.
+   Uses :has() to only apply when panel-head-main exists (blog page only). */
+.posts-panel .panel-head:has(.panel-head-main) {
   flex-direction: column;
   align-items: stretch;
   gap: var(--space-sm);
 }
 
 /* Main row: eyebrow left, clear button right - never wraps */
-.posts-panel .panel-head-main {
+.panel-head-main {
   display: flex;
   align-items: center;
   justify-content: space-between;
