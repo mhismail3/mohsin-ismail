@@ -109,10 +109,9 @@ const PortfolioPage = () => {
       <section className="panel portfolio-panel">
         <div className="panel-head">
           <div>
-            <div className="eyebrow">Selected Work</div>
-            <h1>Portfolio</h1>
+            <div className="eyebrow">Portfolio</div>
             <p className="muted">
-              Some of the projects that I've worked on recently. More coming soon...
+              A collection of the things that I've built over the years.
             </p>
           </div>
         </div>
