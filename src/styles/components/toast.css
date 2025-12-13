@@ -5,8 +5,9 @@
 
 .toast {
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%) translateY(0);
+  /* Right-align to parent to prevent overflow on right edge of screen */
+  right: 0;
+  transform: translateY(0);
   bottom: calc(100% + 10px);
   background: var(--bg-white);
   color: var(--ink);
@@ -16,7 +17,6 @@
   font-size: 0.77rem;
   font-weight: 600;
   white-space: nowrap;
-  max-width: calc(100vw - 40px);
   pointer-events: none;
   text-align: center;
   z-index: var(--z-dropdown);
@@ -40,22 +40,22 @@
 @keyframes toast-pop {
   0% {
     opacity: 0;
-    transform: translateX(-50%) translateY(8px) scale(0.98);
+    transform: translateY(8px) scale(0.98);
   }
   100% {
     opacity: 1;
-    transform: translateX(-50%) translateY(0) scale(1);
+    transform: translateY(0) scale(1);
   }
 }
 
 @keyframes toast-fade {
   0% {
     opacity: 1;
-    transform: translateX(-50%) translateY(0) scale(1);
+    transform: translateY(0) scale(1);
   }
   100% {
     opacity: 0;
-    transform: translateX(-50%) translateY(6px) scale(0.99);
+    transform: translateY(6px) scale(0.99);
   }
 }
 
