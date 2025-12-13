@@ -122,9 +122,22 @@
   pointer-events: none;
 }
 
-/* Hide cards during transition to prevent flicker before animation starts */
-.post-list.transitioning.filter-changed > .post-card {
+/* ─────────────────────────────────────────────────────────────────────────────
+   SELECTIVE CARD ANIMATION
+   
+   Only newly visible cards animate in; cards that were already visible stay put.
+   - .card-entering: Newly visible posts, animate in with stagger
+   - .card-stable: Posts that were already visible, remain visible without animation
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Hide only entering cards during transition (stable cards stay visible) */
+.post-list.transitioning.filter-changed > .post-card.card-entering {
   opacity: 0;
+}
+
+/* Stable cards remain visible during transition - no flicker */
+.post-list.transitioning.filter-changed > .post-card.card-stable {
+  opacity: 1;
 }
 
 /* Staggered card reveal - only for filter changes (not initial page load) */
@@ -139,12 +152,18 @@
   }
 }
 
-/* Cards start invisible to prevent flash before animation starts */
-.post-list.visible.filter-changed > .post-card {
+/* Only animate entering cards with staggered reveal */
+.post-list.visible.filter-changed > .post-card.card-entering {
   opacity: 0;
   /* Elegant reveal with smooth easing - slower for refined feel */
   animation: filterCardReveal var(--fade-in-duration, 280ms) cubic-bezier(0.33, 0, 0.2, 1) both;
   animation-delay: calc(var(--card-index, 0) * var(--stagger-delay, 50ms));
+}
+
+/* Stable cards stay visible without animation */
+.post-list.visible.filter-changed > .post-card.card-stable {
+  opacity: 1;
+  animation: none;
 }
 
 /* Empty state also gets fade animation */
@@ -160,7 +179,8 @@
     transition: none;
   }
   
-  .post-list.visible.filter-changed > .post-card,
+  .post-list.visible.filter-changed > .post-card.card-entering,
+  .post-list.visible.filter-changed > .post-card.card-stable,
   .post-list.visible.filter-changed > .empty-state {
     animation: none;
     opacity: 1;

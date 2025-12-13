@@ -30,6 +30,10 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
   // Track which tags are newly added (for individual tag animations)
   const [newlyAddedTags, setNewlyAddedTags] = useState(new Set());
   const prevDisplayTagsRef = useRef(selectedTags);
+  
+  // Track which posts were visible before filter (for selective card animation)
+  const [newlyVisibleSlugs, setNewlyVisibleSlugs] = useState(new Set());
+  const prevVisibleSlugsRef = useRef(new Set());
 
   // Initialize selected tags from URL search params on mount
   useEffect(() => {
@@ -83,6 +87,10 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
       }
     }
   }, [filterPhase, selectedTags]);
+  
+  // Track which posts are newly visible for selective card animation
+  // This runs after visiblePosts is computed, so we need to define visiblePosts first
+  // We'll use a separate effect that runs after the memos below
 
   const filteredPosts = useMemo(
     () =>
@@ -108,6 +116,35 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
     () => filteredPosts.slice(startIndex, startIndex + POSTS_PER_PAGE),
     [filteredPosts, startIndex],
   );
+  
+  // Track which posts are newly visible for selective card animation
+  useEffect(() => {
+    if (filterPhase === 'in') {
+      const currentSlugs = new Set(visiblePosts.map(p => p.slug));
+      const prevSlugs = prevVisibleSlugsRef.current;
+      
+      // Find posts that weren't visible before
+      const newSlugs = new Set();
+      currentSlugs.forEach(slug => {
+        if (!prevSlugs.has(slug)) {
+          newSlugs.add(slug);
+        }
+      });
+      
+      // Update ref for next comparison
+      prevVisibleSlugsRef.current = currentSlugs;
+      
+      // Mark new posts for animation (only if there are new ones)
+      if (newSlugs.size > 0) {
+        setNewlyVisibleSlugs(newSlugs);
+        // Clear after animation completes (base duration + stagger for all cards)
+        const timer = setTimeout(() => {
+          setNewlyVisibleSlugs(new Set());
+        }, FADE_IN_MS + (visiblePosts.length * STAGGER_MS));
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [filterPhase, visiblePosts]);
 
   // Orchestrated transition using context
   const performTransition = useCallback((updateFn) => {
@@ -221,16 +258,24 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
           ref={postListRef}
           style={listStyle}
         >
-          {visiblePosts.map((post, index) => (
-            <PostCard
-              key={post.slug}
-              post={post}
-              onTagClick={handleTagToggle}
-              selectedTags={selectedTags}
-              data-post-slug={post.slug}
-              style={{ '--card-index': index }}
-            />
-          ))}
+          {visiblePosts.map((post, index) => {
+            const isNewlyVisible = newlyVisibleSlugs.has(post.slug);
+            const cardClass = hasFiltered 
+              ? (isNewlyVisible ? 'card-entering' : 'card-stable')
+              : '';
+            
+            return (
+              <PostCard
+                key={post.slug}
+                post={post}
+                onTagClick={handleTagToggle}
+                selectedTags={selectedTags}
+                className={cardClass}
+                data-post-slug={post.slug}
+                style={{ '--card-index': index }}
+              />
+            );
+          })}
           {visiblePosts.length === 0 && (
             <div className="empty-state">
               <p>No posts match these tags yet.</p>
