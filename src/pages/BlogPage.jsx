@@ -4,7 +4,7 @@ import { usePageTitle } from '../hooks';
 import { usePageTransition, useFilterTransition } from '../contexts';
 import { posts, uniqueTags } from '../data';
 import { PostCard, Pagination, TagCloud, AboutPanel } from '../components/features';
-import { Button } from '../components/ui';
+import { Button, Pill } from '../components/ui';
 
 const POSTS_PER_PAGE = 10;
 
@@ -26,6 +26,10 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
   
   // Snapshot of selected tags to show during fade-out (prevents immediate UI change)
   const [displayTags, setDisplayTags] = useState(selectedTags);
+  
+  // Track which tags are newly added (for individual tag animations)
+  const [newlyAddedTags, setNewlyAddedTags] = useState(new Set());
+  const prevDisplayTagsRef = useRef(selectedTags);
 
   // Initialize selected tags from URL search params on mount
   useEffect(() => {
@@ -58,9 +62,25 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
   }, [selectedTags, isFiltering, filterPhase]);
   
   // Update displayTags when entering the 'in' phase (fade-in starting)
+  // Also track which tags are newly added for individual animations
   useEffect(() => {
     if (filterPhase === 'in') {
+      const prevTags = prevDisplayTagsRef.current;
+      const newTags = selectedTags.filter(tag => !prevTags.includes(tag));
+      
+      // Update display tags and ref
       setDisplayTags(selectedTags);
+      prevDisplayTagsRef.current = selectedTags;
+      
+      // Mark new tags for animation (only if there are new ones)
+      if (newTags.length > 0) {
+        setNewlyAddedTags(new Set(newTags));
+        // Clear the "new" status after animation completes
+        const timer = setTimeout(() => {
+          setNewlyAddedTags(new Set());
+        }, 300); // Match animation duration
+        return () => clearTimeout(timer);
+      }
     }
   }, [filterPhase, selectedTags]);
 
@@ -182,12 +202,16 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
           </div>
           {displayTags.length > 0 && (
             <div className={`active-tags${filterPhase === 'out' || filterPhase === 'update' ? ' fading-out' : ''}`}>
-              <TagCloud
-                tags={displayTags}
-                selectedTags={displayTags}
-                onToggle={handleTagToggle}
-                showClear={false}
-              />
+              {displayTags.map((tag) => (
+                <Pill
+                  key={tag}
+                  active
+                  onClick={() => handleTagToggle(tag)}
+                  className={newlyAddedTags.has(tag) ? 'tag-entering' : 'tag-stable'}
+                >
+                  #{tag}
+                </Pill>
+              ))}
             </div>
           )}
         </div>
