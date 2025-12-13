@@ -76,8 +76,33 @@
 /* Reset/clear button */
 .pill.reset {
   background: var(--color-surface-warning);
+  border-color: var(--color-reset-border);
+  color: var(--color-reset-text);
+  -webkit-text-fill-color: var(--color-reset-text);
+}
+
+@media (hover: hover) {
+  .pill.reset:hover {
+    background: var(--color-reset-hover-bg);
+    border-color: var(--clay);
+    color: var(--color-reset-hover-text);
+    -webkit-text-fill-color: var(--color-reset-hover-text);
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0px var(--shadow-color);
+  }
+}
+
+.pill.reset:active,
+.pill.reset.tap-active {
+  background: var(--color-reset-active-bg);
   border-color: var(--clay);
-  color: var(--clay);
+  color: var(--color-reset-active-text);
+  -webkit-text-fill-color: var(--color-reset-active-text);
+  transform: translate(2px, 2px);
+  box-shadow: none;
+  transition: transform 0.06s ease-out, 
+              background-color 0.06s ease-out,
+              color 0.06s ease-out;
 }
 
 /* Disabled (non-interactive) */

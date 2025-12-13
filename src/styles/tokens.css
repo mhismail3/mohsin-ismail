@@ -125,6 +125,14 @@
   
   /* Ghost button */
   --color-ghost-bg: rgba(31, 26, 20, 0.04);
+  
+  /* Reset/Clear button colors - subtle clay accent */
+  --color-reset-text: #9a4a2e;
+  --color-reset-border: rgba(196, 91, 55, 0.35);
+  --color-reset-hover-bg: #f5dcd4;
+  --color-reset-hover-text: #7a3a22;
+  --color-reset-active-bg: #f0cec3;
+  --color-reset-active-text: #6a3018;
 
   /* ─────────────────────────────────────────────────────────────────────────────
      SHADOWS & BORDERS
@@ -321,6 +329,14 @@
   
   /* Ghost button */
   --color-ghost-bg: rgba(255, 255, 255, 0.06);
+  
+  /* Reset/Clear button colors - subtle clay accent for dark mode */
+  --color-reset-text: #d4836a;
+  --color-reset-border: rgba(196, 91, 55, 0.4);
+  --color-reset-hover-bg: #4a3530;
+  --color-reset-hover-text: #e8a08a;
+  --color-reset-active-bg: #5a403a;
+  --color-reset-active-text: #f0b8a5;
   
   /* Shadows - adjusted for dark mode */
   --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.25);

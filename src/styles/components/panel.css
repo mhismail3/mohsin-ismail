@@ -63,13 +63,21 @@
   gap: var(--space-base);
 }
 
-/* Posts panel header: give eyebrow container a min-height matching button height
-   so the eyebrow stays vertically centered at the same position whether or not
-   filter buttons are present. This prevents the visual "nudge" when filtering. */
-.posts-panel .panel-head > div:first-child {
-  min-height: 34px; /* Matches .btn.small height */
+/* Posts panel header: uses flex-column layout for the panel-head
+   so tags can wrap to their own row while eyebrow + clear stay together. */
+.posts-panel .panel-head {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-sm);
+}
+
+/* Main row: eyebrow left, clear button right - never wraps */
+.posts-panel .panel-head-main {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: var(--space-base);
+  min-height: 34px; /* Matches .btn.small height */
 }
 
 .post-list {
@@ -225,11 +233,11 @@
 
 @media (max-width: 640px) {
   .panel {
-    padding: 1.2rem 1.05rem;
+    padding: 1.1rem 0.85rem;
   }
 
   .panel::before {
-    inset: 6px;
+    inset: 5px;
   }
 }
 

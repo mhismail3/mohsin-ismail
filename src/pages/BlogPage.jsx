@@ -172,24 +172,24 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
     <div className="frame">
       <section className={getPanelClass()}>
         <div className="panel-head">
-          <div>
+          <div className="panel-head-main">
             <div className="eyebrow">All Posts</div>
-          </div>
-          <div className={`active-tags${filterPhase === 'out' || filterPhase === 'update' ? ' fading-out' : ''}`}>
             {displayTags.length > 0 && (
-              <>
-                <TagCloud
-                  tags={displayTags}
-                  selectedTags={displayTags}
-                  onToggle={handleTagToggle}
-                  showClear={false}
-                />
-                <Button variant="outline" size="small" onClick={resetTags}>
-                  Clear tags
-                </Button>
-              </>
+              <Button variant="clear-tags" size="small" onClick={resetTags}>
+                Clear tags
+              </Button>
             )}
           </div>
+          {displayTags.length > 0 && (
+            <div className={`active-tags${filterPhase === 'out' || filterPhase === 'update' ? ' fading-out' : ''}`}>
+              <TagCloud
+                tags={displayTags}
+                selectedTags={displayTags}
+                onToggle={handleTagToggle}
+                showClear={false}
+              />
+            </div>
+          )}
         </div>
 
         <div 

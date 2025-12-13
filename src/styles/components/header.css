@@ -10,11 +10,11 @@
   gap: 0;
   position: fixed;
   top: 18px;
-  left: 14px;
-  right: 14px;
+  left: 10px;
+  right: 10px;
   max-width: var(--max-width-content);
   margin: 0 auto;
-  padding: 12px 14px;
+  padding: 12px 12px;
   background: var(--color-surface-glass);
   border: 1px solid var(--color-border);
   border-radius: 18px;
@@ -433,7 +433,7 @@
 .top-menu {
   position: absolute;
   top: calc(100% + 8px);
-  right: 14px;
+  right: 12px;
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
@@ -507,7 +507,7 @@
   /* Dropdown positioning below the menu toggle (matches mobile) */
   position: absolute;
   top: calc(100% - 5px);
-  right: 14px;
+  right: 12px;
   
   /* Transparent background with shadowed buttons (like mobile) */
   background: transparent;
@@ -630,7 +630,7 @@
   box-shadow: none;
   padding: 0;
   min-width: auto;
-  right: 14px;
+  right: 12px;
   top: calc(100% - 5px);
   gap: var(--space-md);
   backdrop-filter: none;
@@ -751,8 +751,8 @@
 @media (max-width: 640px) {
   .top-bar {
     top: 20px;
-    left: 14px;
-    right: 14px;
+    left: 10px;
+    right: 10px;
   }
   
   .top-bar + * {
@@ -1077,7 +1077,7 @@
   /* left value must match .top-bar padding-left to align with content */
   position: absolute;
   top: calc(100% + 8px);
-  left: 14px; /* matches .top-bar padding on mobile */
+  left: 12px; /* matches .top-bar padding on mobile */
   right: auto;
   
   /* Match mobile menu styling - transparent background */
