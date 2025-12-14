@@ -35,3 +35,4 @@ const FeaturedProjectCard = ({ project }) => {
 
 export default FeaturedProjectCard;
 
+

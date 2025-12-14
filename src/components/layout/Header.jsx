@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useState, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useTheme, useTouchDrag, useShimmerFollow } from '../../hooks';
+import { useTheme, useTouchDrag, useShimmerFollow, useIsTouch } from '../../hooks';
 import { usePageTransition, useFilterTransition } from '../../contexts';
 import { Icon } from '../ui';
 import logoMark from '../../assets/mohsin.png';
@@ -287,7 +287,10 @@ const Header = ({ label, onLogoClick }) => {
     boundsPadding: 12, // Padding from viewport/safe area edges
   });
   
-  // Shimmer effect for brand name - cursor-following highlight
+  // Detect touch-only devices (no hover capability)
+  const isTouch = useIsTouch();
+  
+  // Shimmer effect for brand name - cursor-following highlight (desktop only)
   const { shimmerRef: brandNameRef, shimmerHandlers: brandNameShimmerHandlers } = useShimmerFollow();
 
   // Handle brand button click - coordinates with the drag hook on the photo.
@@ -383,9 +386,9 @@ const Header = ({ label, onLogoClick }) => {
             </span>
           </span>
           <span 
-            ref={brandNameRef}
-            className="brand-name shimmer-text"
-            {...brandNameShimmerHandlers}
+            ref={isTouch ? undefined : brandNameRef}
+            className={`brand-name${isTouch ? '' : ' shimmer-text'}`}
+            {...(isTouch ? {} : brandNameShimmerHandlers)}
           >{label}</span>
         </button>
         <div className="header-actions">
