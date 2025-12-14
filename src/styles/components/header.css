@@ -274,9 +274,12 @@
    correctly with background-clip: text (which makes text transparent).
    
    Uses @property registered colors from tokens.css for smooth theme transitions.
+   
+   IMPORTANT: Uses .top-bar selector for higher specificity to override
+   the collapse animation transitions defined later in this file.
    ───────────────────────────────────────────────────────────────────────────── */
 
-.brand-name.shimmer-text {
+.top-bar .brand-name.shimmer-text {
   /* CSS variables for cursor-following shimmer (set by JS)
      --shimmer-x: horizontal position of shimmer center
      --shimmer-width: band width (0% = hidden, 25% = visible) for fade in/out */
@@ -307,7 +310,8 @@
     drop-shadow(0.5px 0.5px 0 var(--shimmer-shadow-1))
     drop-shadow(1px 1px 0 var(--shimmer-shadow-2));
   
-  /* Smooth transitions for shimmer movement and theme changes */
+  /* Smooth transitions for shimmer movement, theme changes, and collapse opacity
+     MUST include all transition properties to prevent override by collapse styles */
   transition: 
     --shimmer-x 0.15s cubic-bezier(0.25, 0.1, 0.25, 1),
     --shimmer-width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
@@ -322,7 +326,7 @@
 
 /* Hover state - enhanced shadow for "lifting" feel */
 @media (hover: hover) {
-  .brand:hover .brand-name.shimmer-text {
+  .top-bar .brand:hover .brand-name.shimmer-text {
     filter:
       drop-shadow(-0.5px -0.5px 0 var(--shimmer-highlight))
       drop-shadow(0.5px 0.5px 0 var(--shimmer-accent))
@@ -331,7 +335,7 @@
 }
 
 /* Touch sweep animation - disable shimmer-x CSS transition during JS animation */
-.brand-name.shimmer-text.shimmer-sweeping {
+.top-bar .brand-name.shimmer-text.shimmer-sweeping {
   transition:
     --shimmer-width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
     --shimmer-base var(--theme-transition-duration) var(--theme-transition-ease),
