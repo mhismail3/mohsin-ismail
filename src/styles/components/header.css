@@ -902,6 +902,11 @@
   .top-bar + * {
     margin-top: var(--header-height-desktop);
   }
+
+  .brand {
+    font-size: 2.2rem;
+    gap: var(--space-md);
+  }
   
   /* Desktop dropdown menu - match header padding */
   .top-menu.desktop {
@@ -921,14 +926,14 @@
   }
 
   .brand {
-    font-size: 1.85rem;
+    font-size: 2.05rem;
     gap: var(--space-md);
   }
 }
 
 @media (max-width: 480px) {
   .brand {
-    font-size: 1.65rem;
+    font-size: 1.80rem;
     gap: var(--space-sm);
   }
   
@@ -939,7 +944,7 @@
 
 @media (max-width: 400px) {
   .brand {
-    font-size: 1.40rem;
+    font-size: 1.85rem;
     gap: var(--space-xs);
   }
 }
@@ -947,7 +952,7 @@
 @media (max-width: 360px) {
   .brand {
     gap: var(--space-xs);
-    font-size: 1.3rem;
+    font-size: 1.75rem;
   }
   
   .brand-mark-inner {
@@ -977,7 +982,7 @@
 
 @media (max-width: 320px) {
   .brand {
-    font-size: 1.15rem;
+    font-size: 1.35rem;
     gap: var(--space-2xs);
   }
   
