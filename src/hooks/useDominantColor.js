@@ -120,3 +120,4 @@ const useDominantColor = (imageUrl) => {
 export default useDominantColor;
 
 
+

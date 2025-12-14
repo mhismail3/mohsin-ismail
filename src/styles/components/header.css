@@ -1519,6 +1519,21 @@
     /* top is NOT overridden - uses calc(100% + 8px) from base styles */
   }
   
+  /* 
+   * CRITICAL: Lock menu position during close animation.
+   * When user scrolls while menu is closing, the header may collapse/expand,
+   * which would normally change the menu's `top` value and cause a visual jump.
+   * By using a fixed position during closing, the menu fades out in place
+   * regardless of header state changes.
+   * 
+   * We use the "below header" position since that's most natural for a fade-out.
+   */
+  .top-menu.from-collapsed.closing {
+    top: calc(100% + 8px);
+    left: auto;
+    right: calc(100% + 20px);
+  }
+  
   /* Ensure non-collapsed state has identity transform for smooth transition back */
   .top-bar:not(.collapsed) .brand {
     transform: translateX(0);
