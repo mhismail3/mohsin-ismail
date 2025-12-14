@@ -323,12 +323,7 @@
   .top-bar .brand-name {
     color: var(--color-text);
     transition: 
-      color 0.2s ease,
       opacity var(--collapse-duration) var(--collapse-ease);
-  }
-  
-  .top-bar .brand:active .brand-name {
-    color: var(--pine);
   }
 }
 
