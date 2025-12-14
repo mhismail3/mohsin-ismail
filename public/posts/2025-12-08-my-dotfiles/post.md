@@ -30,19 +30,13 @@ I was heavily inspired by [Dries Vints](https://github.com/driesvints/dotfiles) 
 
 The `Brewfile` is the heart of the system. It's a manifest of everything Homebrew should install:
 
-**Dev tools** - git, gh (GitHub CLI), neovim, tmux, jq, httpie, and all the version managers (pyenv, nvm, rbenv, rustup).
+**Dev tools** - git, gh (GitHub CLI), neovim, tmux, jq, httpie, and all the version managers (pyenv, nvm, rbenv, rustup)
 
-**Apps** - Cursor, VS Code, Arc, Warp, Raycast, 1Password, Things 3, and others.
+**Apps** - Cursor, VS Code, Arc, Warp, Raycast, 1Password, Things 3, and others
 
-**AI CLIs** - Cursor Agent, Claude Code, Gemini CLI, OpenAI Codex CLI. Having all three AI coding assistants available from the terminal is the ultimate goal, to be able to SSH in and get stuff done remotely.
+**AI CLIs** - Cursor Agent, Claude Code, Gemini CLI, OpenAI Codex CLI. Having all three AI coding assistants available from the terminal is the ultimate goal, to be able to SSH in and get stuff done remotely
 
-I've replaced most of the default Unix tools with modern alternatives that are faster and have better defaults:
-- `bat` instead of `cat` (syntax highlighting!)
-- `eza` instead of `ls` (colors, git status, icons)
-- `fd` instead of `find` (actually usable syntax)
-- `ripgrep` instead of `grep` (blazing fast)
-- `zoxide` instead of `cd` (remembers your frequent directories)
-- `htop` and `btop` instead of `top`
+And a bunch of other stuff.
 
 ## The Automated Mac Setup
 
