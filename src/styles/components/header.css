@@ -256,26 +256,10 @@
 /* ─────────────────────────────────────────────────────────────────────────────
    BRAND MARK - MENU AFFORDANCE
    
-   Combined visual cues to indicate the photo is a menu trigger:
+   Visual cues to indicate the photo is a menu trigger:
    1. Ring Pulse: Periodic outward pulse when idle (draws attention)
-   2. Reveal Ring: Expanding halo on hover
-   3. Border Glow: Green accent border + glow on hover
-   
-   Uses ::before for reveal ring, ::after for pulse animation.
+   2. Border Glow: Green accent border + glow on hover
    ───────────────────────────────────────────────────────────────────────────── */
-
-/* Reveal ring - starts hidden, expands on hover */
-.brand-mark::before {
-  content: '';
-  position: absolute;
-  inset: -6px;
-  border-radius: 50%;
-  border: 1.5px solid var(--pine);
-  opacity: 0;
-  transform: scale(0.85);
-  pointer-events: none;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-}
 
 /* Pulse ring - periodic animation to draw attention */
 .brand-mark::after {
@@ -295,14 +279,9 @@
   25% { transform: scale(1.2); opacity: 0; }
 }
 
-/* Hover states - reveal ring expands, pulse pauses, border glows */
+/* Hover states - pulse pauses, border glows */
 @media (hover: hover) {
-  .brand-mark:hover::before {
-    transform: scale(1);
-    opacity: 0.6;
-  }
-  
-  /* Pause pulse animation on hover so it doesn't compete */
+  /* Pause pulse animation on hover so it doesn't compete with border glow */
   .brand-mark:hover::after {
     animation-play-state: paused;
     opacity: 0;
