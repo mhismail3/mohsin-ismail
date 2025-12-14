@@ -323,7 +323,13 @@
   .top-bar .brand-name {
     color: var(--color-text);
     transition: 
+      color 0.2s ease,
       opacity var(--collapse-duration) var(--collapse-ease);
+  }
+  
+  /* Color change only when tapping directly on the name, not the photo */
+  .top-bar .brand-name:active {
+    color: var(--pine);
   }
 }
 
