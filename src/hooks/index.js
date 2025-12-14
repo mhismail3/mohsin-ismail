@@ -9,3 +9,4 @@ export { default as useIsMobile } from './useIsMobile';
 export { default as useTheme } from './useTheme';
 export { default as useInternalLinkNavigation } from './useInternalLinkNavigation';
 export { useShimmerFollow } from './useShimmerFollow';
+export { default as useDominantColor } from './useDominantColor';

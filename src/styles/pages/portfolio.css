@@ -32,6 +32,8 @@
   gap: var(--space-lg);
   align-items: flex-start;
   width: 100%;
+  /* Allow scaled cards to overflow during hover */
+  overflow: visible;
 }
 
 .moodboard-column {
@@ -40,6 +42,8 @@
   gap: var(--space-lg);
   flex: 1 1 0%;
   min-width: 0;
+  /* Allow scaled cards to overflow during hover */
+  overflow: visible;
 }
 
 .moodboard.mobile {
@@ -54,11 +58,15 @@
 /* ─────────────────────────────────────────────────────────────────────────────
    PROJECT CARD
    Multi-layer shadow system with spring physics for realistic hover/press
+   Dynamic border color extracted from cover image via --card-border-color
    ───────────────────────────────────────────────────────────────────────────── */
 
 .project-card {
+  /* Custom property for dynamic border - fallback to default retro border */
+  --card-border-color: var(--ink);
+  
   position: relative;
-  border: var(--border-retro);
+  border: 1.5px solid var(--card-border-color);
   border-radius: var(--radius-sm);
   background: var(--bg-card);
   /* Layered shadows: edge + contact + ambient for physical depth */
@@ -129,41 +137,39 @@
   line-height: var(--leading-tight);
 }
 
-/* Desktop hover - card lifts off with spring overshoot */
-@media (hover: hover) and (pointer: fine) {
-  .project-card:hover {
-    transform: translateY(-10px) translateZ(0) scale(1.035);
-    box-shadow: 
-      var(--card-shadow-hover-edge),
-      var(--card-shadow-hover-contact),
-      var(--card-shadow-hover-ambient);
-    /* Snappy spring for hover-in */
-    transition: 
-      transform 0.28s var(--ease-spring-out),
-      box-shadow 0.32s var(--ease-spring-out),
-      background-color var(--theme-transition-duration) var(--theme-transition-ease),
-      border-color var(--theme-transition-duration) var(--theme-transition-ease);
-  }
-  
-  /* Active/pressed state - card compresses toward surface */
-  .project-card:active {
-    transform: translateY(-2px) translateZ(0) scale(0.98);
-    box-shadow: 
-      var(--card-shadow-active-edge),
-      var(--card-shadow-active-contact),
-      var(--card-shadow-active-ambient);
-    /* Quick tactile response */
-    transition: 
-      transform 0.1s var(--ease-snap),
-      box-shadow 0.1s var(--ease-snap),
-      background-color var(--theme-transition-duration) var(--theme-transition-ease),
-      border-color var(--theme-transition-duration) var(--theme-transition-ease);
-  }
+/* Hover - card lifts off and scales up */
+.project-card:hover {
+  transform: translateY(-12px) translateZ(0) scale(1.05);
+  box-shadow: 
+    var(--card-shadow-hover-edge),
+    var(--card-shadow-hover-contact),
+    var(--card-shadow-hover-ambient);
+  /* Snappy spring for hover-in */
+  transition: 
+    transform 0.28s var(--ease-spring-out),
+    box-shadow 0.32s var(--ease-spring-out),
+    background-color var(--theme-transition-duration) var(--theme-transition-ease),
+    border-color var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
-/* Touch hover - same lifted state as desktop */
+/* Active/pressed state - card compresses toward surface */
+.project-card:active {
+  transform: translateY(-2px) translateZ(0) scale(0.98);
+  box-shadow: 
+    var(--card-shadow-active-edge),
+    var(--card-shadow-active-contact),
+    var(--card-shadow-active-ambient);
+  /* Quick tactile response */
+  transition: 
+    transform 0.1s var(--ease-snap),
+    box-shadow 0.1s var(--ease-snap),
+    background-color var(--theme-transition-duration) var(--theme-transition-ease),
+    border-color var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+/* Touch hover - same lifted state as hover */
 .project-card.touch-hover {
-  transform: translateY(-10px) translateZ(0) scale(1.035);
+  transform: translateY(-12px) translateZ(0) scale(1.05);
   box-shadow: 
     var(--card-shadow-hover-edge),
     var(--card-shadow-hover-contact),
@@ -193,12 +199,16 @@
 /* ─────────────────────────────────────────────────────────────────────────────
    FEATURED PROJECT
    Uses same multi-layer shadow system as project cards
+   Dynamic border color extracted from cover image via --card-border-color
    ───────────────────────────────────────────────────────────────────────────── */
 
 .featured-project-card {
+  /* Custom property for dynamic border - fallback to default retro border */
+  --card-border-color: var(--ink);
+  
   display: block;
   position: relative;
-  border: var(--border-retro);
+  border: 1.5px solid var(--card-border-color);
   border-radius: var(--radius-sm);
   background: var(--bg-card);
   /* Layered shadows: edge + contact + ambient for physical depth */
@@ -238,45 +248,29 @@
   display: block;
 }
 
-/* Desktop hover - card lifts off with spring overshoot */
-@media (hover: hover) and (pointer: fine) {
-  .featured-project-card:hover {
-    transform: translateY(-10px) translateZ(0) scale(1.025);
-    box-shadow: 
-      var(--card-shadow-hover-edge),
-      var(--card-shadow-hover-contact),
-      var(--card-shadow-hover-ambient);
-    /* Snappy spring for hover-in */
-    transition: 
-      transform 0.28s var(--ease-spring-out),
-      box-shadow 0.32s var(--ease-spring-out),
-      background-color var(--theme-transition-duration) var(--theme-transition-ease),
-      border-color var(--theme-transition-duration) var(--theme-transition-ease);
-  }
-  
-  /* Active/pressed state - card compresses toward surface */
-  .featured-project-card:active {
-    transform: translateY(-2px) translateZ(0) scale(0.98);
-    box-shadow: 
-      var(--card-shadow-active-edge),
-      var(--card-shadow-active-contact),
-      var(--card-shadow-active-ambient);
-    /* Quick tactile response */
-    transition: 
-      transform 0.1s var(--ease-snap),
-      box-shadow 0.1s var(--ease-snap),
-      background-color var(--theme-transition-duration) var(--theme-transition-ease),
-      border-color var(--theme-transition-duration) var(--theme-transition-ease);
-  }
+/* Hover - card lifts off and scales up */
+.featured-project-card:hover {
+  transform: translateY(-12px) translateZ(0) scale(1.04);
+  box-shadow: 
+    var(--card-shadow-hover-edge),
+    var(--card-shadow-hover-contact),
+    var(--card-shadow-hover-ambient);
+  /* Snappy spring for hover-in */
+  transition: 
+    transform 0.28s var(--ease-spring-out),
+    box-shadow 0.32s var(--ease-spring-out),
+    background-color var(--theme-transition-duration) var(--theme-transition-ease),
+    border-color var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
-/* Touch active - pressed state for tap feedback */
+/* Active/pressed state - card compresses toward surface */
 .featured-project-card:active {
   transform: translateY(-2px) translateZ(0) scale(0.98);
   box-shadow: 
     var(--card-shadow-active-edge),
     var(--card-shadow-active-contact),
     var(--card-shadow-active-ambient);
+  /* Quick tactile response */
   transition: 
     transform 0.1s var(--ease-snap),
     box-shadow 0.1s var(--ease-snap),

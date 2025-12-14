@@ -1,8 +1,7 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { usePageTitle, useTouchHover, useIsMobile } from '../hooks';
 import { portfolioProjects } from '../data';
-import { AboutPanel } from '../components/features';
+import { AboutPanel, ProjectCard } from '../components/features';
 
 const INITIAL_ITEMS = 10;
 const LOAD_BATCH = 4;
@@ -120,22 +119,7 @@ const PortfolioPage = () => {
           {columns.map((col, colIndex) => (
             <div key={colIndex} className="moodboard-column">
               {col.map((project) => (
-                <Link
-                  to={`/portfolio/${project.slug}`}
-                  key={project.id}
-                  className="project-card"
-                >
-                  <div className="project-media">
-                    <img
-                      src={project.image}
-                      alt={project.title}
-                      loading="eager"
-                    />
-                    <div className="project-pill">
-                      <span className="pill-label">{project.title}</span>
-                    </div>
-                  </div>
-                </Link>
+                <ProjectCard key={project.id} project={project} />
               ))}
             </div>
           ))}

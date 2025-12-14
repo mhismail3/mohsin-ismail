@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useState, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useTheme, useTouchDrag } from '../../hooks';
+import { useTheme, useTouchDrag, useShimmerFollow } from '../../hooks';
 import { usePageTransition, useFilterTransition } from '../../contexts';
 import { Icon } from '../ui';
 import logoMark from '../../assets/mohsin.png';
@@ -286,6 +286,9 @@ const Header = ({ label, onLogoClick }) => {
     dragScale: 1.08, // Scale up during drag
     boundsPadding: 12, // Padding from viewport/safe area edges
   });
+  
+  // Shimmer effect for brand name - cursor-following highlight
+  const { shimmerRef: brandNameRef, shimmerHandlers: brandNameShimmerHandlers } = useShimmerFollow();
 
   // Handle brand button click - coordinates with the drag hook on the photo.
   // The drag hook handles tap/click on the photo; this handler covers the brand-name text.
@@ -379,7 +382,11 @@ const Header = ({ label, onLogoClick }) => {
               <img src={logoMark} alt="Mohsin Ismail logo" />
             </span>
           </span>
-          <span className="brand-name">{label}</span>
+          <span 
+            ref={brandNameRef}
+            className="brand-name shimmer-text"
+            {...brandNameShimmerHandlers}
+          >{label}</span>
         </button>
         <div className="header-actions">
           <button

@@ -6,6 +6,8 @@ export { default as TagCloud } from './TagCloud';
 export { default as AboutPanel } from './AboutPanel';
 export { default as AboutContent, contactLinks } from './AboutContent';
 export { default as PostCard } from './PostCard';
+export { default as ProjectCard } from './ProjectCard';
+export { default as FeaturedProjectCard } from './FeaturedProjectCard';
 export { default as CodeBlock } from './CodeBlock';
 export { default as PostImage } from './PostImage';
 export { default as FootnotePopupManager } from './FootnotePopupManager';

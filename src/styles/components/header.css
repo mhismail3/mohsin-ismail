@@ -263,6 +263,87 @@
   padding-right: 0.15em;
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   BRAND NAME - SHIMMER + LETTERPRESS EFFECT
+   
+   Combined effect matching post titles:
+   1. Letterpress: 3D embossed depth using drop-shadow (always visible)
+   2. Shimmer: Cursor-following green highlight on hover
+   
+   Uses filter: drop-shadow() instead of text-shadow because it works
+   correctly with background-clip: text (which makes text transparent).
+   
+   Uses @property registered colors from tokens.css for smooth theme transitions.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.brand-name.shimmer-text {
+  /* CSS variables for cursor-following shimmer (set by JS)
+     --shimmer-x: horizontal position of shimmer center
+     --shimmer-width: band width (0% = hidden, 25% = visible) for fade in/out */
+  --shimmer-x: 50%;
+  --shimmer-width: 0%;
+  
+  /* Gradient with color-mix for softer, more blended shimmer transitions */
+  background: linear-gradient(
+    90deg,
+    var(--shimmer-base) 0%,
+    var(--shimmer-base) calc(var(--shimmer-x) - var(--shimmer-width) - 8%),
+    color-mix(in srgb, var(--shimmer-accent) 30%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width)),
+    var(--shimmer-accent) var(--shimmer-x),
+    color-mix(in srgb, var(--shimmer-accent) 30%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width)),
+    var(--shimmer-base) calc(var(--shimmer-x) + var(--shimmer-width) + 8%),
+    var(--shimmer-base) 100%
+  );
+  background-size: 100% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent; /* Ensure text is transparent for gradient */
+  
+  /* LETTERPRESS: Layered drop-shadows using semantic variables
+     Slightly subtler than post titles due to smaller font size */
+  filter: 
+    drop-shadow(-0.5px -0.5px 0 var(--shimmer-highlight))
+    drop-shadow(0.5px 0.5px 0 var(--shimmer-shadow-1))
+    drop-shadow(1px 1px 0 var(--shimmer-shadow-2));
+  
+  /* Smooth transitions for shimmer movement and theme changes */
+  transition: 
+    --shimmer-x 0.15s cubic-bezier(0.25, 0.1, 0.25, 1),
+    --shimmer-width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    --shimmer-base var(--theme-transition-duration) var(--theme-transition-ease),
+    --shimmer-accent var(--theme-transition-duration) var(--theme-transition-ease),
+    --shimmer-highlight var(--theme-transition-duration) var(--theme-transition-ease),
+    --shimmer-shadow-1 var(--theme-transition-duration) var(--theme-transition-ease),
+    --shimmer-shadow-2 var(--theme-transition-duration) var(--theme-transition-ease),
+    filter var(--theme-transition-duration) var(--theme-transition-ease),
+    opacity var(--collapse-duration) var(--collapse-ease);
+}
+
+/* Hover state - enhanced shadow for "lifting" feel */
+@media (hover: hover) {
+  .brand:hover .brand-name.shimmer-text {
+    filter:
+      drop-shadow(-0.5px -0.5px 0 var(--shimmer-highlight))
+      drop-shadow(0.5px 0.5px 0 var(--shimmer-accent))
+      drop-shadow(0.5px 0.5px 0 transparent);
+  }
+}
+
+/* Touch sweep animation - disable shimmer-x CSS transition during JS animation */
+.brand-name.shimmer-text.shimmer-sweeping {
+  transition:
+    --shimmer-width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    --shimmer-base var(--theme-transition-duration) var(--theme-transition-ease),
+    --shimmer-accent var(--theme-transition-duration) var(--theme-transition-ease),
+    --shimmer-highlight var(--theme-transition-duration) var(--theme-transition-ease),
+    --shimmer-shadow-1 var(--theme-transition-duration) var(--theme-transition-ease),
+    --shimmer-shadow-2 var(--theme-transition-duration) var(--theme-transition-ease),
+    filter var(--theme-transition-duration) var(--theme-transition-ease),
+    opacity var(--collapse-duration) var(--collapse-ease);
+  /* Note: --shimmer-x transition removed so JS animation is smooth */
+}
+
 /* Typewriter cursor - appears and blinks on interaction
    Evokes "just finished typing" - retro, nostalgic, unexpected */
 .brand-name::after {

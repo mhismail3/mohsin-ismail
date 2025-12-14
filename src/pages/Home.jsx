@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { usePageTitle, useTapFeedback } from '../hooks';
 import { posts, portfolioProjects } from '../data';
-import { AboutPanel, PostCard } from '../components/features';
+import { AboutPanel, PostCard, FeaturedProjectCard } from '../components/features';
 
 const RECENT_POSTS_COUNT = 3;
 
@@ -54,18 +54,7 @@ function Home() {
               See other projects &rarr;
             </Link>
           </div>
-          <Link to={`/portfolio/${featuredProject.slug}`} className="featured-project-card">
-            <div className="featured-project-media">
-              <img
-                src={featuredProject.image}
-                alt={featuredProject.title}
-                loading="eager"
-              />
-              <div className="project-pill">
-                <span className="pill-label">{featuredProject.title}</span>
-              </div>
-            </div>
-          </Link>
+          <FeaturedProjectCard project={featuredProject} />
         </section>
       )}
 
