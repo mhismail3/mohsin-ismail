@@ -92,8 +92,7 @@
   text-align: left;
   color: var(--color-text);
   border-bottom: 1px solid var(--color-border);
-  transition: color var(--theme-transition-duration) var(--theme-transition-ease),
-              border-color var(--theme-transition-duration) var(--theme-transition-ease);
+  transition: border-color var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
 /* Right-align numeric headers if needed */
@@ -117,9 +116,9 @@
   color: var(--color-text);
   border-bottom: 1px solid var(--color-border);
   vertical-align: top;
-  transition: color var(--theme-transition-duration) var(--theme-transition-ease),
-              border-color var(--theme-transition-duration) var(--theme-transition-ease),
-              background-color var(--theme-transition-duration) var(--theme-transition-ease);
+  background: transparent;
+  transition: background-color var(--theme-transition-duration) var(--theme-transition-ease),
+              border-color var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
 /* Last row has no bottom border */
@@ -146,8 +145,6 @@
   color: var(--color-text);
   background: var(--color-surface-muted);
   white-space: nowrap;
-  transition: color var(--theme-transition-duration) var(--theme-transition-ease),
-              background-color var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
 /* When first column is empty (comparison tables), don't emphasize */
@@ -162,12 +159,12 @@
 
 @media (hover: hover) and (pointer: fine) {
   .post-body tbody tr:hover td {
-    background: var(--color-surface-hover);
+    background-color: var(--color-surface-hover);
   }
   
   /* Keep first column distinction on hover */
   .post-body tbody tr:hover td:first-child:not(:empty) {
-    background: var(--color-surface-active);
+    background-color: var(--color-surface-active);
   }
 }
 
@@ -238,10 +235,10 @@
 
 @media (prefers-reduced-motion: reduce) {
   .post-body table,
+  .post-body thead,
   .post-body th,
-  .post-body td,
-  .post-body thead {
-    transition: none;
+  .post-body td {
+    transition: none !important;
   }
 }
 
