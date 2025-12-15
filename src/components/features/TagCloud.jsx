@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useState, useEffect } from 'react';
 import { Pill, Button } from '../ui';
 
 /**
@@ -56,6 +56,10 @@ const TagCloud = ({
   showClear = true,
   tagCounts,
 }) => {
+  const scrollRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
   // Calculate scale factors for proportional sizing
   const tagScales = useMemo(
     () => calculateTagScales(tagCounts, tags),
@@ -64,27 +68,69 @@ const TagCloud = ({
   
   const hasScaling = tagCounts && Object.keys(tagScales).length > 0;
 
+  // Split tags into 3 rows for horizontal scrolling layout
+  // using interleaved distribution (0,1,2,0,1,2...) for visual balance
+  const rows = [[], [], []];
+  tags.forEach((tag, index) => {
+    rows[index % 3].push(tag);
+  });
+
+  // Check scroll capability
+  const checkScroll = () => {
+    const el = scrollRef.current;
+    if (el) {
+      const { scrollLeft, scrollWidth, clientWidth } = el;
+      // Show left gradient if we've scrolled past start (with tiny buffer)
+      setCanScrollLeft(scrollLeft > 2);
+      // Show right gradient if there's more content (with tiny buffer)
+      setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 2);
+    }
+  };
+
+  useEffect(() => {
+    checkScroll();
+    
+    // Check on resize too
+    window.addEventListener('resize', checkScroll);
+    return () => window.removeEventListener('resize', checkScroll);
+  }, [tags]); // Re-check when tags change
+
   return (
-    <div className={`tag-cloud${hasScaling ? ' tag-cloud--scaled' : ''}`}>
-      {tags.map((tag) => (
-        <Pill
-          key={tag}
-          active={selectedTags.includes(tag)}
-          onClick={() => onToggle?.(tag)}
-          style={hasScaling ? { '--tag-scale': tagScales[tag] } : undefined}
-          className={hasScaling ? 'tag-scaled' : undefined}
-        >
-          #{tag}
-          {tagCounts && tagCounts[tag] !== undefined && (
-            <span className="tag-count">{tagCounts[tag]}</span>
-          )}
-        </Pill>
-      ))}
-      {showClear && selectedTags.length > 0 && onClear && (
-        <Pill variant="reset" onClick={onClear}>
-          Clear tags
-        </Pill>
-      )}
+    <div className="tag-cloud-wrapper">
+      <div 
+        ref={scrollRef}
+        className={`tag-cloud${hasScaling ? ' tag-cloud--scaled' : ''}`}
+        onScroll={checkScroll}
+      >
+        {rows.map((rowTags, rowIndex) => (
+          <div key={rowIndex} className="tag-cloud-row">
+            {rowTags.map((tag) => (
+              <Pill
+                key={tag}
+                active={selectedTags.includes(tag)}
+                onClick={() => onToggle?.(tag)}
+                style={hasScaling ? { '--tag-scale': tagScales[tag] } : undefined}
+                className={hasScaling ? 'tag-scaled' : undefined}
+              >
+                #{tag}
+                {tagCounts && tagCounts[tag] !== undefined && (
+                  <span className="tag-count">{tagCounts[tag]}</span>
+                )}
+              </Pill>
+            ))}
+            {/* Append clear button to the end of the logical last row (based on count) */}
+            {showClear && selectedTags.length > 0 && onClear && rowIndex === (tags.length % 3) && (
+              <Pill variant="reset" onClick={onClear}>
+                Clear tags
+              </Pill>
+            )}
+          </div>
+        ))}
+      </div>
+      
+      {/* Scroll gradients - using CSS custom properties for smooth transitions */}
+      <div className={`scroll-gradient left ${canScrollLeft ? 'visible' : ''}`} />
+      <div className={`scroll-gradient right ${canScrollRight ? 'visible' : ''}`} />
     </div>
   );
 };

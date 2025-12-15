@@ -14,17 +14,74 @@
   margin-top: var(--space-base);
 }
 
-.tag-cloud {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-sm);
-  align-items: center;
+.tag-cloud-wrapper {
+  position: relative;
+  width: 100%;
+  min-width: 0; /* Allow flex item to shrink below content size */
 }
 
-/* Scaled tag cloud: compact gaps, center-aligned for visual balance */
-.tag-cloud--scaled {
-  gap: var(--space-xs) var(--space-sm);
+/* Scroll gradients for tag cloud */
+.scroll-gradient {
+  position: absolute;
+  top: 0;
+  bottom: 0; /* Cover full height including padding */
+  width: 60px; /* Wider for a more subtle, elegant fade */
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+}
+
+.scroll-gradient.visible {
+  opacity: 1;
+}
+
+.scroll-gradient.left {
+  left: 0;
+  background: linear-gradient(to right, var(--panel-bg), transparent);
+}
+
+.scroll-gradient.right {
+  right: 0;
+  background: linear-gradient(to left, var(--panel-bg), transparent);
+}
+
+@media (max-width: 640px) {
+  .scroll-gradient {
+    width: 32px;
+  }
+}
+
+.tag-cloud {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 4px;
+  width: 100%;
+  
+  /* Hide scrollbar for cleaner look */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.tag-cloud::-webkit-scrollbar {
+  display: none;
+}
+
+.tag-cloud-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--space-sm);
+  width: max-content;
   align-items: center;
+  padding-right: var(--space-md);
+}
+
+/* Scaled tag cloud - inherit gaps from base but ensure alignment */
+.tag-cloud--scaled {
+  /* gap handled in base .tag-cloud */
 }
 
 .active-tags {
