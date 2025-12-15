@@ -279,12 +279,14 @@
   25% { transform: scale(1.2); opacity: 0; }
 }
 
-/* Hover states - pulse pauses, border glows */
+/* Hover states - pulse hidden (but continues), border glows */
 @media (hover: hover) {
-  /* Pause pulse animation on hover so it doesn't compete with border glow */
+  /* Hide pulse ring on hover but let animation continue running in background.
+     This ensures current animation cycle completes naturally without freezing mid-pulse.
+     Using border-color: transparent since opacity is an animated property that CSS 
+     animations can override even with !important. */
   .brand-mark:hover::after {
-    animation-play-state: paused;
-    opacity: 0;
+    border-color: transparent;
   }
   
   /* Border glow on hover */
