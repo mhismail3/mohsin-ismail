@@ -44,6 +44,9 @@ export function useShimmerFollow() {
 
     isActiveRef.current = true;
 
+    // Remove hidden class to enable gradient
+    el.classList.remove('shimmer-hidden');
+    
     const clampedX = getXPercent(e.clientX);
     el.style.setProperty('--shimmer-x', `${clampedX}%`);
     el.style.setProperty('--shimmer-width', '25%');
@@ -68,6 +71,8 @@ export function useShimmerFollow() {
 
     isActiveRef.current = false;
     el.style.setProperty('--shimmer-width', '0%');
+    // Add hidden class to show solid base color (no gradient)
+    el.classList.add('shimmer-hidden');
   }, []);
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -198,6 +203,159 @@ export function useShimmerFollow() {
       onTouchEnd: handleTouchEnd,
       onTouchCancel: handleTouchCancel,
     },
+  };
+}
+
+/**
+ * Hook for container-level shimmer effect that applies to multiple elements.
+ * Tracks mouse position on a container and applies shimmer to multiple target elements.
+ * Each target element gets its own shimmer position calculated relative to its bounds.
+ *
+ * Performance optimizations:
+ * - Caches bounding rects on mouseenter (avoids layout thrashing)
+ * - Uses requestAnimationFrame for smooth 60fps updates
+ * - Batches all element updates in a single frame
+ *
+ * Desktop only - no touch support (use useShimmerFollow for touch).
+ *
+ * @returns {Object} - { containerHandlers, registerTarget, clearTargets }
+ *   - containerHandlers: Spread onto the container element (e.g., .post-head)
+ *   - registerTarget: Function to register a target element ref
+ *   - clearTargets: Function to clear all registered targets
+ */
+export function useShimmerFollowGroup() {
+  const targetsRef = useRef([]);
+  const rectsRef = useRef(new Map()); // Cached bounding rects
+  const isActiveRef = useRef(false);
+  const rafRef = useRef(null);
+  const pendingClientX = useRef(null);
+
+  // Register a target element for shimmer effect
+  const registerTarget = useCallback((element) => {
+    if (element && !targetsRef.current.includes(element)) {
+      targetsRef.current.push(element);
+      // Start with shimmer hidden (no gradient visible on page load)
+      element.classList.add('shimmer-hidden');
+    }
+  }, []);
+
+  // Clear all registered targets
+  const clearTargets = useCallback(() => {
+    targetsRef.current = [];
+    rectsRef.current.clear();
+  }, []);
+
+  // Cache all bounding rects (call on mouseenter, before any animation)
+  const cacheRects = useCallback(() => {
+    rectsRef.current.clear();
+    targetsRef.current.forEach((el) => {
+      if (el) {
+        rectsRef.current.set(el, el.getBoundingClientRect());
+      }
+    });
+  }, []);
+
+  // Calculate X position using cached rect (no layout thrashing)
+  const getXPercentCached = useCallback((clientX, element) => {
+    const rect = rectsRef.current.get(element);
+    if (!rect) return 50;
+    const x = ((clientX - rect.left) / rect.width) * 100;
+    return Math.max(0, Math.min(100, x));
+  }, []);
+
+  // Apply shimmer to all registered targets (called in RAF)
+  const applyShimmerFrame = useCallback(() => {
+    const clientX = pendingClientX.current;
+    if (clientX === null) return;
+    
+    targetsRef.current.forEach((el) => {
+      if (!el) return;
+      const clampedX = getXPercentCached(clientX, el);
+      el.style.setProperty('--shimmer-x', `${clampedX}%`);
+    });
+    
+    rafRef.current = null;
+  }, [getXPercentCached]);
+
+  // Schedule a shimmer update for the next frame
+  const scheduleUpdate = useCallback((clientX) => {
+    pendingClientX.current = clientX;
+    
+    // Only schedule if we don't already have a pending frame
+    if (!rafRef.current) {
+      rafRef.current = requestAnimationFrame(applyShimmerFrame);
+    }
+  }, [applyShimmerFrame]);
+
+  // Clear shimmer from all registered targets
+  const clearShimmer = useCallback(() => {
+    // Cancel any pending frame
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+    
+    targetsRef.current.forEach((el) => {
+      if (!el) return;
+      el.style.setProperty('--shimmer-width', '0%');
+      // Add class to completely hide shimmer gradient (pure base color)
+      el.classList.add('shimmer-hidden');
+    });
+  }, []);
+
+  // Show shimmer on all targets
+  const showShimmer = useCallback(() => {
+    targetsRef.current.forEach((el) => {
+      if (!el) return;
+      // Remove hidden class first to enable gradient
+      el.classList.remove('shimmer-hidden');
+      el.style.setProperty('--shimmer-width', '25%');
+    });
+  }, []);
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // MOUSE HANDLERS (Desktop only)
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  const handleMouseEnter = useCallback((e) => {
+    isActiveRef.current = true;
+    
+    // Cache all rects once at the start (avoids layout thrashing during move)
+    cacheRects();
+    
+    // Set initial position immediately (no RAF delay for first frame)
+    targetsRef.current.forEach((el) => {
+      if (!el) return;
+      const rect = rectsRef.current.get(el);
+      if (!rect) return;
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const clampedX = Math.max(0, Math.min(100, x));
+      el.style.setProperty('--shimmer-x', `${clampedX}%`);
+    });
+    
+    // Show shimmer (triggers fade-in)
+    showShimmer();
+  }, [cacheRects, showShimmer]);
+
+  const handleMouseMove = useCallback((e) => {
+    if (!isActiveRef.current) return;
+    scheduleUpdate(e.clientX);
+  }, [scheduleUpdate]);
+
+  const handleMouseLeave = useCallback(() => {
+    isActiveRef.current = false;
+    clearShimmer();
+    rectsRef.current.clear(); // Clear cached rects
+  }, [clearShimmer]);
+
+  return {
+    containerHandlers: {
+      onMouseEnter: handleMouseEnter,
+      onMouseMove: handleMouseMove,
+      onMouseLeave: handleMouseLeave,
+    },
+    registerTarget,
+    clearTargets,
   };
 }
 

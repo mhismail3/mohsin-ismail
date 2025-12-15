@@ -273,7 +273,7 @@ const PostPage = () => {
           </div>
           <h1 
             ref={isTouch ? titleRef : shimmerRef}
-            className={`post-title${isTouch ? ' touch-title' : ''}`}
+            className={`post-title${isTouch ? ' touch-title' : ' shimmer-hidden'}`}
             {...(isTouch ? { onTouchStart: handleTitleTouchStart } : shimmerHandlers)}
           >{post.title}</h1>
           

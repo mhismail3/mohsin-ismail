@@ -387,7 +387,7 @@ const Header = ({ label, onLogoClick }) => {
           </span>
           <span 
             ref={isTouch ? undefined : brandNameRef}
-            className={`brand-name${isTouch ? '' : ' shimmer-text'}`}
+            className={`brand-name${isTouch ? '' : ' shimmer-text shimmer-hidden'}`}
             {...(isTouch ? {} : brandNameShimmerHandlers)}
           >{label}</span>
         </button>

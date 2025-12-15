@@ -83,6 +83,10 @@
   font-size: 1em;
   position: relative;
   top: -0.1em;
+  /* Reset text-fill-color so the dot shows its color even when parent has shimmer effect */
+  -webkit-text-fill-color: var(--pine);
+  /* Ensure dot isn't affected by parent's background-clip: text */
+  background: none !important;
 }
 
 .post-meta h3 {
@@ -204,16 +208,50 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
   --shimmer-x: 50%;
   --shimmer-width: 0%;
   
-  /* Gradient with extra color stops for a softer, more blended shimmer
-     Uses symmetric fade: base → mid-blend → accent → mid-blend → base */
+  /* ═══════════════════════════════════════════════════════════════════════════
+     SOPHISTICATED SHIMMER - Gaussian-like light reflection
+     
+     Creates a realistic light reflection effect with:
+     • Bright specular hotspot at center (high intensity, small radius)
+     • Diffused inner glow (medium intensity, medium radius)  
+     • Soft outer glow (low intensity, large radius)
+     
+     CRITICAL: All offsets are PROPORTIONAL to --shimmer-width using multipliers.
+     When --shimmer-width is 0%, ALL color stops collapse to --shimmer-x,
+     resulting in pure base color (no shimmer visible).
+     When --shimmer-width is 25%, the full Gaussian spread is visible.
+     ═══════════════════════════════════════════════════════════════════════════ */
   background: linear-gradient(
     90deg,
+    /* Left edge - base color */
     var(--shimmer-base) 0%,
-    var(--shimmer-base) calc(var(--shimmer-x) - var(--shimmer-width) - 8%),
-    color-mix(in srgb, var(--shimmer-accent) 30%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width)),
+    var(--shimmer-base) calc(var(--shimmer-x) - var(--shimmer-width) * 1.8),
+    
+    /* Outer glow - very subtle, wide spread (Gaussian tail) */
+    color-mix(in srgb, var(--shimmer-accent) 3%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 1.6),
+    color-mix(in srgb, var(--shimmer-accent) 8%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 1.4),
+    
+    /* Inner glow - medium intensity, building up */
+    color-mix(in srgb, var(--shimmer-accent) 18%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 1.2),
+    color-mix(in srgb, var(--shimmer-accent) 35%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 1.0),
+    
+    /* Specular hotspot - bright center */
+    color-mix(in srgb, var(--shimmer-accent) 65%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 0.5),
+    color-mix(in srgb, var(--shimmer-accent) 90%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 0.15),
     var(--shimmer-accent) var(--shimmer-x),
-    color-mix(in srgb, var(--shimmer-accent) 30%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width)),
-    var(--shimmer-base) calc(var(--shimmer-x) + var(--shimmer-width) + 8%),
+    color-mix(in srgb, var(--shimmer-accent) 90%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 0.15),
+    color-mix(in srgb, var(--shimmer-accent) 65%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 0.5),
+    
+    /* Inner glow - symmetric falloff */
+    color-mix(in srgb, var(--shimmer-accent) 35%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 1.0),
+    color-mix(in srgb, var(--shimmer-accent) 18%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 1.2),
+    
+    /* Outer glow - Gaussian tail */
+    color-mix(in srgb, var(--shimmer-accent) 8%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 1.4),
+    color-mix(in srgb, var(--shimmer-accent) 3%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 1.6),
+    
+    /* Right edge - base color */
+    var(--shimmer-base) calc(var(--shimmer-x) + var(--shimmer-width) * 1.8),
     var(--shimmer-base) 100%
   );
   background-size: 100% 100%;
@@ -221,17 +259,17 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   
-  /* LETTERPRESS: Layered drop-shadows using semantic variables
+  /* LETTERPRESS: Layered drop-shadows for 3D depth
      These animate smoothly during theme transitions */
   filter: 
     drop-shadow(-0.5px -0.5px 0 var(--shimmer-highlight))
     drop-shadow(1px 1px 0 var(--shimmer-shadow-1))
     drop-shadow(1px 1px 0 var(--shimmer-shadow-2));
   
-  /* Gradual transitions - slower easing for a dreamy, blended feel */
+  /* Transitions - instant position tracking, smooth fade in/out and theme changes
+     Note: --shimmer-x has NO transition for instant cursor tracking */
   transition: 
-    --shimmer-x 0.15s cubic-bezier(0.25, 0.1, 0.25, 1),
-    --shimmer-width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    --shimmer-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
     --shimmer-base var(--theme-transition-duration) var(--theme-transition-ease),
     --shimmer-accent var(--theme-transition-duration) var(--theme-transition-ease),
     --shimmer-highlight var(--theme-transition-duration) var(--theme-transition-ease),
@@ -239,6 +277,22 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
     --shimmer-shadow-2 var(--theme-transition-duration) var(--theme-transition-ease),
     filter var(--theme-transition-duration) var(--theme-transition-ease),
     transform 0.08s ease-out;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SHIMMER HIDDEN STATE
+   When not hovering, show solid base color with no shimmer gradient.
+   This prevents the collapsed gradient from showing any accent color.
+   MUST include background-clip: text to properly shape the background.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.post-title-link.shimmer-hidden,
+.title-style-shimmer .post-title-link.shimmer-hidden,
+.eyebrow.eyebrow-shimmer.shimmer-hidden {
+  background: var(--shimmer-base) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
 }
 
 /* Hover - subtle shadow shift for "lifting" feel */
@@ -273,6 +327,92 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
   /* Note: --shimmer-x transition is removed so JS animation is smooth */
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   EYEBROW DATE/TIME - SHIMMER EFFECT
+   
+   Same cursor-following shimmer effect as the title, applied to the date/time.
+   Only active on devices with hover capability (not touch screens).
+   
+   Uses the same CSS custom properties as the title shimmer:
+   --shimmer-x: horizontal position of shimmer center (set by JS)
+   --shimmer-width: band width (0% = hidden, 25% = visible)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (hover: hover) {
+  .post-meta .eyebrow.eyebrow-shimmer {
+    /* CSS variables for cursor-following shimmer (set by JS) */
+    --shimmer-x: 50%;
+    --shimmer-width: 0%;
+    
+    /* ═══════════════════════════════════════════════════════════════════════════
+       SOPHISTICATED SHIMMER - Gaussian-like light reflection
+       Same proportional scaling as title - collapses to base color when width is 0%
+       ═══════════════════════════════════════════════════════════════════════════ */
+    background: linear-gradient(
+      90deg,
+      /* Left edge - base color */
+      var(--shimmer-base) 0%,
+      var(--shimmer-base) calc(var(--shimmer-x) - var(--shimmer-width) * 1.8),
+      
+      /* Outer glow - very subtle, wide spread (Gaussian tail) */
+      color-mix(in srgb, var(--shimmer-accent) 3%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 1.6),
+      color-mix(in srgb, var(--shimmer-accent) 8%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 1.4),
+      
+      /* Inner glow - medium intensity, building up */
+      color-mix(in srgb, var(--shimmer-accent) 18%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 1.2),
+      color-mix(in srgb, var(--shimmer-accent) 35%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 1.0),
+      
+      /* Specular hotspot - bright center */
+      color-mix(in srgb, var(--shimmer-accent) 65%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 0.5),
+      color-mix(in srgb, var(--shimmer-accent) 90%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 0.15),
+      var(--shimmer-accent) var(--shimmer-x),
+      color-mix(in srgb, var(--shimmer-accent) 90%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 0.15),
+      color-mix(in srgb, var(--shimmer-accent) 65%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 0.5),
+      
+      /* Inner glow - symmetric falloff */
+      color-mix(in srgb, var(--shimmer-accent) 35%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 1.0),
+      color-mix(in srgb, var(--shimmer-accent) 18%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 1.2),
+      
+      /* Outer glow - Gaussian tail */
+      color-mix(in srgb, var(--shimmer-accent) 8%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 1.4),
+      color-mix(in srgb, var(--shimmer-accent) 3%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 1.6),
+      
+      /* Right edge - base color */
+      var(--shimmer-base) calc(var(--shimmer-x) + var(--shimmer-width) * 1.8),
+      var(--shimmer-base) 100%
+    );
+    background-size: 100% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    
+    /* Letterpress effect - subtle 3D depth using drop-shadow */
+    filter: 
+      drop-shadow(-0.3px -0.3px 0 var(--shimmer-highlight))
+      drop-shadow(0.5px 0.5px 0 var(--shimmer-shadow-1))
+      drop-shadow(0.5px 0.5px 0 var(--shimmer-shadow-2));
+    
+    /* Transitions - instant position tracking, smooth fade in/out and theme changes
+       Note: --shimmer-x has NO transition for instant cursor tracking */
+    transition: 
+      --shimmer-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      --shimmer-base var(--theme-transition-duration) var(--theme-transition-ease),
+      --shimmer-accent var(--theme-transition-duration) var(--theme-transition-ease),
+      --shimmer-highlight var(--theme-transition-duration) var(--theme-transition-ease),
+      --shimmer-shadow-1 var(--theme-transition-duration) var(--theme-transition-ease),
+      --shimmer-shadow-2 var(--theme-transition-duration) var(--theme-transition-ease),
+      filter var(--theme-transition-duration) var(--theme-transition-ease);
+  }
+  
+  /* Hover state - subtle shadow shift for "lifting" feel */
+  .post-head:hover .eyebrow.eyebrow-shimmer {
+    filter:
+      drop-shadow(-0.3px -0.3px 0 var(--shimmer-highlight))
+      drop-shadow(0.3px 0.3px 0 var(--shimmer-accent))
+      drop-shadow(0.3px 0.3px 0 transparent);
+  }
+}
+
 @media (hover: hover) {
   .post-title-link:hover {
     color: var(--pine);
@@ -288,8 +428,8 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
     color: var(--color-text);
   }
   
-  /* Subtle indicator for the clickable area */
-  .post-head:hover .eyebrow {
+  /* Subtle indicator for the clickable area (only when shimmer is not active) */
+  .post-head:hover .eyebrow:not(.eyebrow-shimmer) {
     color: var(--pine);
   }
 }
@@ -333,7 +473,7 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
   color: var(--color-text);
 }
 
-.post-head:active .eyebrow {
+.post-head:active .eyebrow:not(.eyebrow-shimmer) {
   color: var(--pine);
 }
 
@@ -349,7 +489,7 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
   color: var(--color-text);
 }
 
-.post-head:has(.post-title-link:focus-visible) .eyebrow {
+.post-head:has(.post-title-link:focus-visible) .eyebrow:not(.eyebrow-shimmer) {
   color: var(--pine);
 }
 

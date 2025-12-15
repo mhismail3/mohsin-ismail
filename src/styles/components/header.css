@@ -239,12 +239,13 @@
   display: grid;
   place-items: center;
   overflow: hidden;
-  /* Smooth transitions for shadow, transform, and theme colors */
+  /* Smooth transitions for hover effects (border/shadow), transform, and theme colors.
+     Using 0.2s ease for border-color and box-shadow to ensure smooth hover in/out. */
   transition: 
-    box-shadow var(--collapse-duration, 0.3s) var(--collapse-ease, ease),
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
     transform 0.15s ease,
-    background-color var(--theme-transition-duration) var(--theme-transition-ease),
-    border-color var(--theme-transition-duration) var(--theme-transition-ease);
+    background-color var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
 .brand-mark img {
@@ -289,10 +290,15 @@
     border-color: transparent;
   }
   
-  /* Border glow on hover */
+  /* Border glow on hover - smooth transition for both in and out */
   .brand-mark:hover .brand-mark-inner {
     border-color: var(--pine);
     box-shadow: 0 0 0 1px var(--pine), 0 0 12px rgba(10, 138, 110, 0.35);
+    transition: 
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      transform 0.15s ease,
+      background-color var(--theme-transition-duration) var(--theme-transition-ease);
   }
 }
 
@@ -361,15 +367,41 @@
     --shimmer-x: 50%;
     --shimmer-width: 0%;
     
-    /* Gradient with color-mix for softer, more blended shimmer transitions */
+    /* ═══════════════════════════════════════════════════════════════════════════
+       SOPHISTICATED SHIMMER - Gaussian-like light reflection
+       All offsets PROPORTIONAL to --shimmer-width - collapses when width is 0%
+       ═══════════════════════════════════════════════════════════════════════════ */
     background: linear-gradient(
       90deg,
+      /* Left edge - base color */
       var(--shimmer-base) 0%,
-      var(--shimmer-base) calc(var(--shimmer-x) - var(--shimmer-width) - 8%),
-      color-mix(in srgb, var(--shimmer-accent) 30%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width)),
+      var(--shimmer-base) calc(var(--shimmer-x) - var(--shimmer-width) * 1.8),
+      
+      /* Outer glow - very subtle, wide spread (Gaussian tail) */
+      color-mix(in srgb, var(--shimmer-accent) 3%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 1.6),
+      color-mix(in srgb, var(--shimmer-accent) 8%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 1.4),
+      
+      /* Inner glow - medium intensity, building up */
+      color-mix(in srgb, var(--shimmer-accent) 18%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 1.2),
+      color-mix(in srgb, var(--shimmer-accent) 35%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 1.0),
+      
+      /* Specular hotspot - bright center */
+      color-mix(in srgb, var(--shimmer-accent) 65%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 0.5),
+      color-mix(in srgb, var(--shimmer-accent) 90%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 0.15),
       var(--shimmer-accent) var(--shimmer-x),
-      color-mix(in srgb, var(--shimmer-accent) 30%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width)),
-      var(--shimmer-base) calc(var(--shimmer-x) + var(--shimmer-width) + 8%),
+      color-mix(in srgb, var(--shimmer-accent) 90%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 0.15),
+      color-mix(in srgb, var(--shimmer-accent) 65%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 0.5),
+      
+      /* Inner glow - symmetric falloff */
+      color-mix(in srgb, var(--shimmer-accent) 35%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 1.0),
+      color-mix(in srgb, var(--shimmer-accent) 18%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 1.2),
+      
+      /* Outer glow - Gaussian tail */
+      color-mix(in srgb, var(--shimmer-accent) 8%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 1.4),
+      color-mix(in srgb, var(--shimmer-accent) 3%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 1.6),
+      
+      /* Right edge - base color */
+      var(--shimmer-base) calc(var(--shimmer-x) + var(--shimmer-width) * 1.8),
       var(--shimmer-base) 100%
     );
     background-size: 100% 100%;
@@ -385,11 +417,11 @@
       drop-shadow(0.5px 0.5px 0 var(--shimmer-shadow-1))
       drop-shadow(1px 1px 0 var(--shimmer-shadow-2));
     
-    /* Smooth transitions for shimmer movement, theme changes, and collapse opacity
-       MUST include all transition properties to prevent override by collapse styles */
+    /* Transitions - instant position tracking, smooth fade in/out and theme changes
+       Note: --shimmer-x has NO transition for instant cursor tracking
+       MUST include opacity for collapse animation override */
     transition: 
-      --shimmer-x 0.15s cubic-bezier(0.25, 0.1, 0.25, 1),
-      --shimmer-width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+      --shimmer-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
       --shimmer-base var(--theme-transition-duration) var(--theme-transition-ease),
       --shimmer-accent var(--theme-transition-duration) var(--theme-transition-ease),
       --shimmer-highlight var(--theme-transition-duration) var(--theme-transition-ease),
@@ -419,6 +451,16 @@
       filter var(--theme-transition-duration) var(--theme-transition-ease),
       opacity var(--collapse-duration) var(--collapse-ease);
     /* Note: --shimmer-x transition removed so JS animation is smooth */
+  }
+  
+  /* Shimmer hidden state - show solid base color, no gradient
+     Prevents collapsed gradient from showing accent color on page load or after hover
+     MUST include background-clip: text to properly shape the background */
+  .top-bar .brand-name.shimmer-text.shimmer-hidden {
+    background: var(--shimmer-base) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
   }
 }
 
@@ -1242,7 +1284,10 @@
       var(--avatar-ring),
       var(--avatar-shadow-hover-contact),
       var(--avatar-shadow-hover-ambient);
-    transition: box-shadow 0.15s ease;
+    transition: 
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      transform 0.15s ease;
   }
 }
 

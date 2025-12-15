@@ -172,16 +172,41 @@
   --shimmer-x: 50%;
   --shimmer-width: 0%;
   
-  /* Gradient with extra color stops for a softer, more blended shimmer
-     Uses symmetric fade: base → mid-blend → accent → mid-blend → base */
+  /* ═══════════════════════════════════════════════════════════════════════════
+     SOPHISTICATED SHIMMER - Gaussian-like light reflection
+     All offsets PROPORTIONAL to --shimmer-width - collapses when width is 0%
+     ═══════════════════════════════════════════════════════════════════════════ */
   background: linear-gradient(
     90deg,
+    /* Left edge - base color */
     var(--shimmer-base) 0%,
-    var(--shimmer-base) calc(var(--shimmer-x) - var(--shimmer-width) - 8%),
-    color-mix(in srgb, var(--shimmer-accent) 30%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width)),
+    var(--shimmer-base) calc(var(--shimmer-x) - var(--shimmer-width) * 1.8),
+    
+    /* Outer glow - very subtle, wide spread (Gaussian tail) */
+    color-mix(in srgb, var(--shimmer-accent) 3%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 1.6),
+    color-mix(in srgb, var(--shimmer-accent) 8%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 1.4),
+    
+    /* Inner glow - medium intensity, building up */
+    color-mix(in srgb, var(--shimmer-accent) 18%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 1.2),
+    color-mix(in srgb, var(--shimmer-accent) 35%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 1.0),
+    
+    /* Specular hotspot - bright center */
+    color-mix(in srgb, var(--shimmer-accent) 65%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 0.5),
+    color-mix(in srgb, var(--shimmer-accent) 90%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 0.15),
     var(--shimmer-accent) var(--shimmer-x),
-    color-mix(in srgb, var(--shimmer-accent) 30%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width)),
-    var(--shimmer-base) calc(var(--shimmer-x) + var(--shimmer-width) + 8%),
+    color-mix(in srgb, var(--shimmer-accent) 90%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 0.15),
+    color-mix(in srgb, var(--shimmer-accent) 65%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 0.5),
+    
+    /* Inner glow - symmetric falloff */
+    color-mix(in srgb, var(--shimmer-accent) 35%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 1.0),
+    color-mix(in srgb, var(--shimmer-accent) 18%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 1.2),
+    
+    /* Outer glow - Gaussian tail */
+    color-mix(in srgb, var(--shimmer-accent) 8%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 1.4),
+    color-mix(in srgb, var(--shimmer-accent) 3%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 1.6),
+    
+    /* Right edge - base color */
+    var(--shimmer-base) calc(var(--shimmer-x) + var(--shimmer-width) * 1.8),
     var(--shimmer-base) 100%
   ) !important;
   background-size: 100% 100% !important;
@@ -201,10 +226,10 @@
   /* Prevent text clipping at bottom */
   padding-bottom: 0.15em !important;
   
-  /* Gradual transitions - slower easing for a dreamy, blended feel */
+  /* Transitions - instant position tracking, smooth fade in/out and theme changes
+     Note: --shimmer-x has NO transition for instant cursor tracking */
   transition: 
-    --shimmer-x 0.15s cubic-bezier(0.25, 0.1, 0.25, 1),
-    --shimmer-width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    --shimmer-width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
     --shimmer-base var(--theme-transition-duration) var(--theme-transition-ease),
     --shimmer-accent var(--theme-transition-duration) var(--theme-transition-ease),
     --shimmer-highlight var(--theme-transition-duration) var(--theme-transition-ease),
@@ -228,6 +253,17 @@
     --shimmer-shadow-3 var(--theme-transition-duration) var(--theme-transition-ease),
     filter var(--theme-transition-duration) var(--theme-transition-ease) !important;
   /* Note: --shimmer-x transition is removed so JS animation is smooth */
+}
+
+/* Shimmer hidden state - show solid base color, no gradient
+   Prevents collapsed gradient from showing accent color on page load or after hover
+   MUST include background-clip: text to properly shape the background */
+.post-page .post-title.shimmer-hidden,
+.title-style-shimmer .post-page .post-title.shimmer-hidden {
+  background: var(--shimmer-base) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
