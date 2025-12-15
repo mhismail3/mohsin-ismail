@@ -10,7 +10,7 @@ tags:
 
 As we all chat more and more with LLMs and agents, I thought it time to explore some of the readily available speech-to-text tools available. I previously used [Superwhisper](https://superwhisper.com)'s free 15-minute trial on my Mac, and found it immediately useful to be able to *talk* to the Cursor window and have it type everything out with high accuracy. This weekend, I checked out [Wispr Flow](https://wisprflow.ai/) as well.
 
-I'm not sure what Wispr Flow adds that justifies its $15/month price point. But Superwhisper is terrific, at just $8.50/month. I'm highly considering purchasing the $250 lifetime license just based on my current usage and how much effort it saves.
+I didn't find enough differentiating features in Wispr Flow that justified the $15/month price point. But Superwhisper is terrific, at just $8.50/month. I'm highly considering purchasing the $250 lifetime license just based on my current usage and how much effort it saves.
 
 I asked Claude to give me a quick breakdown of these two - among other things, here is the comparison table it gave^[I don't know why Claude is comparing the yearly subscription price of Superwhisper against the monthly price for Wispr Flow - Superwhisper clearly has a monthly subscription option on it's website.]:
 
