@@ -18,7 +18,7 @@
   background: var(--color-surface-glass);
   border: 1px solid var(--color-border);
   border-radius: 22px;
-  box-shadow: var(--shadow-soft);
+  box-shadow: var(--shadow-container);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   z-index: var(--z-fixed);
@@ -32,9 +32,7 @@
 }
 
 .top-bar.scrolled {
-  box-shadow: 
-    0 8px 32px var(--shadow-color),
-    0 2px 8px var(--shadow-color);
+  box-shadow: var(--shadow-container-scrolled);
 }
 
 /* Spacer to push content below fixed header */
@@ -49,11 +47,11 @@
 }
 
 .top-bar.expanded {
-  box-shadow: 0 16px 42px var(--shadow-color);
+  box-shadow: var(--shadow-container-expanded);
 }
 
 .top-bar.flyout.expanded {
-  box-shadow: var(--shadow-soft);
+  box-shadow: var(--shadow-container);
 }
 
 .top-bar.flyout {

@@ -247,6 +247,33 @@
   --shadow-soft-lg: 0 20px 50px rgba(31, 26, 20, 0.08);
   --shadow-hover: 5px 11px 10px var(--shadow-color-strong);
   
+  /* Container shadows - multi-layer for realistic floating paper effect */
+  --shadow-container: 
+    0 1px 2px rgba(31, 26, 20, 0.08),
+    0 3px 6px rgba(31, 26, 20, 0.06),
+    0 8px 16px rgba(31, 26, 20, 0.06),
+    0 16px 32px rgba(31, 26, 20, 0.04);
+  
+  --shadow-container-lg: 
+    0 1px 2px rgba(31, 26, 20, 0.10),
+    0 4px 8px rgba(31, 26, 20, 0.07),
+    0 12px 24px rgba(31, 26, 20, 0.08),
+    0 24px 48px rgba(31, 26, 20, 0.05);
+  
+  /* Scrolled/elevated state - intensified layers */
+  --shadow-container-scrolled:
+    0 1px 2px rgba(31, 26, 20, 0.12),
+    0 4px 8px rgba(31, 26, 20, 0.08),
+    0 12px 24px rgba(31, 26, 20, 0.10),
+    0 24px 40px rgba(31, 26, 20, 0.06);
+  
+  /* Expanded state (e.g., menu open) - dramatic elevation */
+  --shadow-container-expanded:
+    0 2px 4px rgba(31, 26, 20, 0.14),
+    0 6px 12px rgba(31, 26, 20, 0.10),
+    0 16px 32px rgba(31, 26, 20, 0.12),
+    0 32px 56px rgba(31, 26, 20, 0.08);
+  
   --border-retro: 1.5px solid var(--ink);
   
   /* Retro accent colors for shadows/borders - stays dark in both themes */
@@ -469,6 +496,33 @@
   --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.25);
   --shadow-soft-lg: 0 20px 50px rgba(0, 0, 0, 0.3);
   --shadow-hover: 5px 11px 10px rgba(0, 0, 0, 0.5);
+  
+  /* Container shadows - multi-layer for realistic floating paper effect (dark mode) */
+  --shadow-container: 
+    0 1px 2px rgba(0, 0, 0, 0.18),
+    0 3px 6px rgba(0, 0, 0, 0.14),
+    0 8px 16px rgba(0, 0, 0, 0.14),
+    0 16px 32px rgba(0, 0, 0, 0.10);
+  
+  --shadow-container-lg: 
+    0 1px 2px rgba(0, 0, 0, 0.22),
+    0 4px 8px rgba(0, 0, 0, 0.16),
+    0 12px 24px rgba(0, 0, 0, 0.18),
+    0 24px 48px rgba(0, 0, 0, 0.12);
+  
+  /* Scrolled/elevated state - intensified layers (dark mode) */
+  --shadow-container-scrolled:
+    0 1px 2px rgba(0, 0, 0, 0.26),
+    0 4px 8px rgba(0, 0, 0, 0.18),
+    0 12px 24px rgba(0, 0, 0, 0.22),
+    0 24px 40px rgba(0, 0, 0, 0.14);
+  
+  /* Expanded state (e.g., menu open) - dramatic elevation (dark mode) */
+  --shadow-container-expanded:
+    0 2px 4px rgba(0, 0, 0, 0.30),
+    0 6px 12px rgba(0, 0, 0, 0.22),
+    0 16px 32px rgba(0, 0, 0, 0.26),
+    0 32px 56px rgba(0, 0, 0, 0.16);
   
   /* Panel background for dark mode - solid color, matches color-surface */
   --panel-bg: #24221e;
