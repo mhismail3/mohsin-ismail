@@ -6,13 +6,14 @@
 .panel {
   position: relative;
   background: var(--panel-bg);
-  border: none;
+  border: 0.5px solid var(--color-border-subtle);
   border-radius: var(--radius-lg);
   padding: 1.4rem 1.35rem;
   box-shadow: var(--shadow-container-lg);
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
   transition: background-color var(--theme-transition-duration) var(--theme-transition-ease),
+              border-color var(--theme-transition-duration) var(--theme-transition-ease),
               box-shadow var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
