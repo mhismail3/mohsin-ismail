@@ -939,6 +939,76 @@
 .top-menu.mobile.visible.closing .btn:nth-child(4) { --btn-stagger-close: 0ms; }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   MOBILE MENU DARK MODE ENHANCEMENTS
+   Frosted glass effect with luminous border for better visibility
+   ───────────────────────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .top-menu.mobile .btn {
+  /* Frosted glass background - nearly solid for visibility */
+  background: rgba(50, 48, 44, 0.97);
+  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  
+  /* Luminous border - subtle warm glow that catches the eye */
+  border-color: rgba(255, 248, 240, 0.18);
+  
+  /* Subtle outer glow for depth */
+  box-shadow: 
+    1px 1px 0px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 248, 240, 0.06),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .top-menu.mobile.visible .btn {
+  box-shadow: 
+    3px 3px 0px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 248, 240, 0.06),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Dark mode active state - more opaque with pine tint */
+[data-theme="dark"] .top-menu.mobile .btn.active {
+  background: rgba(30, 70, 60, 0.9);
+  border-color: rgba(10, 138, 110, 0.6);
+  box-shadow: 
+    3px 3px 0px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(10, 138, 110, 0.2),
+    0 0 12px rgba(10, 138, 110, 0.2);
+}
+
+/* Dark mode hover state */
+@media (hover: hover) {
+  [data-theme="dark"] .top-menu.mobile.visible .btn:hover {
+    background: rgba(60, 57, 52, 0.98);
+    border-color: rgba(255, 248, 240, 0.25);
+    box-shadow: 
+      1.5px 1.5px 0px rgba(0, 0, 0, 0.35),
+      0 0 0 1px rgba(255, 248, 240, 0.08),
+      0 2px 8px rgba(0, 0, 0, 0.25);
+  }
+}
+
+/* Dark mode pressed state */
+[data-theme="dark"] .top-menu.mobile.visible .btn:active,
+[data-theme="dark"] .top-menu.mobile.visible .btn.touch-pressed {
+  background: rgba(55, 52, 48, 0.99);
+  box-shadow: 
+    0px 0px 0px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 248, 240, 0.1);
+}
+
+/* Dark mode closing animation */
+[data-theme="dark"] .top-menu.mobile.visible.closing .btn {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3);
+}
+
+/* Dark mode home link - same as other buttons */
+[data-theme="dark"] .top-menu.mobile .btn.home-link {
+  background: rgba(50, 48, 44, 0.97);
+  border-color: rgba(255, 248, 240, 0.18);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    RESPONSIVE
    ───────────────────────────────────────────────────────────────────────────── */
 
@@ -1467,6 +1537,76 @@
   color: var(--pine);
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   COLLAPSED MENU DARK MODE ENHANCEMENTS (Desktop)
+   Frosted glass effect with luminous border for better visibility
+   ───────────────────────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .top-menu.from-collapsed .btn {
+  /* Frosted glass background - nearly solid for visibility */
+  background: rgba(50, 48, 44, 0.97);
+  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  
+  /* Luminous border - subtle warm glow that catches the eye */
+  border-color: rgba(255, 248, 240, 0.18);
+  
+  /* Subtle outer glow for depth */
+  box-shadow: 
+    1px 1px 0px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 248, 240, 0.06),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .top-menu.from-collapsed.visible .btn {
+  box-shadow: 
+    3px 3px 0px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 248, 240, 0.06),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Dark mode active state - more opaque with pine tint */
+[data-theme="dark"] .top-menu.from-collapsed .btn.active {
+  background: rgba(30, 70, 60, 0.9);
+  border-color: rgba(10, 138, 110, 0.6);
+  box-shadow: 
+    3px 3px 0px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(10, 138, 110, 0.2),
+    0 0 12px rgba(10, 138, 110, 0.2);
+}
+
+/* Dark mode hover state */
+@media (hover: hover) {
+  [data-theme="dark"] .top-menu.from-collapsed.visible .btn:hover {
+    background: rgba(60, 57, 52, 0.98);
+    border-color: rgba(255, 248, 240, 0.25);
+    box-shadow: 
+      1.5px 1.5px 0px rgba(0, 0, 0, 0.35),
+      0 0 0 1px rgba(255, 248, 240, 0.08),
+      0 2px 8px rgba(0, 0, 0, 0.25);
+  }
+}
+
+/* Dark mode pressed state */
+[data-theme="dark"] .top-menu.from-collapsed.visible .btn:active,
+[data-theme="dark"] .top-menu.from-collapsed.visible .btn.touch-pressed {
+  background: rgba(55, 52, 48, 0.99);
+  box-shadow: 
+    0px 0px 0px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 248, 240, 0.1);
+}
+
+/* Dark mode closing animation */
+[data-theme="dark"] .top-menu.from-collapsed.visible.closing .btn {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3);
+}
+
+/* Dark mode home link - same as other buttons */
+[data-theme="dark"] .top-menu.from-collapsed .btn.home-link {
+  background: rgba(50, 48, 44, 0.97);
+  border-color: rgba(255, 248, 240, 0.18);
+}
+
 /* Responsive left positioning to match header padding at each breakpoint */
 @media (min-width: 840px) {
   .top-menu.desktop.from-collapsed,
@@ -1953,10 +2093,10 @@
    ───────────────────────────────────────────────────────────────────────────── */
 
 [data-theme="dark"] .fab-menu .btn {
-  /* Frosted glass background - slightly elevated from the dark content */
-  background: rgba(55, 52, 47, 0.85);
-  backdrop-filter: blur(12px) saturate(1.2);
-  -webkit-backdrop-filter: blur(12px) saturate(1.2);
+  /* Frosted glass background - more opaque for better visibility */
+  background: rgba(55, 52, 47, 0.92);
+  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
   
   /* Luminous border - subtle warm glow that catches the eye */
   border-color: rgba(255, 248, 240, 0.18);
@@ -1975,20 +2115,20 @@
     0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* Dark mode active state */
+/* Dark mode active state - more opaque with pine tint */
 [data-theme="dark"] .fab-menu .btn.active {
-  background: rgba(10, 138, 110, 0.25);
-  border-color: rgba(10, 138, 110, 0.5);
+  background: rgba(30, 70, 60, 0.9);
+  border-color: rgba(10, 138, 110, 0.6);
   box-shadow: 
     2px 2px 0px rgba(0, 0, 0, 0.35),
-    0 0 0 1px rgba(10, 138, 110, 0.15),
-    0 0 12px rgba(10, 138, 110, 0.15);
+    0 0 0 1px rgba(10, 138, 110, 0.2),
+    0 0 12px rgba(10, 138, 110, 0.2);
 }
 
 /* Dark mode hover state */
 @media (hover: hover) {
   [data-theme="dark"] .fab-menu.visible .btn:hover {
-    background: rgba(70, 67, 60, 0.9);
+    background: rgba(70, 67, 60, 0.95);
     border-color: rgba(255, 248, 240, 0.25);
     box-shadow: 
       1px 1px 0px rgba(0, 0, 0, 0.35),
@@ -2000,7 +2140,7 @@
 /* Dark mode pressed state */
 [data-theme="dark"] .fab-menu.visible .btn:active,
 [data-theme="dark"] .fab-menu.visible .btn.touch-pressed {
-  background: rgba(65, 62, 57, 0.95);
+  background: rgba(65, 62, 57, 0.97);
   box-shadow: 
     0px 0px 0px rgba(0, 0, 0, 0.4),
     0 0 0 1px rgba(255, 248, 240, 0.1);
@@ -2009,6 +2149,12 @@
 /* Dark mode closing animation */
 [data-theme="dark"] .fab-menu.visible.closing .btn {
   box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3);
+}
+
+/* Dark mode home link - same as other buttons */
+[data-theme="dark"] .fab-menu .btn.home-link {
+  background: rgba(55, 52, 47, 0.92);
+  border-color: rgba(255, 248, 240, 0.18);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
