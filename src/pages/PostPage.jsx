@@ -1,6 +1,6 @@
 import React, { useState, useRef, useMemo, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { usePageTitle, useTouchHover, useTapFeedback, useInternalLinkNavigation, useShimmerFollow } from '../hooks';
+import { usePageTitle, useTouchHover, useTapFeedback, useInternalLinkNavigation, useShimmerFollow, useIsTouch } from '../hooks';
 import { posts } from '../data';
 import { formatDateParts } from '../utils/formatDate';
 import { AboutPanel, CodeBlock, FootnotePopupManager, Lightbox, PostImage, TableOfContents } from '../components/features';
@@ -214,6 +214,28 @@ const PostPage = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const { getTapProps } = useTapFeedback();
   const { shimmerRef, shimmerHandlers } = useShimmerFollow();
+  const titleRef = useRef(null);
+  
+  // Detect touch-only devices (no hover capability)
+  const isTouch = useIsTouch();
+  
+  // Handle touch tap on title - trigger radial reveal animation
+  const handleTitleTouchStart = useCallback(() => {
+    if (!isTouch || !titleRef.current) return;
+    
+    const el = titleRef.current;
+    // Remove class first to reset animation if tapping again
+    el.classList.remove('radial-reveal-touch');
+    // Force reflow to restart animation
+    void el.offsetWidth;
+    // Add class to trigger animation
+    el.classList.add('radial-reveal-touch');
+    
+    // Remove class after animation completes (2.4s)
+    setTimeout(() => {
+      el.classList.remove('radial-reveal-touch');
+    }, 2400);
+  }, [isTouch]);
 
   const prevPost = postIndex !== -1 && postIndex < posts.length - 1 ? posts[postIndex + 1] : null;
   const nextPost = postIndex !== -1 && postIndex > 0 ? posts[postIndex - 1] : null;
@@ -250,9 +272,9 @@ const PostPage = () => {
             })()}
           </div>
           <h1 
-            ref={shimmerRef}
-            className="post-title"
-            {...shimmerHandlers}
+            ref={isTouch ? titleRef : shimmerRef}
+            className={`post-title${isTouch ? ' touch-title' : ''}`}
+            {...(isTouch ? { onTouchStart: handleTitleTouchStart } : shimmerHandlers)}
           >{post.title}</h1>
           
           {/* Table of Contents - only shown if explicitly enabled in frontmatter */}

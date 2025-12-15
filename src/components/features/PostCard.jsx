@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { formatDateParts } from '../../utils/formatDate';
-import { useTapFeedback, useShimmerFollow } from '../../hooks';
+import { useTapFeedback, useShimmerFollow, useIsTouch } from '../../hooks';
 import { Icon, Pill } from '../ui';
 
 const PostCard = React.forwardRef(({
@@ -17,6 +17,9 @@ const PostCard = React.forwardRef(({
   const navigate = useNavigate();
   const { getTapProps } = useTapFeedback();
   const { shimmerRef, shimmerHandlers } = useShimmerFollow();
+  
+  // Detect touch-only devices (no hover capability)
+  const isTouch = useIsTouch();
 
   // Detect if excerpt content overflows (needs truncation)
   useEffect(() => {
@@ -86,11 +89,11 @@ const PostCard = React.forwardRef(({
           </div>
           <h3>
             <Link 
-              ref={shimmerRef}
+              ref={isTouch ? undefined : shimmerRef}
               to={`/posts/${post.slug}`} 
-              className="post-title-link" 
+              className={`post-title-link${isTouch ? ' touch-title' : ''}`}
               {...getTapProps()}
-              {...shimmerHandlers}
+              {...(isTouch ? {} : shimmerHandlers)}
             >
               {post.title}
             </Link>

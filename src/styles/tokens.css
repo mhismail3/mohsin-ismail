@@ -90,6 +90,25 @@
   initial-value: rgba(31, 26, 20, 0.04);
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   RADIAL REVEAL EFFECT (@property)
+   
+   Used for the touch-only post title animation where color reveals
+   from the center outward on tap.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@property --reveal-size {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 0%;
+}
+
+@property --reveal-opacity {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
 :root {
   /* Color Scheme */
   color-scheme: light;

@@ -464,13 +464,14 @@
       cursor-fade-in-then-blink 1.4s ease-out 1,
       cursor-blink 1s ease-in-out 1.4s infinite;
   }
-}
 
-/* Show cursor on press/tap - faster blink for snappy feedback */
-.brand:active .brand-name::after,
-.brand.tap-active .brand-name::after {
-  opacity: 1;
-  animation: cursor-blink 0.5s ease-in-out 1;
+  /* Show cursor on press/click - faster blink for snappy feedback (desktop only)
+     On touch devices, we only show the green color change, no cursor */
+  .brand:active .brand-name::after,
+  .brand.tap-active .brand-name::after {
+    opacity: 1;
+    animation: cursor-blink 0.5s ease-in-out 1;
+  }
 }
 
 /* Hide cursor when header is collapsed (only photo visible) */

@@ -196,8 +196,8 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
    On hover: Green shimmer follows cursor across the embossed text
    ───────────────────────────────────────────────────────────────────────────── */
 
-.post-title-link.title-style-shimmer,
-.title-style-shimmer .post-title-link {
+.post-title-link.title-style-shimmer:not(.touch-title),
+.title-style-shimmer .post-title-link:not(.touch-title) {
   /* CSS variables for cursor-following shimmer (set by JS)
      --shimmer-x: horizontal position of shimmer center
      --shimmer-width: band width (0% = hidden, 25% = visible) for fade in/out */
@@ -243,9 +243,9 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
 
 /* Hover - subtle shadow shift for "lifting" feel */
 @media (hover: hover) {
-  .post-title-link.title-style-shimmer:hover,
-  .title-style-shimmer .post-title-link:hover,
-  .title-style-shimmer .post-head:hover .post-title-link {
+  .post-title-link.title-style-shimmer:not(.touch-title):hover,
+  .title-style-shimmer .post-title-link:not(.touch-title):hover,
+  .title-style-shimmer .post-head:hover .post-title-link:not(.touch-title) {
     filter:
       drop-shadow(-0.5px -0.5px 0 var(--shimmer-highlight))
       drop-shadow(0.5px 0.5px 0 var(--shimmer-accent))
@@ -259,8 +259,8 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
    so the animation runs smoothly without CSS transition interference.
    ───────────────────────────────────────────────────────────────────────────── */
 
-.post-title-link.title-style-shimmer.shimmer-sweeping,
-.title-style-shimmer .post-title-link.shimmer-sweeping {
+.post-title-link.title-style-shimmer.shimmer-sweeping:not(.touch-title),
+.title-style-shimmer .post-title-link.shimmer-sweeping:not(.touch-title) {
   transition:
     --shimmer-width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
     --shimmer-base var(--theme-transition-duration) var(--theme-transition-ease),
@@ -300,6 +300,28 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
   color: var(--pine);
   transform: scale(0.99);
   transition: transform 0.06s ease-out, color 0.06s ease-out;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   POST CARD TITLE - TOUCH DEVICES
+   
+   Simple green color transition on tap for touch screens.
+   No shimmer effect - just animate to accent color when tapped.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (hover: none) {
+  .post-title-link.touch-title {
+    color: var(--color-text);
+    transition: 
+      color 0.2s ease,
+      transform 0.08s ease-out;
+  }
+  
+  /* Color change only when tapping directly on the title */
+  .post-title-link.touch-title:active,
+  .post-head:active .post-title-link.touch-title {
+    color: var(--pine);
+  }
 }
 
 /* Active state feedback for entire post-head area */

@@ -163,9 +163,9 @@
    On hover: Green shimmer follows cursor across the embossed text
    ───────────────────────────────────────────────────────────────────────────── */
 
-.post-page .post-title.title-style-shimmer,
-.title-style-shimmer .post-page .post-title,
-.title-style-shimmer article.post-page .post-title {
+.post-page .post-title.title-style-shimmer:not(.touch-title),
+.title-style-shimmer .post-page .post-title:not(.touch-title),
+.title-style-shimmer article.post-page .post-title:not(.touch-title) {
   /* CSS variables for cursor-following shimmer (set by JS)
      --shimmer-x: horizontal position of shimmer center
      --shimmer-width: band width (0% = hidden, 25% = visible) for fade in/out */
@@ -215,9 +215,9 @@
 }
 
 /* Touch sweep animation - disable --shimmer-x transition during JS-driven animation */
-.post-page .post-title.title-style-shimmer.shimmer-sweeping,
-.title-style-shimmer .post-page .post-title.shimmer-sweeping,
-.title-style-shimmer article.post-page .post-title.shimmer-sweeping {
+.post-page .post-title.title-style-shimmer.shimmer-sweeping:not(.touch-title),
+.title-style-shimmer .post-page .post-title.shimmer-sweeping:not(.touch-title),
+.title-style-shimmer article.post-page .post-title.shimmer-sweeping:not(.touch-title) {
   transition:
     --shimmer-width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
     --shimmer-base var(--theme-transition-duration) var(--theme-transition-ease),
@@ -228,6 +228,85 @@
     --shimmer-shadow-3 var(--theme-transition-duration) var(--theme-transition-ease),
     filter var(--theme-transition-duration) var(--theme-transition-ease) !important;
   /* Note: --shimmer-x transition is removed so JS animation is smooth */
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   POST PAGE TITLE - TOUCH DEVICES
+   
+   Subtle radial color reveal animation for touch screens.
+   On tap, a soft green tint slowly breathes outward from center, then fades.
+   Uses a radial gradient with very gradual color stops for a gentle effect.
+   
+   Uses the radial-reveal-touch class added via JS on tap, which allows the
+   full animation to play even after the finger is released.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (hover: none) {
+  .post-page .post-title.touch-title {
+    /* Base text color - no shimmer effect */
+    color: var(--color-text);
+    
+    /* CSS variables for radial reveal animation
+       --reveal-size: 0% = hidden, 200% = fully revealed
+       --reveal-opacity: controls the intensity of the green tint */
+    --reveal-size: 0%;
+    --reveal-opacity: 0;
+    
+    /* Subtle radial gradient - soft green tint that fades very gradually
+       Uses color-mix to blend a muted green with the base text color */
+    background: radial-gradient(
+      ellipse at 50% 50%,
+      color-mix(in srgb, var(--pine) calc(var(--reveal-opacity) * 35%), var(--color-text)) 0%,
+      color-mix(in srgb, var(--pine) calc(var(--reveal-opacity) * 25%), var(--color-text)) calc(var(--reveal-size) * 0.3),
+      color-mix(in srgb, var(--pine) calc(var(--reveal-opacity) * 15%), var(--color-text)) calc(var(--reveal-size) * 0.6),
+      color-mix(in srgb, var(--pine) calc(var(--reveal-opacity) * 5%), var(--color-text)) calc(var(--reveal-size) * 0.85),
+      var(--color-text) var(--reveal-size),
+      var(--color-text) 100%
+    );
+    background-size: 100% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    
+    /* Smooth transitions for theme changes */
+    transition: 
+      --reveal-size 0s,
+      --reveal-opacity 0s,
+      color var(--theme-transition-duration) var(--theme-transition-ease);
+  }
+  
+  /* Animating state - triggered via JS class for full animation */
+  .post-page .post-title.touch-title.radial-reveal-touch {
+    animation: radial-reveal 2.4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  }
+}
+
+/* Radial reveal animation - slow, gentle breathing effect */
+@keyframes radial-reveal {
+  0% {
+    --reveal-size: 0%;
+    --reveal-opacity: 0;
+  }
+  /* Fade in the tint as it starts expanding */
+  15% {
+    --reveal-size: 40%;
+    --reveal-opacity: 1;
+  }
+  /* Continue expanding at full tint */
+  45% {
+    --reveal-size: 200%;
+    --reveal-opacity: 1;
+  }
+  /* Hold briefly, then start fading */
+  60% {
+    --reveal-size: 200%;
+    --reveal-opacity: 0.7;
+  }
+  /* Gentle fade out */
+  100% {
+    --reveal-size: 200%;
+    --reveal-opacity: 0;
+  }
 }
 
 .post-tags {
