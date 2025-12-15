@@ -329,21 +329,34 @@
 /* ─────────────────────────────────────────────────────────────────────────────
    BRAND NAME - TOUCH DEVICES
    
-   Simple green color transition on tap for touch screens.
-   No shimmer effect - just animate to accent color when tapped.
+   Letterpress effect for touch screens without the shimmer animation.
+   Uses the same drop-shadow technique as desktop for 3D depth.
    ───────────────────────────────────────────────────────────────────────────── */
 
 @media (hover: none) {
   .top-bar .brand-name {
-    color: var(--color-text);
+    color: var(--shimmer-base);
+    
+    /* LETTERPRESS: Layered drop-shadows for 3D depth - same as desktop */
+    filter: 
+      drop-shadow(-0.5px -0.5px 0 var(--shimmer-highlight))
+      drop-shadow(0.5px 0.5px 0 var(--shimmer-shadow-1))
+      drop-shadow(1px 1px 0 var(--shimmer-shadow-2));
+    
     transition: 
       color 0.2s ease,
+      filter var(--theme-transition-duration) var(--theme-transition-ease),
       opacity var(--collapse-duration) var(--collapse-ease);
   }
   
   /* Color change only when tapping directly on the name, not the photo */
   .top-bar .brand-name:active {
     color: var(--pine);
+    /* Subtle shadow shift for "pressing" feel */
+    filter:
+      drop-shadow(-0.5px -0.5px 0 var(--shimmer-highlight))
+      drop-shadow(0.5px 0.5px 0 var(--shimmer-accent))
+      drop-shadow(0.5px 0.5px 0 transparent);
   }
 }
 
