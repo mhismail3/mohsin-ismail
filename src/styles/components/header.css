@@ -16,7 +16,7 @@
   margin: 0 auto;
   padding: 12px 12px;
   background: var(--color-surface-glass);
-  border: 1px solid var(--color-border);
+  border: none;
   border-radius: 22px;
   box-shadow: var(--shadow-container);
   backdrop-filter: blur(6px);
@@ -26,8 +26,7 @@
               opacity 0.32s ease-in-out,
               transform 0.32s ease-in-out,
               box-shadow var(--theme-transition-duration) var(--theme-transition-ease),
-              background-color var(--theme-transition-duration) var(--theme-transition-ease),
-              border-color var(--theme-transition-duration) var(--theme-transition-ease);
+              background-color var(--theme-transition-duration) var(--theme-transition-ease);
   overflow-anchor: none;
 }
 
