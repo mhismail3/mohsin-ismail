@@ -37,13 +37,13 @@
 }
 
 .scroll-gradient.left {
-  left: 0;
-  background: linear-gradient(to right, var(--panel-bg), transparent);
+  left: -1px; /* Overlap slightly to prevent sub-pixel rendering gaps */
+  background: linear-gradient(to right, var(--color-fade-end), var(--color-fade-start));
 }
 
 .scroll-gradient.right {
-  right: 0;
-  background: linear-gradient(to left, var(--panel-bg), transparent);
+  right: -1px; /* Overlap slightly to prevent sub-pixel rendering gaps */
+  background: linear-gradient(to left, var(--color-fade-end), var(--color-fade-start));
 }
 
 @media (max-width: 640px) {
