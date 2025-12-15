@@ -23,6 +23,7 @@
 @import './components/progressive-image.css';
 @import './components/page-transition.css';
 @import './components/table-of-contents.css';
+@import './components/table.css';
 
 /* Page-specific styles */
 @import './pages/blog.css';

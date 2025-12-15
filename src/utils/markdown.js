@@ -46,7 +46,7 @@ export const SANITIZE_CONFIG_BASIC = {
  * Includes support for code blocks, images, footnotes, and semantic blockquotes.
  */
 export const SANITIZE_CONFIG_POSTS = {
-  ADD_TAGS: ['iframe', 'div', 'figure', 'figcaption', 'footer', 'cite', 'span', 'button'],
+  ADD_TAGS: ['iframe', 'div', 'figure', 'figcaption', 'footer', 'cite', 'span', 'button', 'table', 'thead', 'tbody', 'tr', 'th', 'td'],
   ADD_ATTR: [
     'allow', 'allowfullscreen', 'frameborder', 'scrolling', 'loading', 
     'src', 'title', 'data-code', 'data-language', 'data-codeblock', 

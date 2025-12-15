@@ -1,0 +1,247 @@
+/* =============================================================================
+   TABLE COMPONENT
+   Markdown table styling for post content with retro aesthetic
+   ============================================================================= */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TABLE WRAPPER
+   Provides horizontal scrolling on mobile with subtle fade indicators
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.post-body .table-wrapper {
+  position: relative;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Fade indicators for horizontal scroll - uses same pattern as code blocks */
+.post-body .table-wrapper::before,
+.post-body .table-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 24px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--duration-normal) ease;
+  z-index: 2;
+}
+
+.post-body .table-wrapper::before {
+  left: 0;
+  background: linear-gradient(to right, var(--panel-bg), transparent);
+}
+
+.post-body .table-wrapper::after {
+  right: 0;
+  background: linear-gradient(to left, var(--panel-bg), transparent);
+}
+
+/* Show fade when scrollable (controlled via JS or :has() in future) */
+.post-body .table-wrapper.scrollable-left::before,
+.post-body .table-wrapper.scrollable-right::after {
+  opacity: 1;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TABLE BASE
+   Retro border and shadow matching code blocks
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.post-body table {
+  width: 100%;
+  margin: 1.5rem 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: var(--border-retro);
+  border-radius: var(--radius-sm);
+  background: var(--bg-white);
+  box-shadow: var(--shadow-retro-sm);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  overflow: hidden;
+  transition: background-color var(--theme-transition-duration) var(--theme-transition-ease),
+              border-color var(--theme-transition-duration) var(--theme-transition-ease),
+              box-shadow var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+/* When inside wrapper, remove margin (wrapper handles it) */
+.post-body .table-wrapper table {
+  margin: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   HEADER CELLS
+   Tinted background with eyebrow-style typography
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.post-body thead {
+  background: var(--color-code-header);
+  transition: background-color var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+.post-body th {
+  padding: 0.6rem 0.85rem;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  text-align: left;
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
+  transition: color var(--theme-transition-duration) var(--theme-transition-ease),
+              border-color var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+/* Right-align numeric headers if needed */
+.post-body th[align="right"] {
+  text-align: right;
+}
+
+.post-body th[align="center"] {
+  text-align: center;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   BODY CELLS
+   Comfortable padding with subtle row dividers
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.post-body td {
+  padding: 0.55rem 0.85rem;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: top;
+  transition: color var(--theme-transition-duration) var(--theme-transition-ease),
+              border-color var(--theme-transition-duration) var(--theme-transition-ease),
+              background-color var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+/* Last row has no bottom border */
+.post-body tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Right-align numeric cells if needed */
+.post-body td[align="right"] {
+  text-align: right;
+}
+
+.post-body td[align="center"] {
+  text-align: center;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FIRST COLUMN - ROW LABELS
+   Treated as row headers with subtle emphasis
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.post-body td:first-child {
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--color-surface-muted);
+  white-space: nowrap;
+  transition: color var(--theme-transition-duration) var(--theme-transition-ease),
+              background-color var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+/* When first column is empty (comparison tables), don't emphasize */
+.post-body td:first-child:empty {
+  background: transparent;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ROW HOVER STATE
+   Subtle highlight on desktop for better readability
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (hover: hover) and (pointer: fine) {
+  .post-body tbody tr:hover td {
+    background: var(--color-surface-hover);
+  }
+  
+  /* Keep first column distinction on hover */
+  .post-body tbody tr:hover td:first-child:not(:empty) {
+    background: var(--color-surface-active);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   INLINE CONTENT WITHIN CELLS
+   Links, code, and emphasis within table cells
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.post-body td a {
+  color: var(--aero);
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+@media (hover: hover) {
+  .post-body td a:hover {
+    color: var(--clay);
+    text-decoration-color: var(--clay);
+  }
+}
+
+.post-body td code,
+.post-body th code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  color: var(--pine);
+  background: var(--color-ghost-bg);
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+  border: 1px solid var(--line);
+}
+
+.post-body td strong,
+.post-body th strong {
+  font-weight: 700;
+}
+
+.post-body td em,
+.post-body th em {
+  font-style: italic;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   RESPONSIVE - MOBILE
+   Ensure tables remain usable on small screens
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .post-body table {
+    font-size: 0.78rem;
+  }
+  
+  .post-body th,
+  .post-body td {
+    padding: 0.45rem 0.6rem;
+  }
+  
+  .post-body th {
+    font-size: 0.68rem;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   REDUCED MOTION
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .post-body table,
+  .post-body th,
+  .post-body td,
+  .post-body thead {
+    transition: none;
+  }
+}
+
