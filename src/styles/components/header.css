@@ -38,7 +38,13 @@
 }
 
 /* Spacer to push content below fixed header */
-.top-bar + * {
+/* Exclude .mobile-fab which is a fixed-position sibling */
+.top-bar + *:not(.mobile-fab) {
+  margin-top: var(--header-height-mobile);
+}
+
+/* When FAB is present, target the element after it */
+.top-bar + .mobile-fab + * {
   margin-top: var(--header-height-mobile);
 }
 
@@ -944,7 +950,11 @@
     right: 28px;
   }
   
-  .top-bar + * {
+  .top-bar + *:not(.mobile-fab) {
+    margin-top: var(--header-height-desktop);
+  }
+  
+  .top-bar + .mobile-fab + * {
     margin-top: var(--header-height-desktop);
   }
 
@@ -966,7 +976,11 @@
     right: 10px;
   }
   
-  .top-bar + * {
+  .top-bar + *:not(.mobile-fab) {
+    margin-top: var(--header-height-mobile);
+  }
+  
+  .top-bar + .mobile-fab + * {
     margin-top: var(--header-height-mobile);
   }
 
@@ -1588,4 +1602,440 @@
   }
 }
 
+/* =============================================================================
+   MOBILE FAB (FLOATING ACTION BUTTON)
+   Bottom-right floating photo that appears when scrolled on mobile.
+   Replaces the header photo with a bounce-in animation.
+   ============================================================================= */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MOBILE HEADER PHOTO FADE
+   On mobile, fade out the header photo when collapsed instead of showing it
+   in the top-left. The FAB takes over navigation duties.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 840px) {
+  /* Override the collapsed state on mobile - fade out the header photo entirely */
+  .top-bar.collapsed .brand-mark {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease-out;
+  }
+  
+  /* Disable the pulse animation on mobile collapsed state */
+  .top-bar.collapsed .brand-mark::after {
+    animation: none;
+  }
+  
+  /* Hide the collapsed drop shadow on mobile */
+  .top-bar.collapsed .brand-mark-inner {
+    box-shadow: none;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FAB CONTAINER
+   Fixed position in bottom-right corner with safe area awareness
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.mobile-fab {
+  position: fixed;
+  bottom: calc(20px + var(--safe-area-inset-bottom));
+  right: 20px;
+  z-index: var(--z-fixed);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  
+  /* Hidden by default - becomes visible when collapsed */
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(80px) scale(0.8);
+  
+  /* Bounce out animation (when becoming hidden) */
+  transition: 
+    opacity 0.25s ease-in,
+    transform 0.3s cubic-bezier(0.6, 0, 0.4, 1);
+}
+
+.mobile-fab.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+  
+  /* Bounce in animation (when becoming visible) */
+  transition: 
+    opacity 0.2s ease-out 0.1s,
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FAB PHOTO
+   Circular profile photo with drop shadow and pulse animation
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.fab-photo-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.fab-photo {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--retro-border-color);
+  background: var(--color-bg);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  
+  /* Compact shadow for FAB - smaller than header photo to avoid Safari toolbar clipping.
+     Shadow is shifted slightly upward (-2px offset) so less extends below the element. */
+  box-shadow:
+    0 0 0 1px rgba(31, 26, 20, 0.12),
+    0 2px 4px rgba(31, 26, 20, 0.25),
+    0 4px 12px -2px rgba(31, 26, 20, 0.2);
+  
+  /* Smooth transitions for interactions and theme */
+  transition: 
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease,
+    background-color var(--theme-transition-duration) var(--theme-transition-ease);
+  
+  /* Touch interaction improvements */
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.fab-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FAB PULSE ANIMATION
+   Periodic ring pulse to draw attention (same as header photo)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.fab-photo-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  border: 2px solid var(--pine);
+  opacity: 0;
+  pointer-events: none;
+  animation: ring-pulse 4s ease-out 2s infinite;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FAB INTERACTION STATES
+   Touch and drag feedback matching header photo behavior
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Touch/tap feedback */
+.fab-photo-wrapper:active .fab-photo {
+  border-color: var(--pine);
+  box-shadow: 
+    0 0 6px rgba(10, 138, 110, 0.35),
+    0 1px 2px rgba(31, 26, 20, 0.3),
+    0 2px 6px rgba(31, 26, 20, 0.15);
+  transform: scale(0.96);
+  transition: transform 0.08s ease, box-shadow 0.08s ease, border-color 0.08s ease;
+}
+
+/* Dragging state - slightly lifted but still compact */
+.mobile-fab.dragging .fab-photo {
+  box-shadow:
+    0 0 0 1px rgba(31, 26, 20, 0.1),
+    0 4px 8px rgba(31, 26, 20, 0.3),
+    0 8px 20px -4px rgba(31, 26, 20, 0.25);
+  transition: box-shadow 0.15s ease;
+}
+
+/* Dark mode resting shadow */
+[data-theme="dark"] .fab-photo {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 2px 4px rgba(0, 0, 0, 0.35),
+    0 4px 12px -2px rgba(0, 0, 0, 0.3);
+}
+
+/* Dark mode drag shadow */
+[data-theme="dark"] .mobile-fab.dragging .fab-photo {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 4px 10px rgba(0, 0, 0, 0.45),
+    0 10px 24px -4px rgba(0, 0, 0, 0.4);
+}
+
+/* Snapping state - return to compact resting shadow */
+.mobile-fab.snapping .fab-photo {
+  box-shadow:
+    0 0 0 1px rgba(31, 26, 20, 0.12),
+    0 2px 4px rgba(31, 26, 20, 0.25),
+    0 4px 12px -2px rgba(31, 26, 20, 0.2);
+  transition: box-shadow 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Dark mode snapping state */
+[data-theme="dark"] .mobile-fab.snapping .fab-photo {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 2px 4px rgba(0, 0, 0, 0.35),
+    0 4px 12px -2px rgba(0, 0, 0, 0.3);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FAB MENU (UPWARD)
+   Menu that opens upward from the FAB with staggered button animations
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Instant hide - disables all transitions during navigation */
+.fab-menu.instant-hide,
+.fab-menu.instant-hide .btn,
+.fab-menu.instant-hide .fab-menu-content {
+  transition: none !important;
+  -webkit-transition: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.fab-menu {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-sm);
+  
+  /* Transparent container - buttons have their own backgrounds */
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  min-width: auto;
+  
+  /* Container always visible, buttons handle their own opacity */
+  opacity: 1;
+  pointer-events: none;
+}
+
+.fab-menu.visible {
+  pointer-events: auto;
+}
+
+.fab-menu.closing {
+  pointer-events: none;
+}
+
+.fab-menu-content {
+  display: flex;
+  flex-direction: column;
+  width: auto;
+  gap: var(--space-sm);
+  align-items: flex-end;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FAB MENU BUTTON ANIMATIONS
+   Buttons animate upward (from below) instead of downward
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.fab-menu .btn {
+  min-width: auto;
+  padding: 0.45rem 0.9rem 0.35rem 0.9rem;
+  font-size: var(--text-base);
+  font-weight: 600;
+  opacity: 0;
+  
+  /* Start position: below and scaled down */
+  -webkit-transform: translateY(12px) scale(0.88) rotate(2deg);
+  transform: translateY(12px) scale(0.88) rotate(2deg);
+  -webkit-transform-origin: right center;
+  transform-origin: right center;
+  
+  box-shadow: 1px 1px 0px var(--retro-shadow-color);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  
+  -webkit-transition: opacity 0.28s var(--ease-out),
+                      -webkit-transform var(--duration-slower) var(--ease-bounce),
+                      box-shadow 0.32s var(--ease-bounce);
+  transition: opacity 0.28s var(--ease-out),
+              transform var(--duration-slower) var(--ease-bounce),
+              box-shadow 0.32s var(--ease-bounce);
+  -webkit-transition-delay: var(--btn-stagger, 0ms);
+  transition-delay: var(--btn-stagger, 0ms);
+}
+
+.fab-menu.visible .btn {
+  opacity: 1;
+  -webkit-transform: translateY(0) scale(1) rotate(0deg);
+  transform: translateY(0) scale(1) rotate(0deg);
+  box-shadow: 2px 2px 0px var(--retro-shadow-color);
+}
+
+/* Staggered animation timing - reverse order for upward animation */
+.fab-menu .btn:nth-child(1) { --btn-stagger: 170ms; }
+.fab-menu .btn:nth-child(2) { --btn-stagger: 120ms; }
+.fab-menu .btn:nth-child(3) { --btn-stagger: 70ms; }
+.fab-menu .btn:nth-child(4) { --btn-stagger: 20ms; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FAB MENU BUTTON INTERACTION STATES
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Active/pressed state - 3D press effect */
+.fab-menu.visible .btn:active,
+.fab-menu.visible .btn.touch-pressed {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px var(--retro-shadow-color);
+  transition: transform 0.06s ease-out, box-shadow 0.06s ease-out;
+}
+
+/* Active link styling */
+.fab-menu .btn.active {
+  background: var(--color-surface-active);
+  border-color: var(--pine);
+  color: var(--pine);
+}
+
+/* Home link - same style as other buttons */
+.fab-menu .btn.home-link {
+  background: var(--bg-white);
+  border-color: var(--retro-border-color);
+  color: var(--ink);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FAB MENU CLOSING ANIMATION
+   Buttons animate back downward when closing
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.fab-menu.visible.closing .btn {
+  opacity: 0;
+  -webkit-transform: translateY(14px) scale(0.85) rotate(-3deg);
+  transform: translateY(14px) scale(0.85) rotate(-3deg);
+  box-shadow: 0px 0px 0px var(--retro-shadow-color);
+  
+  -webkit-transition: opacity 0.18s cubic-bezier(0.4, 0, 1, 1),
+                      -webkit-transform 0.24s var(--ease-snap),
+                      box-shadow 0.18s ease-out;
+  transition: opacity 0.18s cubic-bezier(0.4, 0, 1, 1),
+              transform 0.24s var(--ease-snap),
+              box-shadow 0.18s ease-out;
+  -webkit-transition-delay: var(--btn-stagger-close, 0ms);
+  transition-delay: var(--btn-stagger-close, 0ms);
+}
+
+/* Reverse stagger for closing - top buttons close first */
+.fab-menu.visible.closing .btn:nth-child(1) { --btn-stagger-close: 0ms; }
+.fab-menu.visible.closing .btn:nth-child(2) { --btn-stagger-close: 40ms; }
+.fab-menu.visible.closing .btn:nth-child(3) { --btn-stagger-close: 80ms; }
+.fab-menu.visible.closing .btn:nth-child(4) { --btn-stagger-close: 120ms; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FAB MENU DARK MODE ENHANCEMENTS
+   Frosted glass effect with luminous border for better visibility
+   ───────────────────────────────────────────────────────────────────────────── */
+
+[data-theme="dark"] .fab-menu .btn {
+  /* Frosted glass background - slightly elevated from the dark content */
+  background: rgba(55, 52, 47, 0.85);
+  backdrop-filter: blur(12px) saturate(1.2);
+  -webkit-backdrop-filter: blur(12px) saturate(1.2);
+  
+  /* Luminous border - subtle warm glow that catches the eye */
+  border-color: rgba(255, 248, 240, 0.18);
+  
+  /* Subtle outer glow for depth */
+  box-shadow: 
+    2px 2px 0px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 248, 240, 0.06),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .fab-menu.visible .btn {
+  box-shadow: 
+    2px 2px 0px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 248, 240, 0.06),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Dark mode active state */
+[data-theme="dark"] .fab-menu .btn.active {
+  background: rgba(10, 138, 110, 0.25);
+  border-color: rgba(10, 138, 110, 0.5);
+  box-shadow: 
+    2px 2px 0px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(10, 138, 110, 0.15),
+    0 0 12px rgba(10, 138, 110, 0.15);
+}
+
+/* Dark mode hover state */
+@media (hover: hover) {
+  [data-theme="dark"] .fab-menu.visible .btn:hover {
+    background: rgba(70, 67, 60, 0.9);
+    border-color: rgba(255, 248, 240, 0.25);
+    box-shadow: 
+      1px 1px 0px rgba(0, 0, 0, 0.35),
+      0 0 0 1px rgba(255, 248, 240, 0.08),
+      0 2px 8px rgba(0, 0, 0, 0.25);
+  }
+}
+
+/* Dark mode pressed state */
+[data-theme="dark"] .fab-menu.visible .btn:active,
+[data-theme="dark"] .fab-menu.visible .btn.touch-pressed {
+  background: rgba(65, 62, 57, 0.95);
+  box-shadow: 
+    0px 0px 0px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 248, 240, 0.1);
+}
+
+/* Dark mode closing animation */
+[data-theme="dark"] .fab-menu.visible.closing .btn {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FAB RESPONSIVE ADJUSTMENTS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 360px) {
+  .fab-photo {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .mobile-fab {
+    right: 16px;
+    bottom: calc(16px + var(--safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 320px) {
+  .fab-photo {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .mobile-fab {
+    right: 12px;
+    bottom: calc(12px + var(--safe-area-inset-bottom));
+  }
+}
 

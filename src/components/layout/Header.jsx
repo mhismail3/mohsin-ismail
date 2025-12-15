@@ -31,8 +31,17 @@ const Header = ({ label, onLogoClick }) => {
   // When true, menu hides instantly without CSS transitions (prevents phantom buttons during navigation)
   const [instantHide, setInstantHide] = useState(false);
   
+  // Mobile FAB menu state (separate from header menu)
+  const [isFabMenuOpen, setIsFabMenuOpen] = useState(false);
+  const [isFabMenuClosing, setIsFabMenuClosing] = useState(false);
+  const [fabInstantHide, setFabInstantHide] = useState(false);
+  // Track which FAB nav button is being touch-pressed
+  const [fabTouchPressedPath, setFabTouchPressedPath] = useState(null);
+  
   const closeTimeoutRef = useRef(null);
+  const fabCloseTimeoutRef = useRef(null);
   const touchStartRef = useRef(null); // Track touch start position
+  const fabTouchStartRef = useRef(null); // Track FAB touch start position
   const navigate = useNavigate();
   const location = useLocation();
   const { isDark, toggleTheme } = useTheme();
@@ -53,6 +62,7 @@ const Header = ({ label, onLogoClick }) => {
   useEffect(() => {
     return () => {
       if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+      if (fabCloseTimeoutRef.current) clearTimeout(fabCloseTimeoutRef.current);
     };
   }, []);
 
@@ -145,11 +155,68 @@ const Header = ({ label, onLogoClick }) => {
     setIsClosing(false);
   }, [isOpen]);
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // MOBILE FAB MENU FUNCTIONS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // Close FAB menu with animation
+  const closeFabMenu = useCallback(() => {
+    if (!isFabMenuOpen || isFabMenuClosing) return;
+    
+    setIsFabMenuClosing(true);
+    
+    if (fabCloseTimeoutRef.current) {
+      clearTimeout(fabCloseTimeoutRef.current);
+    }
+    
+    fabCloseTimeoutRef.current = setTimeout(() => {
+      setIsFabMenuOpen(false);
+      setIsFabMenuClosing(false);
+    }, CLOSE_ANIMATION_DURATION);
+  }, [isFabMenuOpen, isFabMenuClosing]);
+
+  // Close FAB menu instantly (for navigation)
+  const closeFabMenuInstantly = useCallback(() => {
+    if (!isFabMenuOpen) return;
+    
+    if (fabCloseTimeoutRef.current) {
+      clearTimeout(fabCloseTimeoutRef.current);
+      fabCloseTimeoutRef.current = null;
+    }
+    
+    setFabInstantHide(true);
+    setIsFabMenuOpen(false);
+    setIsFabMenuClosing(false);
+  }, [isFabMenuOpen]);
+
+  // Toggle FAB menu
+  const toggleFabMenu = useCallback(() => {
+    if (isFabMenuOpen) {
+      closeFabMenu();
+    } else {
+      if (fabCloseTimeoutRef.current) {
+        clearTimeout(fabCloseTimeoutRef.current);
+        fabCloseTimeoutRef.current = null;
+      }
+      setIsFabMenuClosing(false);
+      setFabInstantHide(false);
+      setIsFabMenuOpen(true);
+    }
+  }, [isFabMenuOpen, closeFabMenu]);
+
+  // FAB photo tap handler
+  const handleFabPhotoTap = useCallback(() => {
+    toggleFabMenu();
+  }, [toggleFabMenu]);
+
   // Close menu instantly on any location change (fallback for browser back/forward, etc.)
   // This uses instant close to prevent phantom button artifacts during page transitions
   useEffect(() => {
     if (isOpen) {
       closeMenuInstantly();
+    }
+    if (isFabMenuOpen) {
+      closeFabMenuInstantly();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
@@ -165,6 +232,25 @@ const Header = ({ label, onLogoClick }) => {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [isOpen, isClosing, closeMenu]);
+
+  // Close FAB menu on scroll
+  useEffect(() => {
+    if (!isFabMenuOpen || isFabMenuClosing) return;
+
+    const handleScroll = () => {
+      closeFabMenu();
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isFabMenuOpen, isFabMenuClosing, closeFabMenu]);
+
+  // Close FAB menu when header expands (scrolling back up)
+  useEffect(() => {
+    if (!isCollapsed && isFabMenuOpen) {
+      closeFabMenuInstantly();
+    }
+  }, [isCollapsed, isFabMenuOpen, closeFabMenuInstantly]);
 
   useEffect(() => {
     const setMatches = () => {
@@ -248,6 +334,67 @@ const Header = ({ label, onLogoClick }) => {
     touchStartRef.current = null;
   };
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // FAB MENU NAVIGATION HANDLERS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  const handleFabNav = (path) => {
+    if (path === '/') {
+      if (onLogoClick) {
+        onLogoClick();
+      }
+      if (location.pathname !== '/') {
+        closeFabMenuInstantly();
+        navigate('/');
+      } else {
+        closeFabMenu();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      return;
+    }
+    if (location.pathname !== path) {
+      closeFabMenuInstantly();
+      navigate(path);
+    } else {
+      closeFabMenu();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  // FAB touch handlers for nav buttons
+  const handleFabNavTouchStart = (e, path) => {
+    setFabTouchPressedPath(path);
+    const touch = e.touches[0];
+    fabTouchStartRef.current = { x: touch.clientX, y: touch.clientY, target: e.currentTarget };
+  };
+
+  const handleFabNavTouchMove = (e) => {
+    if (!fabTouchStartRef.current) return;
+    
+    const touch = e.touches[0];
+    const dx = Math.abs(touch.clientX - fabTouchStartRef.current.x);
+    const dy = Math.abs(touch.clientY - fabTouchStartRef.current.y);
+    
+    if (dx > 10 || dy > 10) {
+      setFabTouchPressedPath(null);
+      fabTouchStartRef.current = null;
+    }
+  };
+
+  const handleFabNavTouchEnd = (e, path) => {
+    if (fabTouchPressedPath === path) {
+      e.preventDefault();
+      handleFabNav(path);
+    }
+    setFabTouchPressedPath(null);
+    fabTouchStartRef.current = null;
+  };
+
+  const handleFabNavTouchCancel = () => {
+    setFabTouchPressedPath(null);
+    fabTouchStartRef.current = null;
+  };
+
   const toggleMenu = useCallback(() => {
     if (isOpen) {
       closeMenu();
@@ -285,6 +432,21 @@ const Header = ({ label, onLogoClick }) => {
     snapDuration: 450, // Spring snap-back duration
     dragScale: 1.08, // Scale up during drag
     boundsPadding: 12, // Padding from viewport/safe area edges
+  });
+
+  // Drag hook for FAB photo - same behavior as header photo
+  const {
+    ref: fabDragRef,
+    isDragging: isFabDragging,
+    isSnapping: isFabSnapping,
+  } = useTouchDrag({
+    enabled: isMobile && isCollapsed, // Only enabled on mobile when FAB is visible
+    onTap: handleFabPhotoTap,
+    dragThreshold: 8,
+    tapTimeout: 200,
+    snapDuration: 450,
+    dragScale: 1.08,
+    boundsPadding: 12,
   });
   
   // Detect touch-only devices (no hover capability)
@@ -368,65 +530,117 @@ const Header = ({ label, onLogoClick }) => {
     isSnapping ? 'snapping' : '',
   ].filter(Boolean).join(' ');
 
+  // Mobile FAB classes
+  const fabClass = [
+    'mobile-fab',
+    isCollapsed ? 'visible' : '',
+    isFabDragging ? 'dragging' : '',
+    isFabSnapping ? 'snapping' : '',
+  ].filter(Boolean).join(' ');
+
+  const fabMenuClass = [
+    'fab-menu',
+    isFabMenuOpen ? 'visible' : '',
+    isFabMenuClosing ? 'closing' : '',
+    fabInstantHide ? 'instant-hide' : '',
+  ].filter(Boolean).join(' ');
+
   return (
-    <header className={headerClass}>
-      <div className="top-bar-row">
-        <button 
-          className="brand" 
-          type="button" 
-          onClick={handleBrandClick} 
-          aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
-        >
-          <span className={brandMarkClass}>
+    <>
+      <header className={headerClass}>
+        <div className="top-bar-row">
+          <button 
+            className="brand" 
+            type="button" 
+            onClick={handleBrandClick} 
+            aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          >
+            <span className={brandMarkClass}>
+              <span 
+                ref={dragRef}
+                className="brand-mark-inner"
+              >
+                <img src={logoMark} alt="Mohsin Ismail logo" />
+              </span>
+            </span>
             <span 
-              ref={dragRef}
-              className="brand-mark-inner"
+              ref={isTouch ? undefined : brandNameRef}
+              className={`brand-name${isTouch ? '' : ' shimmer-text shimmer-hidden'}`}
+              {...(isTouch ? {} : brandNameShimmerHandlers)}
+            >{label}</span>
+          </button>
+          <div className="header-actions">
+            <button
+              type="button"
+              className="theme-toggle"
+              onClick={toggleTheme}
+              aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
             >
-              <img src={logoMark} alt="Mohsin Ismail logo" />
+              <span className="theme-toggle-icon-wrap">
+                <Icon name="sun" size={18} className={`theme-icon sun ${!isDark ? 'visible' : ''}`} />
+                <Icon name="moon" size={18} className={`theme-icon moon ${isDark ? 'visible' : ''}`} />
+              </span>
+            </button>
+          </div>
+        </div>
+        <div
+          className={menuClass}
+          aria-hidden={!isOpen}
+        >
+          <div className="top-menu-content">
+            {navLinks.map((link) => (
+              <button
+                key={link.path}
+                type="button"
+                className={`btn outline small ${isLinkActive(link.path) ? 'active' : ''} ${link.path === '/' ? 'home-link' : ''} ${touchPressedPath === link.path ? 'touch-pressed' : ''}`}
+                onClick={() => handleNav(link.path)}
+                onTouchStart={(e) => handleNavTouchStart(e, link.path)}
+                onTouchMove={handleNavTouchMove}
+                onTouchEnd={(e) => handleNavTouchEnd(e, link.path)}
+                onTouchCancel={handleNavTouchCancel}
+              >
+                {link.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </header>
+
+      {/* Mobile FAB - appears in bottom-right when scrolled on mobile */}
+      {isMobile && (
+        <div className={fabClass} aria-hidden={!isCollapsed}>
+          <span className="fab-photo-wrapper">
+            <span 
+              ref={fabDragRef}
+              className="fab-photo"
+            >
+              <img src={logoMark} alt="Open menu" />
             </span>
           </span>
-          <span 
-            ref={isTouch ? undefined : brandNameRef}
-            className={`brand-name${isTouch ? '' : ' shimmer-text shimmer-hidden'}`}
-            {...(isTouch ? {} : brandNameShimmerHandlers)}
-          >{label}</span>
-        </button>
-        <div className="header-actions">
-          <button
-            type="button"
-            className="theme-toggle"
-            onClick={toggleTheme}
-            aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+          <div
+            className={fabMenuClass}
+            aria-hidden={!isFabMenuOpen}
           >
-            <span className="theme-toggle-icon-wrap">
-              <Icon name="sun" size={18} className={`theme-icon sun ${!isDark ? 'visible' : ''}`} />
-              <Icon name="moon" size={18} className={`theme-icon moon ${isDark ? 'visible' : ''}`} />
-            </span>
-          </button>
+            <div className="fab-menu-content">
+              {navLinks.map((link) => (
+                <button
+                  key={link.path}
+                  type="button"
+                  className={`btn outline small ${isLinkActive(link.path) ? 'active' : ''} ${link.path === '/' ? 'home-link' : ''} ${fabTouchPressedPath === link.path ? 'touch-pressed' : ''}`}
+                  onClick={() => handleFabNav(link.path)}
+                  onTouchStart={(e) => handleFabNavTouchStart(e, link.path)}
+                  onTouchMove={handleFabNavTouchMove}
+                  onTouchEnd={(e) => handleFabNavTouchEnd(e, link.path)}
+                  onTouchCancel={handleFabNavTouchCancel}
+                >
+                  {link.label}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
-      <div
-        className={menuClass}
-        aria-hidden={!isOpen}
-      >
-        <div className="top-menu-content">
-          {navLinks.map((link) => (
-            <button
-              key={link.path}
-              type="button"
-              className={`btn outline small ${isLinkActive(link.path) ? 'active' : ''} ${link.path === '/' ? 'home-link' : ''} ${touchPressedPath === link.path ? 'touch-pressed' : ''}`}
-              onClick={() => handleNav(link.path)}
-              onTouchStart={(e) => handleNavTouchStart(e, link.path)}
-              onTouchMove={handleNavTouchMove}
-              onTouchEnd={(e) => handleNavTouchEnd(e, link.path)}
-              onTouchCancel={handleNavTouchCancel}
-            >
-              {link.label}
-            </button>
-          ))}
-        </div>
-      </div>
-    </header>
+      )}
+    </>
   );
 };
 
