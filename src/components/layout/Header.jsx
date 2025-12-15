@@ -42,6 +42,7 @@ const Header = ({ label, onLogoClick }) => {
   const fabCloseTimeoutRef = useRef(null);
   const touchStartRef = useRef(null); // Track touch start position
   const fabTouchStartRef = useRef(null); // Track FAB touch start position
+  const fabContainerRef = useRef(null); // Ref for FAB container (for click-outside detection)
   const navigate = useNavigate();
   const location = useLocation();
   const { isDark, toggleTheme } = useTheme();
@@ -251,6 +252,28 @@ const Header = ({ label, onLogoClick }) => {
       closeFabMenuInstantly();
     }
   }, [isCollapsed, isFabMenuOpen, closeFabMenuInstantly]);
+
+  // Close FAB menu when tapping outside of it
+  useEffect(() => {
+    if (!isFabMenuOpen || isFabMenuClosing) return;
+
+    const handleClickOutside = (e) => {
+      // Check if the tap/click is outside the FAB container
+      if (fabContainerRef.current && !fabContainerRef.current.contains(e.target)) {
+        closeFabMenu();
+      }
+    };
+
+    // Use a small delay to prevent the opening tap from immediately closing the menu
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('pointerdown', handleClickOutside, { passive: true });
+    }, 10);
+
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener('pointerdown', handleClickOutside);
+    };
+  }, [isFabMenuOpen, isFabMenuClosing, closeFabMenu]);
 
   useEffect(() => {
     const setMatches = () => {
@@ -608,7 +631,7 @@ const Header = ({ label, onLogoClick }) => {
 
       {/* Mobile FAB - appears in bottom-right when scrolled on mobile */}
       {isMobile && (
-        <div className={fabClass} aria-hidden={!isCollapsed}>
+        <div ref={fabContainerRef} className={fabClass} aria-hidden={!isCollapsed}>
           <span className="fab-photo-wrapper">
             <span 
               ref={fabDragRef}
