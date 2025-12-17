@@ -1,10 +1,10 @@
 ---
-title: Alces PDF Merger
-slug: alces-pdf-merger
+title: PDF Merger
+slug: pdf-merger
 date: 2025-11-20
 summary: A client-side PDF merging tool built with React 19 and Vite. Drop multiple PDFs, reorder pages via drag-and-drop, and download a freshly sequenced document—all without files leaving your browser.
 github: https://github.com/mhismail3/Alces-PDF-Merger
-live: https://mhismail3.github.io/Alces-PDF-Merger/
+live: https://pdf-merger.mhismail.com
 tags:
   - React 19
   - TypeScript
