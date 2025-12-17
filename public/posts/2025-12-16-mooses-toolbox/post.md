@@ -2,9 +2,11 @@
 title: "Moose's Toolbox: My Take on HTML Tools"
 date: "2025-12-16T22:48:00-08:00"
 tags:
+  - moose's toolbox
   - automation
   - ai
   - opus 4.5
+  - html tools
 ---
 
 Like many, I read [Simon Willison's excellent post on building HTML Tools](https://simonwillison.net/2025/Dec/10/html-tools/) recently, and I was immediately inspired to come up with my own version.

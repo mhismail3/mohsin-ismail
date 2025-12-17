@@ -1,10 +1,10 @@
 ---
-title: "My current AGENT.md rules"
+title: "My current AGENTS.md rules"
 date: "2025-11-25T19:55:00-08:00"
 tags:
   - prompt engineering
   - context engineering
-  - AGENT.md
+  - AGENTS.md
   - opus 4.5
   - sonnet 4.5
 ---
