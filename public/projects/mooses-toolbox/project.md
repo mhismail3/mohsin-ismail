@@ -2,7 +2,7 @@
 title: Moose's Toolbox
 slug: mooses-toolbox
 date: 2025-12-16
-summary: A collection of browser-based utility tools with a retro-inspired aesthetic. EXIF viewer, MOV-to-GIF converter, and link explorer—all running 100% client-side with no uploads, no accounts, and no tracking.
+summary: A collection of browser-based utility tools with a retro-inspired aesthetic. All running 100% client-side with no uploads, no accounts, and no tracking.
 github: https://github.com/mhismail3/mooses-toolbox
 live: https://tools.mhismail.com/
 tags:
@@ -25,30 +25,18 @@ Moose's Toolbox is a growing collection of browser-based utilities that run enti
 
 ### The Architecture
 
-Rather than spinning up separate repos for each tool, I built a lightweight template system. Each tool lives in its own `/tools/{name}/` folder with an `index.html` and `script.js`. The shared foundation provides:
+Each tool is intentionally lightweight and portable—just an `index.html` for the UI and an `app.js` for the logic. A shared `shared.css` stylesheet keeps the visual language consistent across all tools, using the same design system as this portfolio site.
 
-* **Theme Engine**: A global dark/light toggle that persists to `localStorage` and respects system preferences via `prefers-color-scheme`. The theme state syncs instantly across tabs using the Storage event.
-* **File Drop Zones**: A reusable component that handles drag-and-drop, file picker fallback, and visual feedback states (idle, hover, processing, error). Built on native File and DataTransfer APIs.
-* **Toast Notifications**: Non-blocking status messages that stack and auto-dismiss. Used for clipboard confirmations, error states, and processing completion.
+Every tool includes a dark/light mode toggle that persists to `localStorage` and respects system preferences via `prefers-color-scheme`. An `Info` button on each page provides usage instructions without cluttering the main interface.
 
-### EXIF Viewer
+### Current Tools
 
-The first tool extracts metadata from JPEG and TIFF images. The data gets parsed into four collapsible sections: Camera & Settings, Date & Time, Location, and Image Details. GPS coordinates are clickable—they open directly in Google Maps. A "Copy All" button formats everything as plain text for pasting into notes or reports.
+**EXIF Viewer** extracts metadata from JPEG and TIFF images—camera settings, GPS coordinates, timestamps—and displays it in collapsible sections. GPS coordinates link directly to Google Maps. A "Copy All" button formats everything as plain text.
 
-The viewer uses a streaming approach to read only the EXIF segment rather than loading the entire image into memory, which keeps it fast even on large RAW-converted JPEGs.
+**MOV to GIF** converts screen recordings (common on macOS) into animated GIFs. Users can adjust output quality, frame rate, and dimensions before conversion. The encoding happens entirely in-memory using browser APIs.
 
-### MOV to GIF
+**Link Explorer** traces redirect chains and inspects link metadata. Paste a URL and it progressively fetches headers, follows redirects, and displays the final destination. Useful for debugging OAuth flows or validating shortened links.
 
-Screen recordings on macOS default to MOV format, but GIFs are still the universal currency for demos and documentation. This tool decodes video frames using the browser's native `VideoDecoder` API, applies optional dithering and palette optimization, then encodes to GIF entirely in-memory.
+### Deployment
 
-Users can adjust output quality, frame rate, and dimensions before conversion. The preview updates in real-time as settings change, so you can dial in the file size before committing to the full encode.
-
-### Link Explorer
-
-A simple but useful debugging tool for checking redirect chains and inspecting link metadata. Paste a URL and it progressively fetches headers, follows redirects, and displays the final destination along with any intermediate hops. Useful for catching tracking redirects, validating short links, and debugging OAuth callback flows.
-
-### The Design
-
-I went with a retro-inspired aesthetic—muted earthy tones, subtle shadows, and card-based layouts with a slight paper texture. The hover states add a gentle lift effect that makes the interface feel tactile without being distracting. Everything scales cleanly from mobile to desktop using CSS Grid with responsive breakpoints.
-
-The whole thing deploys to GitHub Pages with a custom domain. No build step, no bundler, no dependencies—just vanilla HTML, CSS, and JavaScript that works.
+The whole thing deploys to GitHub Pages with a custom domain at [tools.mhismail.com](https://tools.mhismail.com/). No build step, no bundler, no dependencies—just vanilla HTML, CSS, and JavaScript.
