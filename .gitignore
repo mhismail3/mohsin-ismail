@@ -5,3 +5,4 @@ dist
 *.tmp
 *.swp
 /assets
+docs/
