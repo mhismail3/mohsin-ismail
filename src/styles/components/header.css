@@ -191,7 +191,7 @@
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-lg);
+  gap: var(--space-xl);
   border: none;
   background: none;
   padding: 0;
@@ -1041,9 +1041,9 @@
 
   .brand {
     font-size: 2.2rem;
-    gap: var(--space-md);
+    gap: var(--space-lg);
   }
-  
+
   /* Desktop dropdown menu - match header padding */
   .top-menu.desktop {
     right: 18px;
@@ -1067,14 +1067,14 @@
 
   .brand {
     font-size: 2.05rem;
-    gap: var(--space-md);
+    gap: var(--space-lg);
   }
 }
 
 @media (max-width: 480px) {
   .brand {
     font-size: 1.80rem;
-    gap: var(--space-sm);
+    gap: var(--space-md);
   }
   
   .top-bar {
@@ -1085,13 +1085,13 @@
 @media (max-width: 400px) {
   .brand {
     font-size: 1.85rem;
-    gap: var(--space-xs);
+    gap: var(--space-sm);
   }
 }
 
 @media (max-width: 360px) {
   .brand {
-    gap: var(--space-xs);
+    gap: var(--space-sm);
     font-size: 1.75rem;
   }
   
@@ -1123,7 +1123,7 @@
 @media (max-width: 320px) {
   .brand {
     font-size: 1.35rem;
-    gap: var(--space-2xs);
+    gap: var(--space-xs);
   }
   
   .brand-mark-inner {
