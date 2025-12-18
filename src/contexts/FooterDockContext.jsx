@@ -1,32 +1,25 @@
 import React, { createContext, useContext, useState, useCallback, useRef } from 'react';
 
 /**
- * FooterDockContext
+ * FooterDockContext - Optimized for iOS Safari
  *
- * Manages communication between the footer dock panel (AboutPanel) and the
- * floating FAB photo in the Header. When the user scrolls to the bottom and
- * the footer panel comes into view, the FAB "docks" into the panel.
+ * Uses a hybrid approach:
+ * - React state only for isDocked (triggers class updates)
+ * - Direct DOM manipulation for transform values during scroll
+ * - Store refs for values that don't need re-renders
  *
- * State:
- * - dockProgress: 0-1 value indicating how much the photo has docked
- * - isDocked: boolean, true when fully docked (progress >= 0.95)
- * - dockTarget: DOM element reference for the dock target panel
- * - fabOffset: { x, y } offset of FAB from its normal position (for button animation)
+ * Key optimizations:
+ * - Single unified scroll handler in AboutPanel
+ * - Direct DOM manipulation for transform updates
+ * - Minimal React re-renders (only when isDocked changes)
  */
-const FooterDockContext = createContext({
-  dockProgress: 0,
-  isDocked: false,
-  dockTarget: null,
-  fabOffset: { x: 0, y: 0 },
-  setDockProgress: () => {},
-  setDockTarget: () => {},
-  setFabOffset: () => {},
-});
+
+const FooterDockContext = createContext(null);
 
 export const useFooterDock = () => {
   const context = useContext(FooterDockContext);
   if (!context) {
-    // Return default values if used outside provider (safe fallback)
+    // Return safe fallback if used outside provider
     return {
       dockProgress: 0,
       isDocked: false,
@@ -35,18 +28,30 @@ export const useFooterDock = () => {
       setDockProgress: () => {},
       setDockTarget: () => {},
       setFabOffset: () => {},
+      setFabElement: () => {},
+      getProgress: () => 0,
+      getFabElement: () => null,
     };
   }
   return context;
 };
 
 export const FooterDockProvider = ({ children }) => {
-  const [dockProgress, setDockProgressState] = useState(0);
-  const [fabOffset, setFabOffsetState] = useState({ x: 0, y: 0 });
-  const dockTargetRef = useRef(null);
+  // Only isDocked triggers React re-renders (for CSS class updates)
+  const [isDocked, setIsDocked] = useState(false);
 
+  // All other values stored in refs (no re-renders during scroll)
+  const progressRef = useRef(0);
+  const fabOffsetRef = useRef({ x: 0, y: 0 });
+  const dockTargetRef = useRef(null);
+  const fabElementRef = useRef(null);
+
+  // Setters that don't trigger re-renders
   const setDockProgress = useCallback((progress) => {
-    setDockProgressState(progress);
+    progressRef.current = progress;
+    // Only update React state if isDocked status changed
+    const newIsDocked = progress >= 0.95;
+    setIsDocked(prev => prev !== newIsDocked ? newIsDocked : prev);
   }, []);
 
   const setDockTarget = useCallback((element) => {
@@ -54,23 +59,40 @@ export const FooterDockProvider = ({ children }) => {
   }, []);
 
   const setFabOffset = useCallback((offset) => {
-    setFabOffsetState(offset);
+    fabOffsetRef.current = offset;
   }, []);
 
-  const isDocked = dockProgress >= 0.95;
+  const setFabElement = useCallback((element) => {
+    fabElementRef.current = element;
+  }, []);
+
+  // Getters for imperative access
+  const getProgress = useCallback(() => progressRef.current, []);
+  const getFabElement = useCallback(() => fabElementRef.current, []);
+  const getDockTarget = useCallback(() => dockTargetRef.current, []);
+  const getFabOffset = useCallback(() => fabOffsetRef.current, []);
+
+  const value = {
+    // React state (triggers re-renders)
+    isDocked,
+    // Ref values (read current value, no re-render guarantee)
+    dockProgress: progressRef.current,
+    dockTarget: dockTargetRef.current,
+    fabOffset: fabOffsetRef.current,
+    // Setters
+    setDockProgress,
+    setDockTarget,
+    setFabOffset,
+    setFabElement,
+    // Getters (for imperative access to current values)
+    getProgress,
+    getFabElement,
+    getDockTarget,
+    getFabOffset,
+  };
 
   return (
-    <FooterDockContext.Provider
-      value={{
-        dockProgress,
-        isDocked,
-        dockTarget: dockTargetRef.current,
-        fabOffset,
-        setDockProgress,
-        setDockTarget,
-        setFabOffset,
-      }}
-    >
+    <FooterDockContext.Provider value={value}>
       {children}
     </FooterDockContext.Provider>
   );

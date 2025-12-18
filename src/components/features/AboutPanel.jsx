@@ -3,16 +3,43 @@ import { Link } from 'react-router-dom';
 import { contactLinks } from './AboutContent';
 import { useFooterDock } from '../../contexts';
 
+/**
+ * AboutPanel - Footer dock target panel
+ *
+ * This component owns the unified scroll handler that:
+ * 1. Calculates dock progress based on panel position
+ * 2. Calculates FAB offset and applies it directly to DOM
+ * 3. All in a single RAF-throttled handler to avoid race conditions
+ *
+ * Key iOS Safari optimizations:
+ * - Uses visualViewport API for accurate viewport height
+ * - Direct DOM manipulation (no React state during scroll)
+ * - Single scroll handler (no competing listeners)
+ */
 const AboutPanel = () => {
   const panelRef = useRef(null);
   const buttonRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
   const [buttonOpacity, setButtonOpacity] = useState(1);
-  const { setDockProgress, setDockTarget, dockProgress, fabOffset } = useFooterDock();
+  const { setDockProgress, setDockTarget, setFabOffset, isDocked, getProgress, getFabElement } = useFooterDock();
 
-  // Track if user has scrolled at all - prevents docking on short pages initially visible
+  // Track if user has scrolled enough to see FAB
   const hasScrolledRef = useRef(false);
   const initialScrollCheckedRef = useRef(false);
+
+  // RAF tracking
+  const rafIdRef = useRef(null);
+
+  // Cache for expensive calculations
+  const cacheRef = useRef({
+    viewportHeight: 0,
+    viewportWidth: 0,
+    safeArea: 0,
+    fabSize: 48,
+    fabNormalBottom: 20,
+    fabNormalRight: 30,
+    fabCenterY: 0,
+  });
 
   // Detect mobile viewport
   useEffect(() => {
@@ -25,11 +52,7 @@ const AboutPanel = () => {
     return () => media.removeEventListener('change', checkMobile);
   }, []);
 
-  // Cache for viewport measurements (avoid reading on every scroll)
-  const viewportCacheRef = useRef({ height: 0, safeArea: 0, fabCenterY: 0 });
-  const lastProgressRef = useRef(0);
-
-  // Register this panel as the dock target and calculate dock progress
+  // Unified scroll handler - single source of truth for all dock calculations
   useEffect(() => {
     if (!isMobile || !panelRef.current) {
       setDockTarget(null);
@@ -37,35 +60,61 @@ const AboutPanel = () => {
       return;
     }
 
-    // Register the panel element as dock target
-    setDockTarget(panelRef.current);
+    const panel = panelRef.current;
+    setDockTarget(panel);
 
-    // Reset scroll tracking on mount
+    // Reset scroll tracking
     hasScrolledRef.current = false;
     initialScrollCheckedRef.current = false;
 
-    // Cache viewport measurements (expensive to read every frame)
-    const updateViewportCache = () => {
-      const viewportHeight = window.innerHeight;
+    const COLLAPSE_THRESHOLD = 80;
+    const DOCK_START_THRESHOLD = 80;
+
+    // Update viewport cache - uses visualViewport for iOS Safari accuracy
+    const updateCache = () => {
+      // Use visualViewport for iOS Safari (accounts for dynamic toolbar)
+      const vv = window.visualViewport;
+      const viewportHeight = vv ? vv.height : window.innerHeight;
+      const viewportWidth = vv ? vv.width : window.innerWidth;
+
       const safeArea = parseInt(
         getComputedStyle(document.documentElement)
           .getPropertyValue('--safe-area-inset-bottom') || '0',
         10
       ) || 0;
-      // FAB center Y position (bottom: 20px + safe area, size: 48px)
-      const fabCenterY = viewportHeight - 20 - safeArea - 24;
-      viewportCacheRef.current = { height: viewportHeight, safeArea, fabCenterY };
+
+      // Calculate FAB dimensions based on viewport width
+      let fabSize = 48;
+      let fabNormalBottom = 20;
+      if (viewportWidth <= 320) {
+        fabSize = 36;
+        fabNormalBottom = 12;
+      } else if (viewportWidth <= 360) {
+        fabSize = 40;
+        fabNormalBottom = 16;
+      }
+
+      const fabCenterY = viewportHeight - fabNormalBottom - safeArea - (fabSize / 2);
+
+      cacheRef.current = {
+        viewportHeight,
+        viewportWidth,
+        safeArea,
+        fabSize,
+        fabNormalBottom,
+        fabNormalRight: 30,
+        fabCenterY,
+      };
     };
-    updateViewportCache();
 
-    const COLLAPSE_THRESHOLD = 80;
-    const startDockingThreshold = 80;
+    updateCache();
 
-    const calculateProgress = () => {
-      const panel = panelRef.current;
-      if (!panel) return;
+    // Unified calculation - runs on every scroll frame
+    const calculate = () => {
+      const cache = cacheRef.current;
+      const panelRect = panel.getBoundingClientRect();
 
-      // Track scroll threshold
+      // Check if user has scrolled past threshold
       if (!initialScrollCheckedRef.current) {
         initialScrollCheckedRef.current = true;
         if (window.scrollY > COLLAPSE_THRESHOLD) {
@@ -75,127 +124,139 @@ const AboutPanel = () => {
         hasScrolledRef.current = true;
       }
 
-      // Don't dock until user has scrolled enough to see the FAB
+      // Don't dock until FAB is visible
       if (!hasScrolledRef.current) {
-        if (lastProgressRef.current !== 0) {
-          lastProgressRef.current = 0;
-          setDockProgress(0);
+        setDockProgress(0);
+        // Reset FAB position via direct DOM
+        const fab = getFabElement();
+        if (fab) {
+          fab.style.setProperty('--dock-offset-x', '0px');
+          fab.style.setProperty('--dock-offset-y', '0px');
         }
+        setFabOffset({ x: 0, y: 0 });
         return;
       }
 
-      const rect = panel.getBoundingClientRect();
-      const { fabCenterY } = viewportCacheRef.current;
-      const distanceToFabCenter = fabCenterY - rect.top;
-
+      // Calculate dock progress
+      const distanceToFabCenter = cache.fabCenterY - panelRect.top;
       let progress = 0;
       if (distanceToFabCenter < 0) {
         progress = 0;
-      } else if (distanceToFabCenter >= startDockingThreshold) {
+      } else if (distanceToFabCenter >= DOCK_START_THRESHOLD) {
         progress = 1;
       } else {
-        progress = distanceToFabCenter / startDockingThreshold;
+        progress = distanceToFabCenter / DOCK_START_THRESHOLD;
       }
 
-      // Only update if progress changed significantly (reduces re-renders)
-      if (Math.abs(progress - lastProgressRef.current) > 0.01) {
-        lastProgressRef.current = progress;
-        setDockProgress(progress);
+      // Update progress (context handles isDocked notification)
+      setDockProgress(progress);
+
+      // Calculate and apply FAB position directly to DOM
+      const fab = getFabElement();
+      if (fab && progress > 0) {
+        const { viewportWidth, viewportHeight, safeArea, fabSize, fabNormalBottom, fabNormalRight } = cache;
+
+        // FAB's normal center position
+        const fabNormalCenterX = viewportWidth - fabNormalRight - (fabSize / 2);
+        const fabNormalCenterY = viewportHeight - fabNormalBottom - safeArea - (fabSize / 2);
+
+        // Dock target position (right side of panel, vertically centered)
+        const panelInnerPadding = 20;
+        const targetCenterX = panelRect.right - panelInnerPadding - (fabSize / 2);
+        const targetCenterY = panelRect.top + (panelRect.height / 2);
+
+        // Full offset when fully docked
+        const fullDeltaX = targetCenterX - fabNormalCenterX;
+        const fullDeltaY = targetCenterY - fabNormalCenterY;
+
+        // Apply progress (snap to 1 when >= 0.95 for clean docking)
+        const effectiveProgress = progress >= 0.95 ? 1 : progress;
+        const currentDeltaX = fullDeltaX * effectiveProgress;
+        const currentDeltaY = fullDeltaY * effectiveProgress;
+
+        // Direct DOM update - no React re-render
+        fab.style.setProperty('--dock-offset-x', `${currentDeltaX}px`);
+        fab.style.setProperty('--dock-offset-y', `${currentDeltaY}px`);
+
+        // Store offset for button fade calculation
+        setFabOffset({ x: currentDeltaX, y: currentDeltaY });
+      } else if (fab) {
+        fab.style.setProperty('--dock-offset-x', '0px');
+        fab.style.setProperty('--dock-offset-y', '0px');
+        setFabOffset({ x: 0, y: 0 });
       }
     };
 
-    calculateProgress(); // Initial check
+    // Initial calculation
+    calculate();
 
-    // Throttle scroll handler with RAF
-    let rafId = null;
+    // Scroll handler with RAF throttling
     const handleScroll = () => {
-      if (rafId) return;
-      rafId = requestAnimationFrame(() => {
-        rafId = null;
-        calculateProgress();
+      if (rafIdRef.current !== null) return;
+      rafIdRef.current = requestAnimationFrame(() => {
+        rafIdRef.current = null;
+        calculate();
       });
     };
 
+    // Resize handler - update cache and recalculate
     const handleResize = () => {
-      updateViewportCache();
-      calculateProgress();
+      updateCache();
+      calculate();
     };
+
+    // Use visualViewport resize for iOS Safari toolbar changes
+    const vv = window.visualViewport;
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('resize', handleResize, { passive: true });
+    if (vv) {
+      vv.addEventListener('resize', handleResize, { passive: true });
+      vv.addEventListener('scroll', handleScroll, { passive: true });
+    }
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleResize);
-      if (rafId) cancelAnimationFrame(rafId);
+      if (vv) {
+        vv.removeEventListener('resize', handleResize);
+        vv.removeEventListener('scroll', handleScroll);
+      }
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
+        rafIdRef.current = null;
+      }
       setDockTarget(null);
       setDockProgress(0);
     };
-  }, [isMobile, setDockProgress, setDockTarget]);
+  }, [isMobile, setDockProgress, setDockTarget, setFabOffset, getFabElement]);
 
-  // Button fades out when photo is docked
-  const isDocked = isMobile && dockProgress >= 0.95;
-
-  // Calculate button opacity based on FAB proximity to button
-  // This makes the fade feel "caused" by the photo approaching
+  // Button opacity based on dock state (simple - no complex calculations)
   useEffect(() => {
-    if (!isMobile || !buttonRef.current || dockProgress === 0) {
+    if (!isMobile) {
       setButtonOpacity(1);
       return;
     }
-
-    const button = buttonRef.current;
-    const buttonRect = button.getBoundingClientRect();
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-    const safeAreaBottom = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--safe-area-inset-bottom') || '0', 10) || 0;
-
-    // FAB's current position (center point)
-    // Normal position: right: 30px, bottom: 20px + safe area, size: 48px
-    const fabSize = viewportWidth <= 320 ? 36 : viewportWidth <= 360 ? 40 : 48;
-    const fabBottom = viewportWidth <= 320 ? 12 : viewportWidth <= 360 ? 16 : 20;
-    const fabNormalCenterX = viewportWidth - 30 - fabSize / 2;
-    const fabNormalCenterY = viewportHeight - fabBottom - safeAreaBottom - fabSize / 2;
-
-    // FAB's current center with offset applied
-    const fabCurrentCenterX = fabNormalCenterX + fabOffset.x;
-    const fabCurrentCenterY = fabNormalCenterY + fabOffset.y;
-
-    // Button center
-    const buttonCenterX = buttonRect.left + buttonRect.width / 2;
-    const buttonCenterY = buttonRect.top + buttonRect.height / 2;
-
-    // Distance between FAB center and button center
-    const distance = Math.sqrt(
-      Math.pow(fabCurrentCenterX - buttonCenterX, 2) +
-      Math.pow(fabCurrentCenterY - buttonCenterY, 2)
-    );
-
-    // Fade starts when FAB is within 120px, fully faded at 40px
-    const fadeStartDistance = 120;
-    const fadeEndDistance = 40;
-
-    let opacity = 1;
-    if (distance <= fadeEndDistance) {
-      opacity = 0;
-    } else if (distance < fadeStartDistance) {
-      // Smooth fade based on proximity
-      opacity = (distance - fadeEndDistance) / (fadeStartDistance - fadeEndDistance);
+    // Simple fade: start fading at 50% progress, fully hidden at 95%
+    const progress = getProgress();
+    if (progress <= 0.5) {
+      setButtonOpacity(1);
+    } else if (progress >= 0.95) {
+      setButtonOpacity(0);
+    } else {
+      // Linear fade from 50% to 95%
+      setButtonOpacity(1 - ((progress - 0.5) / 0.45));
     }
-
-    setButtonOpacity(opacity);
-  }, [isMobile, dockProgress, fabOffset]);
+  }, [isMobile, isDocked, getProgress]);
 
   const panelClass = [
     'panel',
     'about-panel',
     'about-panel-compact',
-    dockProgress > 0 ? 'docking' : '',
     isDocked ? 'docked' : '',
   ].filter(Boolean).join(' ');
 
-  // Style for button fade - use CSS variable for smooth transition
-  const buttonStyle = isMobile && dockProgress > 0 ? {
+  const buttonStyle = isMobile ? {
     '--button-opacity': buttonOpacity,
   } : {};
 

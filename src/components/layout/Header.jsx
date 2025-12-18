@@ -60,136 +60,23 @@ const Header = ({ label, onLogoClick }) => {
   // but we DON'T immediately reset collapsed state (header stays as-is during fade-out)
   const { isFiltering, filterPhase } = useFilterTransition();
 
-  // Get footer dock state - FAB animates to dock position in footer panel
-  const { isDocked: isFabDocked, dockProgress, dockTarget, setFabOffset } = useFooterDock();
+  // Get footer dock state - FAB position is now controlled entirely by AboutPanel
+  // Header just reads isDocked for class updates and registers the FAB element
+  const { isDocked: isFabDocked, dockProgress, setFabElement } = useFooterDock();
 
-  // FAB dock position - use ref + direct DOM manipulation for jitter-free scrolling
-  // Avoid React state updates during scroll to prevent re-renders
+  // FAB element ref - registered with store so AboutPanel can manipulate it directly
   const fabRef = useRef(null);
-  const fabPositionRef = useRef({ deltaX: 0, deltaY: 0 });
-  const lastOffsetRef = useRef({ x: 0, y: 0 });
 
-  // Store dockProgress in a ref so scroll handler always has current value
-  const dockProgressRef = useRef(dockProgress);
-  dockProgressRef.current = dockProgress;
-
-  // Cache viewport measurements (only update on resize)
-  const viewportCacheRef = useRef({ width: 0, height: 0, safeArea: 0 });
-
+  // Register FAB element with the dock store so AboutPanel can manipulate it directly
+  // This is the key to having a single scroll handler control everything
   useEffect(() => {
-    if (!isMobile || !dockTarget) {
-      // Reset FAB styles when not docking
-      if (fabRef.current) {
-        fabRef.current.style.setProperty('--dock-offset-x', '0px');
-        fabRef.current.style.setProperty('--dock-offset-y', '0px');
-      }
-      setFabOffset({ x: 0, y: 0 });
-      lastOffsetRef.current = { x: 0, y: 0 };
-      return;
+    if (isMobile && fabRef.current) {
+      setFabElement(fabRef.current);
     }
-
-    // Cache viewport measurements (expensive to read every frame)
-    const updateViewportCache = () => {
-      const safeArea = parseInt(
-        getComputedStyle(document.documentElement)
-          .getPropertyValue('--safe-area-inset-bottom') || '0',
-        10
-      ) || 0;
-      viewportCacheRef.current = {
-        width: window.innerWidth,
-        height: window.innerHeight,
-        safeArea,
-      };
-    };
-    updateViewportCache();
-
-    // Calculate and apply dock position directly to DOM (no React state)
-    const updateDockPosition = () => {
-      const fab = fabRef.current;
-      if (!fab) return;
-
-      const { width: viewportWidth, height: viewportHeight, safeArea } = viewportCacheRef.current;
-      const targetRect = dockTarget.getBoundingClientRect();
-
-      // FAB's normal position
-      const fabNormalRight = 30;
-      let fabSize = 48;
-      let fabNormalBottom = 20 + safeArea;
-      if (viewportWidth <= 320) {
-        fabSize = 36;
-        fabNormalBottom = 12 + safeArea;
-      } else if (viewportWidth <= 360) {
-        fabSize = 40;
-        fabNormalBottom = 16 + safeArea;
-      }
-
-      // Calculate positions
-      const fabNormalCenterX = viewportWidth - fabNormalRight - fabSize / 2;
-      const fabNormalCenterY = viewportHeight - fabNormalBottom - fabSize / 2;
-      const panelInnerPadding = 20;
-      const targetCenterX = targetRect.right - panelInnerPadding - fabSize / 2;
-      const targetCenterY = targetRect.top + targetRect.height / 2;
-
-      const fullDeltaX = targetCenterX - fabNormalCenterX;
-      const fullDeltaY = targetCenterY - fabNormalCenterY;
-      fabPositionRef.current = { deltaX: fullDeltaX, deltaY: fullDeltaY };
-
-      const currentProgress = dockProgressRef.current;
-
-      if (currentProgress > 0) {
-        const effectiveProgress = currentProgress >= 0.95 ? 1 : currentProgress;
-        const currentDeltaX = fullDeltaX * effectiveProgress;
-        const currentDeltaY = fullDeltaY * effectiveProgress;
-
-        // Direct DOM update - no React re-render
-        fab.style.setProperty('--dock-offset-x', `${currentDeltaX}px`);
-        fab.style.setProperty('--dock-offset-y', `${currentDeltaY}px`);
-
-        // Only update context if offset changed significantly (reduces re-renders)
-        const dx = Math.abs(currentDeltaX - lastOffsetRef.current.x);
-        const dy = Math.abs(currentDeltaY - lastOffsetRef.current.y);
-        if (dx > 2 || dy > 2) {
-          lastOffsetRef.current = { x: currentDeltaX, y: currentDeltaY };
-          setFabOffset({ x: currentDeltaX, y: currentDeltaY });
-        }
-      } else {
-        fab.style.setProperty('--dock-offset-x', '0px');
-        fab.style.setProperty('--dock-offset-y', '0px');
-        if (lastOffsetRef.current.x !== 0 || lastOffsetRef.current.y !== 0) {
-          lastOffsetRef.current = { x: 0, y: 0 };
-          setFabOffset({ x: 0, y: 0 });
-        }
-      }
-    };
-
-    updateDockPosition();
-
-    // Scroll handler - runs on every frame for smooth tracking
-    let rafId = null;
-    const handleScroll = () => {
-      if (rafId) return; // Throttle to one RAF per frame
-      rafId = requestAnimationFrame(() => {
-        rafId = null;
-        updateDockPosition();
-      });
-    };
-
-    // Resize handler - update cache and position
-    const handleResize = () => {
-      updateViewportCache();
-      updateDockPosition();
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', handleResize, { passive: true });
-
     return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleResize);
-      if (rafId) cancelAnimationFrame(rafId);
-      setFabOffset({ x: 0, y: 0 });
+      setFabElement(null);
     };
-  }, [isMobile, dockTarget, setFabOffset]); // Removed dockProgress dependency
+  }, [isMobile, setFabElement]);
 
   // Suspend scroll reactions during navigation OR filtering
   const isSuspended = isNavigating || isFiltering;
@@ -790,6 +677,10 @@ const Header = ({ label, onLogoClick }) => {
           ref={(el) => {
             fabContainerRef.current = el;
             fabRef.current = el;
+            // Immediately register with store for dock control
+            if (el) {
+              setFabElement(el);
+            }
           }}
           className={fabClass}
           aria-hidden={!isCollapsed}
