@@ -113,7 +113,7 @@ const AboutPanel = () => {
     const calculate = () => {
       const panelRect = panel.getBoundingClientRect();
       const viewport = getViewportInfo();
-      const { visualHeight, viewportWidth, toolbarOffset, fabSize, fabNormalBottom, fabNormalRight, safeArea } = viewport;
+      const { visualHeight, layoutHeight, viewportWidth, toolbarOffset, fabSize, fabNormalBottom, fabNormalRight, safeArea } = viewport;
 
       // Check if user has scrolled past threshold
       if (!initialScrollCheckedRef.current) {
@@ -167,22 +167,51 @@ const AboutPanel = () => {
         const targetCenterX = panelRect.right - panelInnerPadding - (fabSize / 2);
         const targetCenterY = panelRect.top + (panelRect.height / 2);
 
-        // Calculate offset from FAB's visual position
-        const fullDeltaX = targetCenterX - fabVisualCenterX;
-        const fullDeltaY = targetCenterY - fabVisualCenterY;
+        // When fully docked (progress >= 0.95), use a stable calculation method
+        // that doesn't depend on visual viewport changes
+        const isFullyDocked = progress >= 0.95;
 
-        // Apply progress (snap to 1 when >= 0.95 for clean docking)
-        const effectiveProgress = progress >= 0.95 ? 1 : progress;
-        const currentDeltaX = fullDeltaX * effectiveProgress;
-        // Add toolbar compensation to Y offset
-        const currentDeltaY = (fullDeltaY * effectiveProgress) + toolbarCompensation;
+        if (isFullyDocked) {
+          // STABLE DOCKED POSITION: Calculate offset from FAB's CSS position
+          // FAB CSS: bottom: X, right: 30px (relative to layout viewport)
+          // We need to move it to panel position (also relative to layout viewport)
 
-        // Direct DOM update - no React re-render
-        fab.style.setProperty('--dock-offset-x', `${currentDeltaX}px`);
-        fab.style.setProperty('--dock-offset-y', `${currentDeltaY}px`);
+          // FAB's CSS position in layout viewport coordinates
+          const fabCssBottom = fabNormalBottom + safeArea;
+          const fabCssRight = fabNormalRight;
 
-        // Store offset for button fade calculation
-        setFabOffset({ x: currentDeltaX, y: currentDeltaY });
+          // FAB center in layout viewport coordinates (from top-left)
+          const fabLayoutX = viewportWidth - fabCssRight - (fabSize / 2);
+          const fabLayoutY = layoutHeight - fabCssBottom - (fabSize / 2);
+
+          // Panel target in layout viewport coordinates
+          // panelRect is already in viewport coordinates, but we need layout viewport
+          // Since layout viewport = visual viewport + toolbar offset at top,
+          // and panelRect.top is relative to visual viewport top...
+          // Actually panelRect is relative to the current viewport (visual on iOS)
+          // So we need to convert to layout viewport coordinates
+          const panelTargetX = targetCenterX; // X is the same
+          const panelTargetY = targetCenterY + toolbarOffset; // Adjust for toolbar
+
+          // Calculate stable offset (doesn't change with toolbar)
+          const stableDeltaX = panelTargetX - fabLayoutX;
+          const stableDeltaY = panelTargetY - fabLayoutY;
+
+          fab.style.setProperty('--dock-offset-x', `${stableDeltaX}px`);
+          fab.style.setProperty('--dock-offset-y', `${stableDeltaY}px`);
+          setFabOffset({ x: stableDeltaX, y: stableDeltaY });
+        } else {
+          // TRANSITIONING: Interpolate with toolbar compensation
+          const fullDeltaX = targetCenterX - fabVisualCenterX;
+          const fullDeltaY = targetCenterY - fabVisualCenterY;
+
+          const currentDeltaX = fullDeltaX * progress;
+          const currentDeltaY = (fullDeltaY * progress) + toolbarCompensation;
+
+          fab.style.setProperty('--dock-offset-x', `${currentDeltaX}px`);
+          fab.style.setProperty('--dock-offset-y', `${currentDeltaY}px`);
+          setFabOffset({ x: currentDeltaX, y: currentDeltaY });
+        }
       } else {
         fab.style.setProperty('--dock-offset-x', '0px');
         fab.style.setProperty('--dock-offset-y', `${toolbarCompensation}px`);
