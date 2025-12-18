@@ -105,6 +105,7 @@ function getAllImages() {
 async function generateBlurPlaceholder(imagePath) {
   try {
     const buffer = await sharp(imagePath)
+      .rotate() // Auto-rotate based on EXIF orientation
       .resize(BLUR_SIZE, BLUR_SIZE, { fit: 'inside' })
       .blur(2)
       .webp({ quality: 20 })
@@ -118,12 +119,13 @@ async function generateBlurPlaceholder(imagePath) {
 }
 
 /**
- * Get image dimensions
+ * Get image dimensions (after EXIF rotation is applied)
  */
 async function getImageDimensions(imagePath) {
   try {
-    const metadata = await sharp(imagePath).metadata();
-    return { width: metadata.width, height: metadata.height };
+    // Use rotate() to get dimensions after EXIF orientation is applied
+    const { width, height } = await sharp(imagePath).rotate().metadata();
+    return { width, height };
   } catch {
     return { width: 0, height: 0 };
   }
@@ -176,6 +178,7 @@ async function optimizeImage(image, manifest) {
       const webpRelative = `/optimized/${relativeDir}/${webpFilename}`;
 
       await sharp(absolutePath)
+        .rotate() // Auto-rotate based on EXIF orientation
         .resize(config.width, null, {
           fit: 'inside',
           withoutEnlargement: true
@@ -193,6 +196,7 @@ async function optimizeImage(image, manifest) {
 
       if (fallbackExt === '.png') {
         await sharp(absolutePath)
+          .rotate() // Auto-rotate based on EXIF orientation
           .resize(config.width, null, {
             fit: 'inside',
             withoutEnlargement: true
@@ -201,6 +205,7 @@ async function optimizeImage(image, manifest) {
           .toFile(fallbackPath);
       } else {
         await sharp(absolutePath)
+          .rotate() // Auto-rotate based on EXIF orientation
           .resize(config.width, null, {
             fit: 'inside',
             withoutEnlargement: true
