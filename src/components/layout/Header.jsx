@@ -37,12 +37,16 @@ const Header = ({ label, onLogoClick }) => {
   const [fabInstantHide, setFabInstantHide] = useState(false);
   // Track which FAB nav button is being touch-pressed
   const [fabTouchPressedPath, setFabTouchPressedPath] = useState(null);
-  
+  // Track when FAB has just appeared (for bounce animation - only plays once)
+  const [fabJustAppeared, setFabJustAppeared] = useState(false);
+
   const closeTimeoutRef = useRef(null);
   const fabCloseTimeoutRef = useRef(null);
   const touchStartRef = useRef(null); // Track touch start position
   const fabTouchStartRef = useRef(null); // Track FAB touch start position
   const fabContainerRef = useRef(null); // Ref for FAB container (for click-outside detection)
+  const fabBounceTimeoutRef = useRef(null); // Timeout for bounce animation
+  const wasCollapsedRef = useRef(false); // Track previous collapsed state for bounce trigger
   const navigate = useNavigate();
   const location = useLocation();
   const { isDark, toggleTheme } = useTheme();
@@ -59,104 +63,133 @@ const Header = ({ label, onLogoClick }) => {
   // Get footer dock state - FAB animates to dock position in footer panel
   const { isDocked: isFabDocked, dockProgress, dockTarget, setFabOffset } = useFooterDock();
 
-  // Calculate FAB dock position - runs continuously while panel is visible
-  const [fabDockStyle, setFabDockStyle] = useState({});
+  // FAB dock position - use ref + direct DOM manipulation for jitter-free scrolling
+  // Avoid React state updates during scroll to prevent re-renders
+  const fabRef = useRef(null);
   const fabPositionRef = useRef({ deltaX: 0, deltaY: 0 });
+  const lastOffsetRef = useRef({ x: 0, y: 0 });
 
   // Store dockProgress in a ref so scroll handler always has current value
   const dockProgressRef = useRef(dockProgress);
   dockProgressRef.current = dockProgress;
 
+  // Cache viewport measurements (only update on resize)
+  const viewportCacheRef = useRef({ width: 0, height: 0, safeArea: 0 });
+
   useEffect(() => {
     if (!isMobile || !dockTarget) {
-      setFabDockStyle({});
+      // Reset FAB styles when not docking
+      if (fabRef.current) {
+        fabRef.current.style.setProperty('--dock-offset-x', '0px');
+        fabRef.current.style.setProperty('--dock-offset-y', '0px');
+      }
       setFabOffset({ x: 0, y: 0 });
+      lastOffsetRef.current = { x: 0, y: 0 };
       return;
     }
 
-    // Calculate the dock position inside the footer panel
-    // This runs on every scroll frame for real-time tracking
+    // Cache viewport measurements (expensive to read every frame)
+    const updateViewportCache = () => {
+      const safeArea = parseInt(
+        getComputedStyle(document.documentElement)
+          .getPropertyValue('--safe-area-inset-bottom') || '0',
+        10
+      ) || 0;
+      viewportCacheRef.current = {
+        width: window.innerWidth,
+        height: window.innerHeight,
+        safeArea,
+      };
+    };
+    updateViewportCache();
+
+    // Calculate and apply dock position directly to DOM (no React state)
     const updateDockPosition = () => {
+      const fab = fabRef.current;
+      if (!fab) return;
+
+      const { width: viewportWidth, height: viewportHeight, safeArea } = viewportCacheRef.current;
       const targetRect = dockTarget.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const viewportWidth = window.innerWidth;
-      const safeAreaBottom = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--safe-area-inset-bottom') || '0', 10) || 0;
 
-      // FAB's normal position (using fixed positioning from bottom-right)
-      // fabNormalRight matches CSS: app-padding (10px) + panel-inner-padding (20px) = 30px
-      // This eliminates horizontal movement when docking.
+      // FAB's normal position
       const fabNormalRight = 30;
-
-      // FAB size varies by viewport width (matches CSS breakpoints)
       let fabSize = 48;
-      let fabNormalBottom = 20 + safeAreaBottom;
+      let fabNormalBottom = 20 + safeArea;
       if (viewportWidth <= 320) {
         fabSize = 36;
-        fabNormalBottom = 12 + safeAreaBottom;
+        fabNormalBottom = 12 + safeArea;
       } else if (viewportWidth <= 360) {
         fabSize = 40;
-        fabNormalBottom = 16 + safeAreaBottom;
+        fabNormalBottom = 16 + safeArea;
       }
 
-      // Calculate FAB's normal center position in viewport coordinates
+      // Calculate positions
       const fabNormalCenterX = viewportWidth - fabNormalRight - fabSize / 2;
       const fabNormalCenterY = viewportHeight - fabNormalBottom - fabSize / 2;
-
-      // Target position: inside the panel, vertically centered, with padding from right edge
       const panelInnerPadding = 20;
       const targetCenterX = targetRect.right - panelInnerPadding - fabSize / 2;
       const targetCenterY = targetRect.top + targetRect.height / 2;
 
-      // Calculate the full offset to dock position
       const fullDeltaX = targetCenterX - fabNormalCenterX;
       const fullDeltaY = targetCenterY - fabNormalCenterY;
-
-      // Store for reference
       fabPositionRef.current = { deltaX: fullDeltaX, deltaY: fullDeltaY };
 
-      // Use ref to get current progress (avoids stale closure)
       const currentProgress = dockProgressRef.current;
 
       if (currentProgress > 0) {
-        // When docked (progress >= 0.95), track panel exactly for real-time positioning
-        // Otherwise interpolate based on progress
         const effectiveProgress = currentProgress >= 0.95 ? 1 : currentProgress;
         const currentDeltaX = fullDeltaX * effectiveProgress;
         const currentDeltaY = fullDeltaY * effectiveProgress;
 
-        setFabDockStyle({
-          '--dock-offset-x': `${currentDeltaX}px`,
-          '--dock-offset-y': `${currentDeltaY}px`,
-          '--dock-progress': currentProgress,
-        });
+        // Direct DOM update - no React re-render
+        fab.style.setProperty('--dock-offset-x', `${currentDeltaX}px`);
+        fab.style.setProperty('--dock-offset-y', `${currentDeltaY}px`);
 
-        // Share the offset with context so button can respond
-        setFabOffset({ x: currentDeltaX, y: currentDeltaY });
+        // Only update context if offset changed significantly (reduces re-renders)
+        const dx = Math.abs(currentDeltaX - lastOffsetRef.current.x);
+        const dy = Math.abs(currentDeltaY - lastOffsetRef.current.y);
+        if (dx > 2 || dy > 2) {
+          lastOffsetRef.current = { x: currentDeltaX, y: currentDeltaY };
+          setFabOffset({ x: currentDeltaX, y: currentDeltaY });
+        }
       } else {
-        setFabDockStyle({});
-        setFabOffset({ x: 0, y: 0 });
+        fab.style.setProperty('--dock-offset-x', '0px');
+        fab.style.setProperty('--dock-offset-y', '0px');
+        if (lastOffsetRef.current.x !== 0 || lastOffsetRef.current.y !== 0) {
+          lastOffsetRef.current = { x: 0, y: 0 };
+          setFabOffset({ x: 0, y: 0 });
+        }
       }
     };
 
     updateDockPosition();
 
-    // Use requestAnimationFrame for real-time tracking on every scroll frame
+    // Scroll handler - runs on every frame for smooth tracking
     let rafId = null;
-    const handleScrollRaf = () => {
-      if (rafId) cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(updateDockPosition);
+    const handleScroll = () => {
+      if (rafId) return; // Throttle to one RAF per frame
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        updateDockPosition();
+      });
     };
 
-    window.addEventListener('scroll', handleScrollRaf, { passive: true });
-    window.addEventListener('resize', updateDockPosition, { passive: true });
+    // Resize handler - update cache and position
+    const handleResize = () => {
+      updateViewportCache();
+      updateDockPosition();
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleResize, { passive: true });
 
     return () => {
-      window.removeEventListener('scroll', handleScrollRaf);
-      window.removeEventListener('resize', updateDockPosition);
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize);
       if (rafId) cancelAnimationFrame(rafId);
       setFabOffset({ x: 0, y: 0 });
     };
-  }, [isMobile, dockTarget, dockProgress, setFabOffset]);
+  }, [isMobile, dockTarget, setFabOffset]); // Removed dockProgress dependency
 
   // Suspend scroll reactions during navigation OR filtering
   const isSuspended = isNavigating || isFiltering;
@@ -166,8 +199,23 @@ const Header = ({ label, onLogoClick }) => {
     return () => {
       if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
       if (fabCloseTimeoutRef.current) clearTimeout(fabCloseTimeoutRef.current);
+      if (fabBounceTimeoutRef.current) clearTimeout(fabBounceTimeoutRef.current);
     };
   }, []);
+
+  // Trigger bounce animation when FAB first appears (isCollapsed changes to true)
+  // Animation only plays once per appearance, not on every visibility toggle
+  useEffect(() => {
+    if (isCollapsed && !wasCollapsedRef.current && isMobile) {
+      // FAB just became visible - trigger bounce animation
+      setFabJustAppeared(true);
+      // Remove the class after animation completes (500ms)
+      fabBounceTimeoutRef.current = setTimeout(() => {
+        setFabJustAppeared(false);
+      }, 500);
+    }
+    wasCollapsedRef.current = isCollapsed;
+  }, [isCollapsed, isMobile]);
 
   // Reset collapsed state when NAVIGATION starts (not filtering)
   // For filtering, we let the header stay as-is during fade-out, then
@@ -657,9 +705,11 @@ const Header = ({ label, onLogoClick }) => {
 
   // Mobile FAB classes
   // FAB stays visible during docking - it animates into position
+  // 'bouncing' class is only applied during initial appearance animation (500ms)
   const fabClass = [
     'mobile-fab',
     isCollapsed ? 'visible' : '',
+    fabJustAppeared ? 'bouncing' : '',
     dockProgress > 0 ? 'docking' : '',
     isFabDocked ? 'docked' : '',
     isFabDragging ? 'dragging' : '',
@@ -737,10 +787,12 @@ const Header = ({ label, onLogoClick }) => {
       {/* Mobile FAB - appears in bottom-right when scrolled on mobile */}
       {isMobile && (
         <div
-          ref={fabContainerRef}
+          ref={(el) => {
+            fabContainerRef.current = el;
+            fabRef.current = el;
+          }}
           className={fabClass}
           aria-hidden={!isCollapsed}
-          style={fabDockStyle}
         >
           <span className="fab-photo-wrapper">
             <span

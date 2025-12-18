@@ -25,6 +25,10 @@ const AboutPanel = () => {
     return () => media.removeEventListener('change', checkMobile);
   }, []);
 
+  // Cache for viewport measurements (avoid reading on every scroll)
+  const viewportCacheRef = useRef({ height: 0, safeArea: 0, fabCenterY: 0 });
+  const lastProgressRef = useRef(0);
+
   // Register this panel as the dock target and calculate dock progress
   useEffect(() => {
     if (!isMobile || !panelRef.current) {
@@ -40,18 +44,30 @@ const AboutPanel = () => {
     hasScrolledRef.current = false;
     initialScrollCheckedRef.current = false;
 
-    const handleScroll = () => {
+    // Cache viewport measurements (expensive to read every frame)
+    const updateViewportCache = () => {
+      const viewportHeight = window.innerHeight;
+      const safeArea = parseInt(
+        getComputedStyle(document.documentElement)
+          .getPropertyValue('--safe-area-inset-bottom') || '0',
+        10
+      ) || 0;
+      // FAB center Y position (bottom: 20px + safe area, size: 48px)
+      const fabCenterY = viewportHeight - 20 - safeArea - 24;
+      viewportCacheRef.current = { height: viewportHeight, safeArea, fabCenterY };
+    };
+    updateViewportCache();
+
+    const COLLAPSE_THRESHOLD = 80;
+    const startDockingThreshold = 80;
+
+    const calculateProgress = () => {
       const panel = panelRef.current;
       if (!panel) return;
 
-      // Track that user has scrolled past the header collapse threshold
-      // This prevents docking when page loads with footer already visible
-      // The FAB only appears when header collapses (scroll > 80px), so we use that threshold
-      const COLLAPSE_THRESHOLD = 80;
-
+      // Track scroll threshold
       if (!initialScrollCheckedRef.current) {
         initialScrollCheckedRef.current = true;
-        // On first check, if already scrolled past threshold, consider "has scrolled"
         if (window.scrollY > COLLAPSE_THRESHOLD) {
           hasScrolledRef.current = true;
         }
@@ -60,47 +76,58 @@ const AboutPanel = () => {
       }
 
       // Don't dock until user has scrolled enough to see the FAB
-      // This handles short pages where footer is visible on load
       if (!hasScrolledRef.current) {
-        setDockProgress(0);
+        if (lastProgressRef.current !== 0) {
+          lastProgressRef.current = 0;
+          setDockProgress(0);
+        }
         return;
       }
 
       const rect = panel.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const safeAreaBottom = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--safe-area-inset-bottom') || '0', 10) || 0;
-
-      // FAB position: bottom: 20px + safe area, right: 20px
-      // FAB is 48px tall, so its vertical center is at: viewportHeight - 20 - safeAreaBottom - 24
-      const fabCenterY = viewportHeight - 20 - safeAreaBottom - 24;
-
-      // Calculate overlap - when panel top reaches FAB center area, we're docked
-      // Start docking when panel top is within 80px of FAB center
-      const startDockingThreshold = 80;
+      const { fabCenterY } = viewportCacheRef.current;
       const distanceToFabCenter = fabCenterY - rect.top;
 
       let progress = 0;
       if (distanceToFabCenter < 0) {
-        // Panel is below FAB - no overlap
         progress = 0;
       } else if (distanceToFabCenter >= startDockingThreshold) {
-        // Fully docked
         progress = 1;
       } else {
-        // Transitioning
         progress = distanceToFabCenter / startDockingThreshold;
       }
 
-      setDockProgress(progress);
+      // Only update if progress changed significantly (reduces re-renders)
+      if (Math.abs(progress - lastProgressRef.current) > 0.01) {
+        lastProgressRef.current = progress;
+        setDockProgress(progress);
+      }
     };
 
-    handleScroll(); // Initial check
+    calculateProgress(); // Initial check
+
+    // Throttle scroll handler with RAF
+    let rafId = null;
+    const handleScroll = () => {
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        calculateProgress();
+      });
+    };
+
+    const handleResize = () => {
+      updateViewportCache();
+      calculateProgress();
+    };
+
     window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', handleScroll, { passive: true });
+    window.addEventListener('resize', handleResize, { passive: true });
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleScroll);
+      window.removeEventListener('resize', handleResize);
+      if (rafId) cancelAnimationFrame(rafId);
       setDockTarget(null);
       setDockProgress(0);
     };
