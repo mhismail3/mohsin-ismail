@@ -134,6 +134,15 @@ const ProgressiveImage = ({
     setHasError(false);
   }, [src]);
 
+  // Check if image is already loaded from cache
+  // This handles the case where onLoad fires before React attaches the handler
+  useEffect(() => {
+    const img = imgRef.current;
+    if (img && img.complete && img.naturalWidth > 0 && !isLoaded) {
+      setIsLoaded(true);
+    }
+  });
+
   // Calculate aspect ratio for placeholder sizing
   const aspectRatio = optimizedData?.width && optimizedData?.height
     ? optimizedData.width / optimizedData.height
