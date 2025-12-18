@@ -1,9 +1,9 @@
 ---
 gallery:
-  - gallery-1.JPG
-  - gallery-2.jpeg
-  - gallery-3.JPG
-  - gallery-4.jpeg
+  - gallery-1.jpeg
+  - gallery-2.JPG
+  - gallery-3.jpeg
+  - gallery-4.JPG
   - gallery-5.JPG
 ---
 
