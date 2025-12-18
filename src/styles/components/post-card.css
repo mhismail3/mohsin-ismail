@@ -445,10 +445,6 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
     color: var(--pine);
   }
   
-  /* When hovering the post-head, also style the excerpt */
-  .post-head:hover .post-excerpt {
-    color: var(--color-text);
-  }
   
   /* Subtle indicator for the clickable area (only when shimmer is not active) */
   .post-head:hover .eyebrow:not(.eyebrow-shimmer) {
@@ -504,9 +500,6 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
   color: var(--pine);
 }
 
-.post-head:active .post-excerpt {
-  color: var(--color-text);
-}
 
 .post-head:active .eyebrow:not(.eyebrow-shimmer) {
   color: var(--pine);
@@ -520,9 +513,6 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
   border-radius: 2px;
 }
 
-.post-head:has(.post-title-link:focus-visible) .post-excerpt {
-  color: var(--color-text);
-}
 
 .post-head:has(.post-title-link:focus-visible) .eyebrow:not(.eyebrow-shimmer) {
   color: var(--pine);
