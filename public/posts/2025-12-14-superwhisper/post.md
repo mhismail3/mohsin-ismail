@@ -14,14 +14,14 @@ Wispr Flow didn't offer enough to justify its $15/month price point. Superwhispe
 
 I asked Claude for a quick breakdown of the two. Among other things, here's the comparison table it gave^[I'm not sure why Claude is comparing Superwhisper's yearly subscription price against Wispr Flow's monthly—Superwhisper clearly has a monthly option on its website.]:
 
-> | | Superwhisper | Wispr Flow |
-> |---|---|---|
-> | **Funding** | $0 | $81M |
-> | **Privacy** | Offline | Cloud-based |
-> | **Customization** | High | Low |
-> | **Platforms** | macOS, iOS | Mac, Windows, iOS |
-> | **Price** | $85/yr or lifetime | $15/mo subscription |
-> | **Target** | Power users | Mainstream + enterprise |
+| | Superwhisper | Wispr Flow |
+|---|---|---|
+| **Funding** | $0 | $81M |
+| **Privacy** | Offline | Cloud-based |
+| **Customization** | High | Low |
+| **Platforms** | macOS, iOS | Mac, Windows, iOS |
+| **Price** | $85/yr or lifetime | $15/mo subscription |
+| **Target** | Power users | Mainstream + enterprise |
 
 What I love: a single keyboard shortcut (`Option+Space` for me) immediately starts recording, and another keystroke transcribes and pastes the text right where your cursor is.
 
