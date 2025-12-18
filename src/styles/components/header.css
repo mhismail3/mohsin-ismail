@@ -1791,7 +1791,11 @@
 
 .mobile-fab {
   position: fixed;
-  bottom: calc(20px + var(--safe-area-inset-bottom));
+  /* Use CSS custom properties for position - updated by JS on every frame.
+     This allows precise control during iOS Safari toolbar changes.
+     Default values position FAB at bottom-right corner. */
+  --fab-base-bottom: calc(20px + var(--safe-area-inset-bottom));
+  bottom: var(--fab-base-bottom);
   /* Right position calculated to align with dock position in footer panel.
      Formula: app-padding (10px) + panel-inner-padding (20px) = 30px
      This eliminates horizontal movement when FAB docks into footer. */
@@ -1802,57 +1806,29 @@
   align-items: flex-end;
 
   /* GPU acceleration for smooth scroll tracking */
-  will-change: transform;
+  will-change: transform, opacity;
 
-  /* Hidden by default - starts below viewport */
+  /* Hidden by default */
   opacity: 0;
   pointer-events: none;
-  transform: translate3d(0, 32px, 0);
+  /* JS-controlled dock offsets - position only, no scale here */
+  --dock-offset-x: 0px;
+  --dock-offset-y: 0px;
+  transform: translate3d(var(--dock-offset-x), var(--dock-offset-y), 0);
 
-  /* Exit animation - drops down and fades out */
-  transition:
-    opacity 0.2s ease-in,
-    transform 0.2s ease-in;
-}
-
-/* Smooth spring entrance with pronounced bounce */
-@keyframes fabBounceIn {
-  0% {
-    opacity: 0;
-    transform: translate3d(0, 32px, 0);
-  }
-  40% {
-    opacity: 1;
-    transform: translate3d(0, -14px, 0);
-  }
-  65% {
-    transform: translate3d(0, 5px, 0);
-  }
-  85% {
-    transform: translate3d(0, -2px, 0);
-  }
-  100% {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
+  /* Exit animation - smooth fade out */
+  transition: opacity 0.2s cubic-bezier(0.4, 0, 1, 1);
 }
 
 .mobile-fab.visible {
   opacity: 1;
   pointer-events: auto;
-  transform: translate3d(0, 0, 0);
 }
 
-/* Bounce animation only plays on initial appearance (not during docking)
-   Uses smooth ease-out for natural deceleration between keyframes */
-.mobile-fab.bouncing {
-  animation: fabBounceIn 0.5s cubic-bezier(0.33, 0, 0.2, 1) forwards;
-}
-
-/* Docking/docked states override bounce animation */
-.mobile-fab.bouncing.docking,
-.mobile-fab.bouncing.docked {
-  animation: none;
+/* Docking states: disable transitions for jitter-free scroll tracking */
+.mobile-fab.docking,
+.mobile-fab.docked {
+  transition: none;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -1866,6 +1842,80 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  /* Entrance/exit animation happens on wrapper to not interfere with photo interactions */
+  transform: scale(0) translateY(8px);
+  opacity: 0;
+  will-change: transform, opacity;
+  /* Exit animation - smooth shrink with slight anticipation curve */
+  transition:
+    transform 0.28s cubic-bezier(0.4, 0, 0.7, 0.2),
+    opacity 0.22s cubic-bezier(0.4, 0, 1, 1);
+}
+
+/* Elegant spring entrance - grows from point, overshoots to 1.1x, settles */
+@keyframes fabSpringIn {
+  0% {
+    transform: scale(0) translateY(8px);
+    opacity: 0;
+  }
+  /* Quick expansion with overshoot */
+  50% {
+    transform: scale(1.1) translateY(-3px);
+    opacity: 1;
+  }
+  /* Small bounce back */
+  75% {
+    transform: scale(0.97) translateY(1px);
+  }
+  /* Settle to final size */
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Exit animation - shrinks with slight squish before disappearing */
+@keyframes fabSpringOut {
+  0% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+  /* Brief squish/anticipation */
+  25% {
+    transform: scale(1.06) translateY(-2px);
+    opacity: 1;
+  }
+  /* Shrink away */
+  100% {
+    transform: scale(0) translateY(8px);
+    opacity: 0;
+  }
+}
+
+/* Visible state - wrapper fully scaled (used when not animating) */
+.mobile-fab.visible:not(.bouncing):not(.exiting) .fab-photo-wrapper {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+/* Entrance animation - plays once on first appearance
+   'both' fill mode: applies 0% keyframe immediately, holds 100% keyframe after */
+.mobile-fab.visible.bouncing .fab-photo-wrapper {
+  animation: fabSpringIn 0.42s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
+/* Exit animation - plays when FAB is hiding */
+.mobile-fab.exiting .fab-photo-wrapper {
+  animation: fabSpringOut 0.28s cubic-bezier(0.4, 0, 0.7, 0.2) forwards;
+}
+
+/* During docking, wrapper stays at scale(1) - no animation interference */
+.mobile-fab.docking .fab-photo-wrapper,
+.mobile-fab.docked .fab-photo-wrapper {
+  animation: none;
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  transition: none;
 }
 
 .fab-photo {
@@ -1877,21 +1927,20 @@
   display: grid;
   place-items: center;
   overflow: hidden;
-  
+
   /* Compact shadow for FAB - smaller than header photo to avoid Safari toolbar clipping.
      Shadow is shifted slightly upward (-2px offset) so less extends below the element. */
   box-shadow:
     0 0 0 1px rgba(31, 26, 20, 0.12),
     0 2px 4px rgba(31, 26, 20, 0.25),
     0 4px 12px -2px rgba(31, 26, 20, 0.2);
-  
-  /* Smooth transitions for interactions and theme */
-  transition: 
+
+  /* Smooth transitions for interactions and theme - NOT for entrance animation */
+  transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease,
-    transform 0.15s ease,
     background-color var(--theme-transition-duration) var(--theme-transition-ease);
-  
+
   /* Touch interaction improvements */
   touch-action: none;
   -webkit-tap-highlight-color: transparent;
@@ -2215,7 +2264,7 @@
 
   .mobile-fab {
     /* Keep same right position for dock alignment, just adjust bottom spacing */
-    bottom: calc(16px + var(--safe-area-inset-bottom));
+    --fab-base-bottom: calc(16px + var(--safe-area-inset-bottom));
   }
 }
 
@@ -2227,47 +2276,33 @@
 
   .mobile-fab {
     /* Keep same right position for dock alignment, just adjust bottom spacing */
-    bottom: calc(12px + var(--safe-area-inset-bottom));
+    --fab-base-bottom: calc(12px + var(--safe-area-inset-bottom));
   }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   FAB FOOTER DOCK ANIMATION
-
-   When the footer "Get in Touch" panel comes into view, the FAB photo
-   smoothly animates from its floating position into the panel.
-
-   Uses CSS custom properties set by JavaScript:
-   - --dock-offset-x: horizontal offset from normal position
-   - --dock-offset-y: vertical offset from normal position
-   - --dock-progress: 0-1 progress value
+   FAB REDUCED MOTION
+   Disable animations for users who prefer reduced motion
    ───────────────────────────────────────────────────────────────────────────── */
 
-/* Docking state - FAB moves toward footer position */
-.mobile-fab.docking {
-  /* Apply position offset calculated by JS - use translate3d for GPU acceleration */
-  transform: translate3d(
-    var(--dock-offset-x, 0px),
-    var(--dock-offset-y, 0px),
-    0
-  ) scale(1);
-  /* Disable transform transition for real-time scroll tracking */
-  transition: none;
+@media (prefers-reduced-motion: reduce) {
+  .fab-photo-wrapper {
+    transition: opacity 0.1s ease;
+  }
+
+  .mobile-fab.visible.bouncing .fab-photo-wrapper,
+  .mobile-fab.exiting .fab-photo-wrapper {
+    animation: none;
+  }
+
+  .mobile-fab.visible.bouncing .fab-photo-wrapper {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+
+  .mobile-fab.exiting .fab-photo-wrapper {
+    transform: scale(0) translateY(8px);
+    opacity: 0;
+  }
 }
-
-/* Fully docked state - FAB is lodged in footer */
-.mobile-fab.docked {
-  transform: translate3d(
-    var(--dock-offset-x, 0px),
-    var(--dock-offset-y, 0px),
-    0
-  ) scale(1);
-  /* No transition - FAB tracks panel position in real-time */
-  transition: none;
-}
-
-/* When docked, FAB looks normal - green glow only on hover/active like header */
-/* No special styling when docked - it behaves like the header photo */
-
-/* FAB remains fully interactive when docked - menu and pulse stay active */
 

@@ -8,13 +8,15 @@ import { useFooterDock } from '../../contexts';
  *
  * This component owns the unified scroll handler that:
  * 1. Calculates dock progress based on panel position
- * 2. Calculates FAB offset and applies it directly to DOM
+ * 2. Calculates FAB position and applies it directly to DOM
  * 3. All in a single RAF-throttled handler to avoid race conditions
  *
  * Key iOS Safari optimizations:
- * - Uses visualViewport API for accurate viewport height
- * - Direct DOM manipulation (no React state during scroll)
- * - Single scroll handler (no competing listeners)
+ * - Uses visualViewport API to detect toolbar expand/contract
+ * - Compensates for toolbar changes via transform offset
+ * - CSS uses `bottom` positioning (layout viewport), JS adjusts for visual viewport
+ * - Immediate recalculation on visualViewport resize events
+ * - The toolbarCompensation value keeps FAB stable as toolbar animates
  */
 const AboutPanel = () => {
   const panelRef = useRef(null);
@@ -30,16 +32,8 @@ const AboutPanel = () => {
   // RAF tracking
   const rafIdRef = useRef(null);
 
-  // Cache for expensive calculations
-  const cacheRef = useRef({
-    viewportHeight: 0,
-    viewportWidth: 0,
-    safeArea: 0,
-    fabSize: 48,
-    fabNormalBottom: 20,
-    fabNormalRight: 30,
-    fabCenterY: 0,
-  });
+  // Debounce timer for resize events
+  const resizeDebounceRef = useRef(null);
 
   // Detect mobile viewport
   useEffect(() => {
@@ -70,22 +64,23 @@ const AboutPanel = () => {
     const COLLAPSE_THRESHOLD = 80;
     const DOCK_START_THRESHOLD = 80;
 
-    // Update viewport cache - uses visualViewport for iOS Safari accuracy
-    const updateCache = () => {
-      // Use visualViewport for iOS Safari (accounts for dynamic toolbar)
+    // Get current visual viewport dimensions (called every frame for accuracy)
+    const getViewportInfo = () => {
       const vv = window.visualViewport;
-      const viewportHeight = vv ? vv.height : window.innerHeight;
+      const visualHeight = vv ? vv.height : window.innerHeight;
+      const layoutHeight = window.innerHeight;
       const viewportWidth = vv ? vv.width : window.innerWidth;
+      // visualViewport.offsetTop accounts for iOS Safari URL bar
+      const viewportOffsetTop = vv ? vv.offsetTop : 0;
 
-      const safeArea = parseInt(
-        getComputedStyle(document.documentElement)
-          .getPropertyValue('--safe-area-inset-bottom') || '0',
-        10
-      ) || 0;
+      // Toolbar compensation: difference between layout and visual viewport
+      // When iOS Safari toolbar expands, visual viewport shrinks but CSS bottom stays fixed
+      // We need to compensate by moving the FAB up by this difference
+      const toolbarOffset = layoutHeight - visualHeight;
 
       // Calculate FAB dimensions based on viewport width
       let fabSize = 48;
-      let fabNormalBottom = 20;
+      let fabNormalBottom = 20; // Distance from bottom of visual viewport
       if (viewportWidth <= 320) {
         fabSize = 36;
         fabNormalBottom = 12;
@@ -94,25 +89,31 @@ const AboutPanel = () => {
         fabNormalBottom = 16;
       }
 
-      const fabCenterY = viewportHeight - fabNormalBottom - safeArea - (fabSize / 2);
+      // Safe area only matters for the actual bottom padding
+      const safeArea = parseInt(
+        getComputedStyle(document.documentElement)
+          .getPropertyValue('--safe-area-inset-bottom') || '0',
+        10
+      ) || 0;
 
-      cacheRef.current = {
-        viewportHeight,
+      return {
+        visualHeight,
+        layoutHeight,
         viewportWidth,
-        safeArea,
+        viewportOffsetTop,
+        toolbarOffset,
         fabSize,
         fabNormalBottom,
         fabNormalRight: 30,
-        fabCenterY,
+        safeArea,
       };
     };
 
-    updateCache();
-
-    // Unified calculation - runs on every scroll frame
+    // Unified calculation - runs on every scroll/resize frame
     const calculate = () => {
-      const cache = cacheRef.current;
       const panelRect = panel.getBoundingClientRect();
+      const viewport = getViewportInfo();
+      const { visualHeight, viewportWidth, toolbarOffset, fabSize, fabNormalBottom, fabNormalRight, safeArea } = viewport;
 
       // Check if user has scrolled past threshold
       if (!initialScrollCheckedRef.current) {
@@ -124,21 +125,30 @@ const AboutPanel = () => {
         hasScrolledRef.current = true;
       }
 
+      const fab = getFabElement();
+      if (!fab) return;
+
+      // Toolbar compensation: move FAB up when toolbar expands (visual viewport shrinks)
+      // This keeps FAB visually stable relative to the visible screen bottom
+      const toolbarCompensation = -toolbarOffset;
+
       // Don't dock until FAB is visible
       if (!hasScrolledRef.current) {
         setDockProgress(0);
-        // Reset FAB position via direct DOM
-        const fab = getFabElement();
-        if (fab) {
-          fab.style.setProperty('--dock-offset-x', '0px');
-          fab.style.setProperty('--dock-offset-y', '0px');
-        }
-        setFabOffset({ x: 0, y: 0 });
+        fab.style.setProperty('--dock-offset-x', '0px');
+        fab.style.setProperty('--dock-offset-y', `${toolbarCompensation}px`);
+        setFabOffset({ x: 0, y: toolbarCompensation });
         return;
       }
 
-      // Calculate dock progress
-      const distanceToFabCenter = cache.fabCenterY - panelRect.top;
+      // FAB's visual position (where it appears on screen after CSS bottom positioning)
+      // CSS positions from layout viewport bottom, but we calculate relative to visual viewport
+      const fabVisualCenterX = viewportWidth - fabNormalRight - (fabSize / 2);
+      // Where FAB appears in visual viewport (accounting for toolbar)
+      const fabVisualCenterY = visualHeight - fabNormalBottom - safeArea - (fabSize / 2);
+
+      // Calculate dock progress based on panel position relative to where FAB appears
+      const distanceToFabCenter = fabVisualCenterY - panelRect.top;
       let progress = 0;
       if (distanceToFabCenter < 0) {
         progress = 0;
@@ -151,28 +161,21 @@ const AboutPanel = () => {
       // Update progress (context handles isDocked notification)
       setDockProgress(progress);
 
-      // Calculate and apply FAB position directly to DOM
-      const fab = getFabElement();
-      if (fab && progress > 0) {
-        const { viewportWidth, viewportHeight, safeArea, fabSize, fabNormalBottom, fabNormalRight } = cache;
-
-        // FAB's normal center position
-        const fabNormalCenterX = viewportWidth - fabNormalRight - (fabSize / 2);
-        const fabNormalCenterY = viewportHeight - fabNormalBottom - safeArea - (fabSize / 2);
-
+      if (progress > 0) {
         // Dock target position (right side of panel, vertically centered)
         const panelInnerPadding = 20;
         const targetCenterX = panelRect.right - panelInnerPadding - (fabSize / 2);
         const targetCenterY = panelRect.top + (panelRect.height / 2);
 
-        // Full offset when fully docked
-        const fullDeltaX = targetCenterX - fabNormalCenterX;
-        const fullDeltaY = targetCenterY - fabNormalCenterY;
+        // Calculate offset from FAB's visual position
+        const fullDeltaX = targetCenterX - fabVisualCenterX;
+        const fullDeltaY = targetCenterY - fabVisualCenterY;
 
         // Apply progress (snap to 1 when >= 0.95 for clean docking)
         const effectiveProgress = progress >= 0.95 ? 1 : progress;
         const currentDeltaX = fullDeltaX * effectiveProgress;
-        const currentDeltaY = fullDeltaY * effectiveProgress;
+        // Add toolbar compensation to Y offset
+        const currentDeltaY = (fullDeltaY * effectiveProgress) + toolbarCompensation;
 
         // Direct DOM update - no React re-render
         fab.style.setProperty('--dock-offset-x', `${currentDeltaX}px`);
@@ -180,10 +183,10 @@ const AboutPanel = () => {
 
         // Store offset for button fade calculation
         setFabOffset({ x: currentDeltaX, y: currentDeltaY });
-      } else if (fab) {
+      } else {
         fab.style.setProperty('--dock-offset-x', '0px');
-        fab.style.setProperty('--dock-offset-y', '0px');
-        setFabOffset({ x: 0, y: 0 });
+        fab.style.setProperty('--dock-offset-y', `${toolbarCompensation}px`);
+        setFabOffset({ x: 0, y: toolbarCompensation });
       }
     };
 
@@ -199,52 +202,76 @@ const AboutPanel = () => {
       });
     };
 
-    // Resize handler - update cache and recalculate
+    // Resize handler - recalculate immediately for toolbar changes
+    // The key insight: we recalculate positions each frame using current viewport
+    // so the FAB naturally adjusts to toolbar size changes
     const handleResize = () => {
-      updateCache();
+      // Cancel any pending RAF to avoid double-calculation
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
+        rafIdRef.current = null;
+      }
+      // Immediate recalculation
       calculate();
     };
 
-    // Use visualViewport resize for iOS Safari toolbar changes
+    // Debounced resize for expensive operations (not currently needed but kept for future)
+    const handleResizeDebounced = () => {
+      if (resizeDebounceRef.current) {
+        clearTimeout(resizeDebounceRef.current);
+      }
+      resizeDebounceRef.current = setTimeout(() => {
+        calculate();
+      }, 100);
+    };
+
     const vv = window.visualViewport;
 
+    // Main scroll listener
     window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', handleResize, { passive: true });
+
+    // Window resize (orientation change, etc.)
+    window.addEventListener('resize', handleResizeDebounced, { passive: true });
+
+    // Visual viewport listeners for iOS Safari toolbar
     if (vv) {
+      // Resize fires when toolbar expands/contracts
       vv.addEventListener('resize', handleResize, { passive: true });
-      vv.addEventListener('scroll', handleScroll, { passive: true });
+      // Scroll fires when visual viewport pans (keyboard, etc.)
+      vv.addEventListener('scroll', handleResize, { passive: true });
     }
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('resize', handleResizeDebounced);
       if (vv) {
         vv.removeEventListener('resize', handleResize);
-        vv.removeEventListener('scroll', handleScroll);
+        vv.removeEventListener('scroll', handleResize);
       }
       if (rafIdRef.current !== null) {
         cancelAnimationFrame(rafIdRef.current);
         rafIdRef.current = null;
+      }
+      if (resizeDebounceRef.current) {
+        clearTimeout(resizeDebounceRef.current);
       }
       setDockTarget(null);
       setDockProgress(0);
     };
   }, [isMobile, setDockProgress, setDockTarget, setFabOffset, getFabElement]);
 
-  // Button opacity based on dock state (simple - no complex calculations)
+  // Button opacity based on dock state
   useEffect(() => {
     if (!isMobile) {
       setButtonOpacity(1);
       return;
     }
-    // Simple fade: start fading at 50% progress, fully hidden at 95%
     const progress = getProgress();
     if (progress <= 0.5) {
       setButtonOpacity(1);
     } else if (progress >= 0.95) {
       setButtonOpacity(0);
     } else {
-      // Linear fade from 50% to 95%
       setButtonOpacity(1 - ((progress - 0.5) / 0.45));
     }
   }, [isMobile, isDocked, getProgress]);

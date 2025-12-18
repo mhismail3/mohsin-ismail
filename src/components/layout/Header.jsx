@@ -39,6 +39,8 @@ const Header = ({ label, onLogoClick }) => {
   const [fabTouchPressedPath, setFabTouchPressedPath] = useState(null);
   // Track when FAB has just appeared (for bounce animation - only plays once)
   const [fabJustAppeared, setFabJustAppeared] = useState(false);
+  // Track when FAB is exiting (for exit animation)
+  const [fabExiting, setFabExiting] = useState(false);
 
   const closeTimeoutRef = useRef(null);
   const fabCloseTimeoutRef = useRef(null);
@@ -46,6 +48,7 @@ const Header = ({ label, onLogoClick }) => {
   const fabTouchStartRef = useRef(null); // Track FAB touch start position
   const fabContainerRef = useRef(null); // Ref for FAB container (for click-outside detection)
   const fabBounceTimeoutRef = useRef(null); // Timeout for bounce animation
+  const fabExitTimeoutRef = useRef(null); // Timeout for exit animation
   const wasCollapsedRef = useRef(false); // Track previous collapsed state for bounce trigger
   const navigate = useNavigate();
   const location = useLocation();
@@ -87,19 +90,38 @@ const Header = ({ label, onLogoClick }) => {
       if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
       if (fabCloseTimeoutRef.current) clearTimeout(fabCloseTimeoutRef.current);
       if (fabBounceTimeoutRef.current) clearTimeout(fabBounceTimeoutRef.current);
+      if (fabExitTimeoutRef.current) clearTimeout(fabExitTimeoutRef.current);
     };
   }, []);
 
-  // Trigger bounce animation when FAB first appears (isCollapsed changes to true)
-  // Animation only plays once per appearance, not on every visibility toggle
+  // Trigger entrance/exit animations when FAB visibility changes
   useEffect(() => {
     if (isCollapsed && !wasCollapsedRef.current && isMobile) {
-      // FAB just became visible - trigger bounce animation
+      // FAB just became visible - trigger entrance animation
+      // Clear any pending exit animation
+      if (fabExitTimeoutRef.current) {
+        clearTimeout(fabExitTimeoutRef.current);
+        fabExitTimeoutRef.current = null;
+      }
+      setFabExiting(false);
       setFabJustAppeared(true);
       // Remove the class after animation completes (500ms)
       fabBounceTimeoutRef.current = setTimeout(() => {
         setFabJustAppeared(false);
       }, 500);
+    } else if (!isCollapsed && wasCollapsedRef.current && isMobile) {
+      // FAB just became hidden - trigger exit animation
+      // Clear any pending entrance animation
+      if (fabBounceTimeoutRef.current) {
+        clearTimeout(fabBounceTimeoutRef.current);
+        fabBounceTimeoutRef.current = null;
+      }
+      setFabJustAppeared(false);
+      setFabExiting(true);
+      // Remove the class after animation completes (280ms)
+      fabExitTimeoutRef.current = setTimeout(() => {
+        setFabExiting(false);
+      }, 280);
     }
     wasCollapsedRef.current = isCollapsed;
   }, [isCollapsed, isMobile]);
@@ -597,6 +619,7 @@ const Header = ({ label, onLogoClick }) => {
     'mobile-fab',
     isCollapsed ? 'visible' : '',
     fabJustAppeared ? 'bouncing' : '',
+    fabExiting ? 'exiting' : '',
     dockProgress > 0 ? 'docking' : '',
     isFabDocked ? 'docked' : '',
     isFabDragging ? 'dragging' : '',
