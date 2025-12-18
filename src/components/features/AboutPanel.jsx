@@ -35,6 +35,11 @@ const AboutPanel = () => {
   // Debounce timer for resize events
   const resizeDebounceRef = useRef(null);
 
+  // Track docked state to skip toolbar resize updates when fully docked
+  const isFullyDockedRef = useRef(false);
+  // Cache the last stable docked position
+  const dockedOffsetRef = useRef({ x: 0, y: 0 });
+
   // Detect mobile viewport
   useEffect(() => {
     const checkMobile = () => {
@@ -197,10 +202,16 @@ const AboutPanel = () => {
           const stableDeltaX = panelTargetX - fabLayoutX;
           const stableDeltaY = panelTargetY - fabLayoutY;
 
+          // Cache the docked offset and mark as fully docked
+          isFullyDockedRef.current = true;
+          dockedOffsetRef.current = { x: stableDeltaX, y: stableDeltaY };
+
           fab.style.setProperty('--dock-offset-x', `${stableDeltaX}px`);
           fab.style.setProperty('--dock-offset-y', `${stableDeltaY}px`);
           setFabOffset({ x: stableDeltaX, y: stableDeltaY });
         } else {
+          // No longer fully docked
+          isFullyDockedRef.current = false;
           // TRANSITIONING: Interpolate with toolbar compensation
           const fullDeltaX = targetCenterX - fabVisualCenterX;
           const fullDeltaY = targetCenterY - fabVisualCenterY;
@@ -213,6 +224,8 @@ const AboutPanel = () => {
           setFabOffset({ x: currentDeltaX, y: currentDeltaY });
         }
       } else {
+        // Not docking at all
+        isFullyDockedRef.current = false;
         fab.style.setProperty('--dock-offset-x', '0px');
         fab.style.setProperty('--dock-offset-y', `${toolbarCompensation}px`);
         setFabOffset({ x: 0, y: toolbarCompensation });
@@ -231,10 +244,15 @@ const AboutPanel = () => {
       });
     };
 
-    // Resize handler - recalculate immediately for toolbar changes
-    // The key insight: we recalculate positions each frame using current viewport
-    // so the FAB naturally adjusts to toolbar size changes
+    // Resize handler - recalculate for toolbar changes
+    // CRITICAL: When fully docked, skip recalculation to prevent jitter
+    // The docked position is stable and doesn't need to change with toolbar
     const handleResize = () => {
+      // When fully docked, don't recalculate - the position is stable
+      if (isFullyDockedRef.current) {
+        return;
+      }
+
       // Cancel any pending RAF to avoid double-calculation
       if (rafIdRef.current !== null) {
         cancelAnimationFrame(rafIdRef.current);
