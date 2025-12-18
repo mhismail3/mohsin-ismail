@@ -1,5 +1,5 @@
 ---
-title: "Writing My Own Dotfiles"
+title: "My Take on a Dotfiles setup (v1)"
 date: "2025-12-08T01:00:00-08:00"
 tags:
   - dotfiles

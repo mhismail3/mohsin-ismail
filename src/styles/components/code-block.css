@@ -158,10 +158,492 @@
 }
 
 .code-block-content code {
-  color: var(--ink);
+  color: var(--code-text);
   font-family: inherit;
   white-space: pre;
   display: block;
+}
+
+/* =============================================================================
+   SYNTAX HIGHLIGHTING - LIGHT THEME
+
+   A warm, sepia-tinted palette that complements the cream/paper aesthetic.
+   Colors are carefully chosen for readability and visual harmony.
+   ============================================================================= */
+
+:root {
+  /* Base code colors */
+  --code-text: #403931;
+  --code-bg: var(--bg-card);
+
+  /* Comments - muted sage green, unobtrusive */
+  --code-comment: #728a6e;
+
+  /* Strings - warm terracotta/clay */
+  --code-string: #a85d3b;
+
+  /* Numbers, booleans, null - deep teal */
+  --code-number: #0f7363;
+
+  /* Keywords (if, else, return, const, let, etc.) - rich burgundy/wine */
+  --code-keyword: #8b4049;
+
+  /* Functions - forest green */
+  --code-function: #3d7a5c;
+
+  /* Operators (+, -, =, etc.) - muted slate */
+  --code-operator: #6b5d53;
+
+  /* Punctuation (brackets, semicolons) - warm gray */
+  --code-punctuation: #7d7067;
+
+  /* Properties, attributes - warm brown */
+  --code-property: #7c5a3c;
+
+  /* Classes, types - deep indigo/purple */
+  --code-class: #6b5b8c;
+
+  /* Tags (HTML/JSX) - muted brick red */
+  --code-tag: #9a4a4a;
+
+  /* Attribute names - olive/khaki */
+  --code-attr-name: #6b7353;
+
+  /* Attribute values - same as strings */
+  --code-attr-value: #a85d3b;
+
+  /* Regex - purple-ish */
+  --code-regex: #8b6b8c;
+
+  /* Important, bold - darker emphasis */
+  --code-important: #5c4033;
+
+  /* Variables - warm charcoal */
+  --code-variable: #4a4039;
+
+  /* Deleted (diff) - soft red */
+  --code-deleted: #9e4a4a;
+  --code-deleted-bg: rgba(158, 74, 74, 0.1);
+
+  /* Inserted (diff) - soft green */
+  --code-inserted: #3d7a5c;
+  --code-inserted-bg: rgba(61, 122, 92, 0.1);
+
+  /* Selection highlight */
+  --code-selection: rgba(15, 115, 99, 0.15);
+}
+
+/* =============================================================================
+   SYNTAX HIGHLIGHTING - DARK THEME
+
+   A sophisticated, muted palette for dark mode. Colors are desaturated
+   slightly to reduce eye strain while maintaining clear differentiation.
+   ============================================================================= */
+
+[data-theme="dark"] {
+  /* Base code colors */
+  --code-text: #d4cfc7;
+  --code-bg: var(--bg-card);
+
+  /* Comments - soft sage */
+  --code-comment: #7a9a74;
+
+  /* Strings - warm coral/peach */
+  --code-string: #d4956a;
+
+  /* Numbers, booleans, null - bright teal */
+  --code-number: #4ec9b0;
+
+  /* Keywords - soft rose/pink */
+  --code-keyword: #d19a9a;
+
+  /* Functions - mint green */
+  --code-function: #7cc9a0;
+
+  /* Operators - warm gray */
+  --code-operator: #b0a89e;
+
+  /* Punctuation - muted cream */
+  --code-punctuation: #9a9284;
+
+  /* Properties, attributes - warm gold */
+  --code-property: #d4b47a;
+
+  /* Classes, types - soft lavender */
+  --code-class: #b4a4d4;
+
+  /* Tags (HTML/JSX) - dusty rose */
+  --code-tag: #d49a9a;
+
+  /* Attribute names - sage green */
+  --code-attr-name: #a4b48c;
+
+  /* Attribute values - same as strings */
+  --code-attr-value: #d4956a;
+
+  /* Regex - soft purple */
+  --code-regex: #c4a4c4;
+
+  /* Important, bold - bright cream */
+  --code-important: #f0e8dc;
+
+  /* Variables - light warm gray */
+  --code-variable: #c4bcb0;
+
+  /* Deleted (diff) - soft red */
+  --code-deleted: #d49a9a;
+  --code-deleted-bg: rgba(212, 154, 154, 0.12);
+
+  /* Inserted (diff) - soft green */
+  --code-inserted: #7cc9a0;
+  --code-inserted-bg: rgba(124, 201, 160, 0.12);
+
+  /* Selection highlight */
+  --code-selection: rgba(78, 201, 176, 0.2);
+}
+
+/* =============================================================================
+   PRISM TOKEN STYLES
+
+   Comprehensive styling for all Prism.js token types.
+   Uses CSS custom properties for seamless theme transitions.
+   ============================================================================= */
+
+/* Base transition for all tokens */
+.code-block-content code .token {
+  transition: color var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+/* Comments */
+.code-block-content code .token.comment,
+.code-block-content code .token.prolog,
+.code-block-content code .token.doctype,
+.code-block-content code .token.cdata {
+  color: var(--code-comment);
+  font-style: italic;
+}
+
+/* Punctuation */
+.code-block-content code .token.punctuation {
+  color: var(--code-punctuation);
+}
+
+/* Namespace (subtle) */
+.code-block-content code .token.namespace {
+  opacity: 0.8;
+}
+
+/* Property, tag, symbol, deleted */
+.code-block-content code .token.property,
+.code-block-content code .token.symbol {
+  color: var(--code-property);
+}
+
+.code-block-content code .token.tag {
+  color: var(--code-tag);
+}
+
+.code-block-content code .token.deleted {
+  color: var(--code-deleted);
+  background: var(--code-deleted-bg);
+}
+
+/* Boolean, number, constant */
+.code-block-content code .token.boolean,
+.code-block-content code .token.number,
+.code-block-content code .token.constant {
+  color: var(--code-number);
+}
+
+/* Selector, attr-name, string, char, builtin, inserted */
+.code-block-content code .token.selector,
+.code-block-content code .token.attr-name {
+  color: var(--code-attr-name);
+}
+
+.code-block-content code .token.string,
+.code-block-content code .token.char,
+.code-block-content code .token.attr-value,
+.code-block-content code .token.builtin {
+  color: var(--code-string);
+}
+
+.code-block-content code .token.inserted {
+  color: var(--code-inserted);
+  background: var(--code-inserted-bg);
+}
+
+/* Operator, entity, url */
+.code-block-content code .token.operator,
+.code-block-content code .token.entity,
+.code-block-content code .token.url,
+.code-block-content code .language-css .token.string,
+.code-block-content code .style .token.string {
+  color: var(--code-operator);
+}
+
+/* Atrule, attr-value, keyword */
+.code-block-content code .token.atrule,
+.code-block-content code .token.keyword,
+.code-block-content code .token.control,
+.code-block-content code .token.directive,
+.code-block-content code .token.unit {
+  color: var(--code-keyword);
+}
+
+/* Function */
+.code-block-content code .token.function,
+.code-block-content code .token.function-variable {
+  color: var(--code-function);
+}
+
+/* Class name */
+.code-block-content code .token.class-name {
+  color: var(--code-class);
+}
+
+/* Regex */
+.code-block-content code .token.regex {
+  color: var(--code-regex);
+}
+
+/* Important, bold */
+.code-block-content code .token.important,
+.code-block-content code .token.bold {
+  color: var(--code-important);
+  font-weight: 600;
+}
+
+/* Italic */
+.code-block-content code .token.italic {
+  font-style: italic;
+}
+
+/* Variable */
+.code-block-content code .token.variable {
+  color: var(--code-variable);
+}
+
+/* Entity (HTML entities) */
+.code-block-content code .token.entity {
+  cursor: help;
+}
+
+/* =============================================================================
+   LANGUAGE-SPECIFIC ADJUSTMENTS
+   ============================================================================= */
+
+/* Markdown-specific */
+.code-block-content code.language-markdown .token.title,
+.code-block-content code.language-markdown .token.title .token.punctuation {
+  color: var(--code-keyword);
+  font-weight: 600;
+}
+
+.code-block-content code.language-markdown .token.blockquote,
+.code-block-content code.language-markdown .token.blockquote .token.punctuation {
+  color: var(--code-comment);
+  font-style: italic;
+}
+
+.code-block-content code.language-markdown .token.code,
+.code-block-content code.language-markdown .token.code-snippet {
+  color: var(--code-string);
+}
+
+.code-block-content code.language-markdown .token.bold .token.content {
+  color: var(--code-important);
+  font-weight: 600;
+}
+
+.code-block-content code.language-markdown .token.italic .token.content {
+  color: var(--code-property);
+  font-style: italic;
+}
+
+.code-block-content code.language-markdown .token.strike .token.content {
+  text-decoration: line-through;
+}
+
+.code-block-content code.language-markdown .token.url,
+.code-block-content code.language-markdown .token.url-reference .token.url {
+  color: var(--code-function);
+  text-decoration: underline;
+}
+
+.code-block-content code.language-markdown .token.list.punctuation {
+  color: var(--code-keyword);
+}
+
+.code-block-content code.language-markdown .token.hr {
+  color: var(--code-punctuation);
+}
+
+/* JSON-specific */
+.code-block-content code.language-json .token.property {
+  color: var(--code-property);
+}
+
+.code-block-content code.language-json .token.operator {
+  color: var(--code-punctuation);
+}
+
+/* YAML-specific */
+.code-block-content code.language-yaml .token.key {
+  color: var(--code-property);
+}
+
+.code-block-content code.language-yaml .token.tag {
+  color: var(--code-keyword);
+}
+
+/* CSS-specific */
+.code-block-content code.language-css .token.selector {
+  color: var(--code-tag);
+}
+
+.code-block-content code.language-css .token.property {
+  color: var(--code-property);
+}
+
+.code-block-content code.language-css .token.function {
+  color: var(--code-function);
+}
+
+.code-block-content code.language-css .token.important {
+  color: var(--code-keyword);
+}
+
+/* Bash/Shell-specific */
+.code-block-content code.language-bash .token.function,
+.code-block-content code.language-shell .token.function {
+  color: var(--code-function);
+}
+
+.code-block-content code.language-bash .token.builtin,
+.code-block-content code.language-shell .token.builtin {
+  color: var(--code-keyword);
+}
+
+.code-block-content code.language-bash .token.shebang,
+.code-block-content code.language-shell .token.shebang {
+  color: var(--code-comment);
+  font-style: italic;
+}
+
+/* Diff-specific */
+.code-block-content code.language-diff .token.deleted {
+  color: var(--code-deleted);
+  background: var(--code-deleted-bg);
+  display: inline-block;
+  width: 100%;
+}
+
+.code-block-content code.language-diff .token.inserted {
+  color: var(--code-inserted);
+  background: var(--code-inserted-bg);
+  display: inline-block;
+  width: 100%;
+}
+
+.code-block-content code.language-diff .token.coord {
+  color: var(--code-class);
+}
+
+/* Git-specific */
+.code-block-content code.language-git .token.commit_sha1 {
+  color: var(--code-number);
+}
+
+/* GraphQL-specific */
+.code-block-content code.language-graphql .token.type-def {
+  color: var(--code-class);
+}
+
+.code-block-content code.language-graphql .token.directive {
+  color: var(--code-keyword);
+}
+
+/* JSX/TSX-specific */
+.code-block-content code.language-jsx .token.tag .token.tag,
+.code-block-content code.language-tsx .token.tag .token.tag {
+  color: var(--code-tag);
+}
+
+.code-block-content code.language-jsx .token.tag .token.class-name,
+.code-block-content code.language-tsx .token.tag .token.class-name {
+  color: var(--code-class);
+}
+
+.code-block-content code.language-jsx .token.attr-name,
+.code-block-content code.language-tsx .token.attr-name {
+  color: var(--code-attr-name);
+}
+
+.code-block-content code.language-jsx .token.attr-value,
+.code-block-content code.language-tsx .token.attr-value {
+  color: var(--code-attr-value);
+}
+
+/* TypeScript-specific */
+.code-block-content code.language-typescript .token.type,
+.code-block-content code.language-tsx .token.type {
+  color: var(--code-class);
+}
+
+.code-block-content code.language-typescript .token.generic-function,
+.code-block-content code.language-tsx .token.generic-function {
+  color: var(--code-function);
+}
+
+/* Python-specific */
+.code-block-content code.language-python .token.decorator,
+.code-block-content code.language-python .token.decorator .token.function {
+  color: var(--code-class);
+}
+
+.code-block-content code.language-python .token.triple-quoted-string {
+  color: var(--code-comment);
+  font-style: italic;
+}
+
+/* Rust-specific */
+.code-block-content code.language-rust .token.lifetime {
+  color: var(--code-class);
+}
+
+.code-block-content code.language-rust .token.macro {
+  color: var(--code-function);
+}
+
+/* Go-specific */
+.code-block-content code.language-go .token.builtin {
+  color: var(--code-keyword);
+}
+
+/* SQL-specific */
+.code-block-content code.language-sql .token.keyword {
+  color: var(--code-keyword);
+  text-transform: uppercase;
+}
+
+/* Docker-specific */
+.code-block-content code.language-docker .token.instruction {
+  color: var(--code-keyword);
+}
+
+/* =============================================================================
+   CODE SELECTION
+   ============================================================================= */
+
+.code-block-content code::selection,
+.code-block-content code *::selection {
+  background: var(--code-selection);
+}
+
+.code-block-content code::-moz-selection,
+.code-block-content code *::-moz-selection {
+  background: var(--code-selection);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

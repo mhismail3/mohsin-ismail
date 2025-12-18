@@ -294,12 +294,20 @@ export function useShimmerFollowGroup() {
       cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
     }
-    
+
     targetsRef.current.forEach((el) => {
       if (!el) return;
+      // Start fade-out transition by setting width to 0%
       el.style.setProperty('--shimmer-width', '0%');
-      // Add class to completely hide shimmer gradient (pure base color)
-      el.classList.add('shimmer-hidden');
+      // Delay adding shimmer-hidden class until after the CSS transition completes
+      // This allows the --shimmer-width transition to animate the fade out
+      // (350ms matches the fade-out transition duration in post-card.css)
+      setTimeout(() => {
+        // Only add class if element still exists and shimmer is still at 0%
+        if (el && el.style.getPropertyValue('--shimmer-width') === '0%') {
+          el.classList.add('shimmer-hidden');
+        }
+      }, 350);
     });
   }, []);
 

@@ -1,5 +1,5 @@
 ---
-title: "My current AGENTS.md rules"
+title: "My current AGENTS.md file"
 date: "2025-11-25T19:55:00-08:00"
 tags:
   - prompt engineering

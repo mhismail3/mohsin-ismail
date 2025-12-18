@@ -1,5 +1,5 @@
 ---
-title: "Post Notes"
+title: "Post Notes, a small blog feature"
 date: "2025-12-10T14:45:00-08:00"
 tags:
   - website update

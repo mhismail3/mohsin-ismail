@@ -1,5 +1,5 @@
 ---
-title: "Moose's Toolbox: My Take on HTML Tools"
+title: "Moose's Toolbox: My take on HTML Tools"
 date: "2025-12-16T22:48:00-08:00"
 tags:
   - moose's toolbox

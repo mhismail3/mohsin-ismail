@@ -405,9 +405,12 @@ const posts = Object.entries(rawPosts).map(([path, raw]) => {
     footnotes,
     headings,
     enableTableOfContents: data.enableTableOfContents === true,
+    exclude: data.exclude === true,
     basePath,
   };
-}).sort((a, b) => b.dateValue.getTime() - a.dateValue.getTime());
+})
+  .filter((post) => post.exclude !== true)
+  .sort((a, b) => b.dateValue.getTime() - a.dateValue.getTime());
 
 export const uniqueTags = Array.from(new Set(posts.flatMap((post) => post.tags))).sort(
   (a, b) => a.localeCompare(b),

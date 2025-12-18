@@ -1,5 +1,5 @@
 ---
-title: "Superwhisper is My ASR Tool of Choice"
+title: "Superwhisper is my ASR tool of choice"
 date: "2025-12-14T21:17:00-08:00"
 tags:
   - superwhisper

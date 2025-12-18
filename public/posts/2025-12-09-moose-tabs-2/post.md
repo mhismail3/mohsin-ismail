@@ -1,5 +1,5 @@
 ---
-title: "Moose Tabs v2"
+title: "Moose Tabs v2, a hierarchical tab manager"
 date: "2025-12-08T17:32:00-08:00"
 tags:
   - chrome extensions

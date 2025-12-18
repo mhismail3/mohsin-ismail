@@ -1,6 +1,7 @@
 ---
 title: "Argo (2012) Review"
 date: "2025-11-26T23:15:00-08:00"
+exclude: true
 tags:
   - movies
   - reviews
