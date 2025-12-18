@@ -1,7 +1,7 @@
 import React, { useEffect, useLayoutEffect, useState, useRef, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTheme, useTouchDrag, useShimmerFollow, useIsTouch } from '../../hooks';
-import { usePageTransition, useFilterTransition } from '../../contexts';
+import { usePageTransition, useFilterTransition, useFooterDock } from '../../contexts';
 import { Icon } from '../ui';
 import logoMark from '../../assets/mohsin.png';
 
@@ -55,7 +55,109 @@ const Header = ({ label, onLogoClick }) => {
   // Get filter transition state - during filtering, we suspend scroll reactions
   // but we DON'T immediately reset collapsed state (header stays as-is during fade-out)
   const { isFiltering, filterPhase } = useFilterTransition();
-  
+
+  // Get footer dock state - FAB animates to dock position in footer panel
+  const { isDocked: isFabDocked, dockProgress, dockTarget, setFabOffset } = useFooterDock();
+
+  // Calculate FAB dock position - runs continuously while panel is visible
+  const [fabDockStyle, setFabDockStyle] = useState({});
+  const fabPositionRef = useRef({ deltaX: 0, deltaY: 0 });
+
+  // Store dockProgress in a ref so scroll handler always has current value
+  const dockProgressRef = useRef(dockProgress);
+  dockProgressRef.current = dockProgress;
+
+  useEffect(() => {
+    if (!isMobile || !dockTarget) {
+      setFabDockStyle({});
+      setFabOffset({ x: 0, y: 0 });
+      return;
+    }
+
+    // Calculate the dock position inside the footer panel
+    // This runs on every scroll frame for real-time tracking
+    const updateDockPosition = () => {
+      const targetRect = dockTarget.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const viewportWidth = window.innerWidth;
+      const safeAreaBottom = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--safe-area-inset-bottom') || '0', 10) || 0;
+
+      // FAB's normal position (using fixed positioning from bottom-right)
+      // fabNormalRight matches CSS: app-padding (10px) + panel-inner-padding (20px) = 30px
+      // This eliminates horizontal movement when docking.
+      const fabNormalRight = 30;
+
+      // FAB size varies by viewport width (matches CSS breakpoints)
+      let fabSize = 48;
+      let fabNormalBottom = 20 + safeAreaBottom;
+      if (viewportWidth <= 320) {
+        fabSize = 36;
+        fabNormalBottom = 12 + safeAreaBottom;
+      } else if (viewportWidth <= 360) {
+        fabSize = 40;
+        fabNormalBottom = 16 + safeAreaBottom;
+      }
+
+      // Calculate FAB's normal center position in viewport coordinates
+      const fabNormalCenterX = viewportWidth - fabNormalRight - fabSize / 2;
+      const fabNormalCenterY = viewportHeight - fabNormalBottom - fabSize / 2;
+
+      // Target position: inside the panel, vertically centered, with padding from right edge
+      const panelInnerPadding = 20;
+      const targetCenterX = targetRect.right - panelInnerPadding - fabSize / 2;
+      const targetCenterY = targetRect.top + targetRect.height / 2;
+
+      // Calculate the full offset to dock position
+      const fullDeltaX = targetCenterX - fabNormalCenterX;
+      const fullDeltaY = targetCenterY - fabNormalCenterY;
+
+      // Store for reference
+      fabPositionRef.current = { deltaX: fullDeltaX, deltaY: fullDeltaY };
+
+      // Use ref to get current progress (avoids stale closure)
+      const currentProgress = dockProgressRef.current;
+
+      if (currentProgress > 0) {
+        // When docked (progress >= 0.95), track panel exactly for real-time positioning
+        // Otherwise interpolate based on progress
+        const effectiveProgress = currentProgress >= 0.95 ? 1 : currentProgress;
+        const currentDeltaX = fullDeltaX * effectiveProgress;
+        const currentDeltaY = fullDeltaY * effectiveProgress;
+
+        setFabDockStyle({
+          '--dock-offset-x': `${currentDeltaX}px`,
+          '--dock-offset-y': `${currentDeltaY}px`,
+          '--dock-progress': currentProgress,
+        });
+
+        // Share the offset with context so button can respond
+        setFabOffset({ x: currentDeltaX, y: currentDeltaY });
+      } else {
+        setFabDockStyle({});
+        setFabOffset({ x: 0, y: 0 });
+      }
+    };
+
+    updateDockPosition();
+
+    // Use requestAnimationFrame for real-time tracking on every scroll frame
+    let rafId = null;
+    const handleScrollRaf = () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(updateDockPosition);
+    };
+
+    window.addEventListener('scroll', handleScrollRaf, { passive: true });
+    window.addEventListener('resize', updateDockPosition, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleScrollRaf);
+      window.removeEventListener('resize', updateDockPosition);
+      if (rafId) cancelAnimationFrame(rafId);
+      setFabOffset({ x: 0, y: 0 });
+    };
+  }, [isMobile, dockTarget, dockProgress, setFabOffset]);
+
   // Suspend scroll reactions during navigation OR filtering
   const isSuspended = isNavigating || isFiltering;
 
@@ -554,9 +656,12 @@ const Header = ({ label, onLogoClick }) => {
   ].filter(Boolean).join(' ');
 
   // Mobile FAB classes
+  // FAB stays visible during docking - it animates into position
   const fabClass = [
     'mobile-fab',
     isCollapsed ? 'visible' : '',
+    dockProgress > 0 ? 'docking' : '',
+    isFabDocked ? 'docked' : '',
     isFabDragging ? 'dragging' : '',
     isFabSnapping ? 'snapping' : '',
   ].filter(Boolean).join(' ');
@@ -631,9 +736,14 @@ const Header = ({ label, onLogoClick }) => {
 
       {/* Mobile FAB - appears in bottom-right when scrolled on mobile */}
       {isMobile && (
-        <div ref={fabContainerRef} className={fabClass} aria-hidden={!isCollapsed}>
+        <div
+          ref={fabContainerRef}
+          className={fabClass}
+          aria-hidden={!isCollapsed}
+          style={fabDockStyle}
+        >
           <span className="fab-photo-wrapper">
-            <span 
+            <span
               ref={fabDragRef}
               className="fab-photo"
             >

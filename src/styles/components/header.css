@@ -1792,19 +1792,22 @@
 .mobile-fab {
   position: fixed;
   bottom: calc(20px + var(--safe-area-inset-bottom));
-  right: 20px;
+  /* Right position calculated to align with dock position in footer panel.
+     Formula: app-padding (10px) + panel-inner-padding (20px) = 30px
+     This eliminates horizontal movement when FAB docks into footer. */
+  right: 30px;
   z-index: var(--z-fixed);
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  
+
   /* Hidden by default - becomes visible when collapsed */
   opacity: 0;
   pointer-events: none;
   transform: translateY(80px) scale(0.8);
-  
+
   /* Bounce out animation (when becoming hidden) */
-  transition: 
+  transition:
     opacity 0.25s ease-in,
     transform 0.3s cubic-bezier(0.6, 0, 0.4, 1);
 }
@@ -2177,9 +2180,9 @@
     width: 40px;
     height: 40px;
   }
-  
+
   .mobile-fab {
-    right: 16px;
+    /* Keep same right position for dock alignment, just adjust bottom spacing */
     bottom: calc(16px + var(--safe-area-inset-bottom));
   }
 }
@@ -2189,10 +2192,48 @@
     width: 36px;
     height: 36px;
   }
-  
+
   .mobile-fab {
-    right: 12px;
+    /* Keep same right position for dock alignment, just adjust bottom spacing */
     bottom: calc(12px + var(--safe-area-inset-bottom));
   }
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   FAB FOOTER DOCK ANIMATION
+
+   When the footer "Get in Touch" panel comes into view, the FAB photo
+   smoothly animates from its floating position into the panel.
+
+   Uses CSS custom properties set by JavaScript:
+   - --dock-offset-x: horizontal offset from normal position
+   - --dock-offset-y: vertical offset from normal position
+   - --dock-progress: 0-1 progress value
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Docking state - FAB moves toward footer position */
+.mobile-fab.docking {
+  /* Apply position offset calculated by JS */
+  transform: translate(
+    var(--dock-offset-x, 0px),
+    var(--dock-offset-y, 0px)
+  ) scale(1);
+  /* Disable transform transition for real-time scroll tracking */
+  transition: opacity 0.2s ease-out;
+}
+
+/* Fully docked state - FAB is lodged in footer */
+.mobile-fab.docked {
+  transform: translate(
+    var(--dock-offset-x, 0px),
+    var(--dock-offset-y, 0px)
+  ) scale(1);
+  /* No transform transition - FAB tracks panel position in real-time */
+  transition: opacity 0.2s ease-out;
+}
+
+/* When docked, FAB looks normal - green glow only on hover/active like header */
+/* No special styling when docked - it behaves like the header photo */
+
+/* FAB remains fully interactive when docked - menu and pulse stay active */
 

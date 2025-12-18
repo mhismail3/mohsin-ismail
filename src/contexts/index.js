@@ -10,3 +10,8 @@ export {
   FilterTransitionProvider,
   useFilterTransition,
 } from './FilterTransitionContext';
+export {
+  FooterDockContext,
+  FooterDockProvider,
+  useFooterDock,
+} from './FooterDockContext';

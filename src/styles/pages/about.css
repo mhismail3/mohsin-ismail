@@ -379,5 +379,26 @@
   fill: var(--pine);
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   FOOTER DOCK - BUTTON FADE OUT
+
+   "More about me" button fades out smoothly as the FAB photo docks into the panel.
+   Uses CSS variable for gradual opacity controlled by JS dock progress.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 840px) {
+  /* Use CSS variable for smooth opacity based on dock progress */
+  .about-panel-compact .see-all-link {
+    opacity: var(--button-opacity, 1);
+    transition: opacity 0.1s ease-out;
+  }
+
+  /* When fully docked, ensure it's hidden and not interactive */
+  .about-panel-compact .see-all-link.dock-hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
 
 
