@@ -21,6 +21,17 @@ const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
 const DIST_DIR = path.join(ROOT_DIR, 'dist');
 const PUBLIC_DIR = path.join(ROOT_DIR, 'public');
+const MANIFEST_PATH = path.join(ROOT_DIR, 'src', 'data', 'image-manifest.json');
+
+// Load image manifest for optimized image URLs
+let imageManifest = {};
+try {
+  if (fs.existsSync(MANIFEST_PATH)) {
+    imageManifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf-8'));
+  }
+} catch {
+  console.log('  Note: Image manifest not found, using original images for OG tags');
+}
 
 // Site configuration
 const SITE_URL = 'https://mhismail.com';
@@ -131,19 +142,43 @@ function getAllProjects() {
 }
 
 /**
+ * Get optimized image URL from manifest (prefers largest size for OG images)
+ * Falls back to original if no optimized version exists
+ */
+function getOptimizedImageUrl(originalPath) {
+  const manifestKey = originalPath.startsWith('/') ? originalPath : `/${originalPath}`;
+  const optimizedData = imageManifest[manifestKey];
+
+  if (optimizedData?.srcset) {
+    // Get the largest available size for OG images (social media needs high res)
+    const sizes = Object.entries(optimizedData.srcset);
+    if (sizes.length > 0) {
+      // Sort by width descending and get largest
+      const sorted = sizes.sort((a, b) => parseInt(b[0]) - parseInt(a[0]));
+      return `${SITE_URL}${sorted[0][1]}`;
+    }
+  }
+
+  // Fallback to original
+  return `${SITE_URL}${originalPath}`;
+}
+
+/**
  * Find an image to use for a post's OG image
  * Prioritizes: gallery-1.ext > any image in folder > default
+ * Returns optimized version if available
  */
 function getPostImage(slug) {
   const postDir = path.join(PUBLIC_DIR, 'posts', slug);
   if (!fs.existsSync(postDir)) return DEFAULT_IMAGE;
 
   const files = fs.readdirSync(postDir);
-  
+
   // Look for gallery-1 first
   const gallery1 = files.find(f => f.startsWith('gallery-1'));
   if (gallery1) {
-    return `${SITE_URL}/posts/${slug}/${gallery1}`;
+    const originalPath = `/posts/${slug}/${gallery1}`;
+    return getOptimizedImageUrl(originalPath);
   }
 
   // Look for any image file
@@ -153,7 +188,8 @@ function getPostImage(slug) {
     return imageExts.includes(ext) && f !== 'post.md';
   });
   if (anyImage) {
-    return `${SITE_URL}/posts/${slug}/${anyImage}`;
+    const originalPath = `/posts/${slug}/${anyImage}`;
+    return getOptimizedImageUrl(originalPath);
   }
 
   return DEFAULT_IMAGE;
@@ -161,19 +197,22 @@ function getPostImage(slug) {
 
 /**
  * Get project cover image
+ * Returns optimized version if available
  */
 function getProjectCover(slug, coverFileName) {
   if (coverFileName) {
-    return `${SITE_URL}/projects/${slug}/${coverFileName}`;
+    const originalPath = `/projects/${slug}/${coverFileName}`;
+    return getOptimizedImageUrl(originalPath);
   }
-  
+
   const projectDir = path.join(PUBLIC_DIR, 'projects', slug);
   if (!fs.existsSync(projectDir)) return DEFAULT_IMAGE;
 
   const files = fs.readdirSync(projectDir);
   const cover = files.find(f => f.startsWith('cover.'));
   if (cover) {
-    return `${SITE_URL}/projects/${slug}/${cover}`;
+    const originalPath = `/projects/${slug}/${cover}`;
+    return getOptimizedImageUrl(originalPath);
   }
 
   return DEFAULT_IMAGE;

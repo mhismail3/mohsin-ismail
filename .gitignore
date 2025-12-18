@@ -6,3 +6,6 @@ dist
 *.swp
 /assets
 docs/
+
+# Generated optimized images (rebuilt on each build)
+public/optimized/

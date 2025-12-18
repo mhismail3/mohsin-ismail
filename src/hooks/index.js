@@ -10,3 +10,4 @@ export { default as useTheme } from './useTheme';
 export { default as useInternalLinkNavigation } from './useInternalLinkNavigation';
 export { useShimmerFollow, useShimmerFollowGroup } from './useShimmerFollow';
 export { default as useDominantColor } from './useDominantColor';
+export { usePreloadImages, usePrefetch, usePrerender } from './usePreloadResources';

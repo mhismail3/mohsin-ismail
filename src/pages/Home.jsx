@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { usePageTitle, useTapFeedback } from '../hooks';
+import { usePageTitle, useTapFeedback, usePreloadImages, usePrerender } from '../hooks';
 import { posts, portfolioProjects } from '../data';
 import { AboutPanel, PostCard, FeaturedProjectCard } from '../components/features';
 
@@ -12,9 +12,32 @@ function Home() {
 
   // Get the most recent portfolio project
   const featuredProject = portfolioProjects[0];
-  
+
   // Get the latest posts (already sorted by date in posts.js)
   const recentPosts = posts.slice(0, RECENT_POSTS_COUNT);
+
+  // Preload critical above-the-fold images (LCP optimization)
+  const criticalImages = useMemo(() => {
+    const images = [];
+    if (featuredProject?.image) {
+      images.push(featuredProject.image);
+    }
+    return images;
+  }, [featuredProject]);
+
+  usePreloadImages(criticalImages, { fetchpriority: 'high' });
+
+  // Prerender likely navigation targets for instant page loads
+  const likelyRoutes = useMemo(() => {
+    const routes = ['/blog', '/portfolio'];
+    // Add the first post route for quick navigation
+    if (recentPosts[0]) {
+      routes.push(`/posts/${recentPosts[0].slug}`);
+    }
+    return routes;
+  }, [recentPosts]);
+
+  usePrerender(likelyRoutes, { eagerness: 'moderate' });
 
   return (
     <div className="frame">

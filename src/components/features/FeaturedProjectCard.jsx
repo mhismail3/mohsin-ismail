@@ -1,10 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useDominantColor } from '../../hooks';
+import { ProgressiveImage } from '../ui';
 
 /**
  * FeaturedProjectCard component with dynamic border color extracted from the cover image
- * and iOS 26 liquid glass effect on the title pill
+ * and iOS 26 liquid glass effect on the title pill.
+ * Uses ProgressiveImage for optimized loading with WebP and blur placeholders.
  */
 const FeaturedProjectCard = ({ project }) => {
   const { borderColor } = useDominantColor(project.image);
@@ -20,10 +22,11 @@ const FeaturedProjectCard = ({ project }) => {
       style={cardStyle}
     >
       <div className="featured-project-media">
-        <img
+        <ProgressiveImage
           src={project.image}
           alt={project.title}
-          loading="eager"
+          eager={true}
+          sizes="(max-width: 600px) 100vw, 600px"
         />
         <div className="project-pill">
           <span className="pill-label">{project.title}</span>

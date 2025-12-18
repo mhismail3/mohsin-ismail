@@ -52,6 +52,35 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   BLUR PLACEHOLDER (LQIP)
+   Low Quality Image Placeholder - a tiny blurred preview of the actual image
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.progressive-image__blur {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(20px);
+  transform: scale(1.1); /* Prevent blur edges from showing */
+  z-index: 1;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.4s ease-out;
+}
+
+/* Hide blur when loaded */
+.progressive-image.is-loaded .progressive-image__blur {
+  opacity: 0;
+}
+
+/* When we have blur, hide the shimmer placeholder */
+.progressive-image.has-blur .progressive-image__placeholder {
+  display: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    ACTUAL IMAGE
    ───────────────────────────────────────────────────────────────────────────── */
 
@@ -162,13 +191,19 @@
     animation: none;
     background: var(--bg-card);
   }
-  
+
+  .progressive-image__blur {
+    filter: blur(10px);
+    transform: none;
+    transition: opacity 0.2s ease-out;
+  }
+
   .progressive-image__img {
     transform: none;
     filter: none;
     transition: opacity 0.2s ease-out;
   }
-  
+
   .progressive-image.is-loaded .progressive-image__img {
     transform: none;
   }
