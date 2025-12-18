@@ -41,6 +41,7 @@ const CodeBlock = ({ code, language = 'javascript', maxLines = 10 }) => {
   const [expanded, setExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [wrapped, setWrapped] = useState(false);
   const copyTimeoutRef = useRef(null);
 
   // Normalize language name
@@ -124,13 +125,26 @@ const CodeBlock = ({ code, language = 'javascript', maxLines = 10 }) => {
             </span>
             <span className="copy-text">{copied ? 'Copied' : 'Copy'}</span>
           </button>
+          <button
+            type="button"
+            className={`code-block-wrap ${wrapped ? 'active' : ''}`}
+            onClick={() => setWrapped((prev) => !prev)}
+            aria-label={wrapped ? 'Unwrap code lines' : 'Wrap code lines'}
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 6h18" />
+              <path d="M3 12h15a3 3 0 1 1 0 6h-4" />
+              <polyline points="13 16 10 18 13 20" />
+            </svg>
+            <span>{wrapped ? 'Unwrap' : 'Wrap'}</span>
+          </button>
         </div>
       </div>
       
       <div className={`code-block-content ${!expanded && needsExpand ? 'truncated' : ''}`}>
         <pre>
           <code
-            className={`language-${normalizedLanguage}`}
+            className={`language-${normalizedLanguage}${wrapped ? ' wrapped' : ''}`}
             dangerouslySetInnerHTML={{ __html: highlightedCode }}
           />
         </pre>

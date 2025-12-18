@@ -133,6 +133,61 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   WRAP BUTTON
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.code-block-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0.22rem 0.5rem 0.18rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  color: var(--ink);
+  -webkit-text-fill-color: var(--ink);
+  background: var(--bg-white);
+  border: var(--border-retro);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color var(--theme-transition-duration) var(--theme-transition-ease),
+              transform var(--duration-fast) ease,
+              box-shadow var(--theme-transition-duration) var(--theme-transition-ease),
+              border-color var(--theme-transition-duration) var(--theme-transition-ease),
+              color var(--duration-fast) ease,
+              -webkit-text-fill-color var(--duration-fast) ease;
+  box-shadow: 1.5px 1.5px 0px var(--retro-shadow-color);
+  min-width: 64px;
+  justify-content: center;
+}
+
+@media (hover: hover) {
+  .code-block-wrap:hover {
+    background: var(--color-surface-hover);
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0px var(--retro-shadow-color);
+    color: var(--pine);
+    -webkit-text-fill-color: var(--pine);
+  }
+}
+
+.code-block-wrap:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px var(--retro-shadow-color);
+}
+
+.code-block-wrap svg {
+  flex-shrink: 0;
+}
+
+.code-block-wrap.active {
+  background: var(--color-surface-success);
+  border-color: var(--pine);
+  color: var(--pine);
+  -webkit-text-fill-color: var(--pine);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    CONTENT AREA
    ───────────────────────────────────────────────────────────────────────────── */
 
@@ -162,6 +217,11 @@
   font-family: inherit;
   white-space: pre;
   display: block;
+}
+
+.code-block-content code.wrapped {
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 /* =============================================================================
