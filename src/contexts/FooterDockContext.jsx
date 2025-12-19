@@ -3,15 +3,15 @@ import React, { createContext, useContext, useState, useCallback, useRef } from 
 /**
  * FooterDockContext - Optimized for iOS Safari
  *
- * Uses a hybrid approach:
- * - React state only for isDocked (triggers class updates)
- * - Direct DOM manipulation for transform values during scroll
- * - Store refs for values that don't need re-renders
+ * ARCHITECTURE (Inverted Model):
+ * The FAB's "home" is the AboutPanel. When docked, the FAB is portaled INTO
+ * the panel DOM and uses position:absolute - no JS calculations needed.
+ * When floating, it's portaled back to body and uses position:fixed.
  *
- * Key optimizations:
- * - Single unified scroll handler in AboutPanel
- * - Direct DOM manipulation for transform updates
- * - Minimal React re-renders (only when isDocked changes)
+ * This inversion eliminates jitter because:
+ * - Docked state = pure CSS positioning (absolute relative to panel)
+ * - Floating state = position:fixed (calculations only happen while scrolling anyway)
+ * - The docked position requires ZERO JavaScript updates
  */
 
 const FooterDockContext = createContext(null);
@@ -25,19 +25,22 @@ export const useFooterDock = () => {
       isDocked: false,
       dockTarget: null,
       fabOffset: { x: 0, y: 0 },
+      portalTarget: null,
       setDockProgress: () => {},
       setDockTarget: () => {},
       setFabOffset: () => {},
       setFabElement: () => {},
+      setPortalTarget: () => {},
       getProgress: () => 0,
       getFabElement: () => null,
+      getPortalTarget: () => null,
     };
   }
   return context;
 };
 
 export const FooterDockProvider = ({ children }) => {
-  // Only isDocked triggers React re-renders (for CSS class updates)
+  // Only isDocked triggers React re-renders (for CSS class updates and portal switching)
   const [isDocked, setIsDocked] = useState(false);
 
   // All other values stored in refs (no re-renders during scroll)
@@ -45,6 +48,7 @@ export const FooterDockProvider = ({ children }) => {
   const fabOffsetRef = useRef({ x: 0, y: 0 });
   const dockTargetRef = useRef(null);
   const fabElementRef = useRef(null);
+  const portalTargetRef = useRef(null); // DOM element to portal FAB into when docked
 
   // Setters that don't trigger re-renders
   const setDockProgress = useCallback((progress) => {
@@ -66,11 +70,16 @@ export const FooterDockProvider = ({ children }) => {
     fabElementRef.current = element;
   }, []);
 
+  const setPortalTarget = useCallback((element) => {
+    portalTargetRef.current = element;
+  }, []);
+
   // Getters for imperative access
   const getProgress = useCallback(() => progressRef.current, []);
   const getFabElement = useCallback(() => fabElementRef.current, []);
   const getDockTarget = useCallback(() => dockTargetRef.current, []);
   const getFabOffset = useCallback(() => fabOffsetRef.current, []);
+  const getPortalTarget = useCallback(() => portalTargetRef.current, []);
 
   const value = {
     // React state (triggers re-renders)
@@ -79,16 +88,19 @@ export const FooterDockProvider = ({ children }) => {
     dockProgress: progressRef.current,
     dockTarget: dockTargetRef.current,
     fabOffset: fabOffsetRef.current,
+    portalTarget: portalTargetRef.current,
     // Setters
     setDockProgress,
     setDockTarget,
     setFabOffset,
     setFabElement,
+    setPortalTarget,
     // Getters (for imperative access to current values)
     getProgress,
     getFabElement,
     getDockTarget,
     getFabOffset,
+    getPortalTarget,
   };
 
   return (

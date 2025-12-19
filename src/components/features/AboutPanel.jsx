@@ -6,24 +6,26 @@ import { useFooterDock } from '../../contexts';
 /**
  * AboutPanel - Footer dock target panel
  *
- * This component owns the unified scroll handler that:
- * 1. Calculates dock progress based on panel position
- * 2. Calculates FAB position and applies it directly to DOM
- * 3. All in a single RAF-throttled handler to avoid race conditions
+ * ARCHITECTURE (Inverted Model):
+ * The FAB's "home" is this panel. When docked, the FAB is portaled INTO
+ * this panel's DOM and uses position:absolute - no JS calculations needed.
+ * When floating, it uses position:fixed with JS-calculated offsets.
  *
- * Key iOS Safari optimizations:
- * - Uses visualViewport API to detect toolbar expand/contract
- * - Compensates for toolbar changes via transform offset
- * - CSS uses `bottom` positioning (layout viewport), JS adjusts for visual viewport
- * - Immediate recalculation on visualViewport resize events
- * - The toolbarCompensation value keeps FAB stable as toolbar animates
+ * This inversion eliminates jitter because:
+ * - Docked state = pure CSS positioning (absolute relative to panel)
+ * - Floating state = position:fixed (calculations only during active scroll)
+ * - The docked position requires ZERO JavaScript updates
+ *
+ * The panel provides a portal target element that the Header's FAB
+ * portals into when docked.
  */
 const AboutPanel = () => {
   const panelRef = useRef(null);
+  const portalRef = useRef(null); // Portal target for docked FAB
   const buttonRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
   const [buttonOpacity, setButtonOpacity] = useState(1);
-  const { setDockProgress, setDockTarget, setFabOffset, isDocked, getProgress, getFabElement } = useFooterDock();
+  const { setDockProgress, setDockTarget, setFabOffset, setPortalTarget, isDocked, getProgress, getFabElement } = useFooterDock();
 
   // Track if user has scrolled enough to see FAB
   const hasScrolledRef = useRef(false);
@@ -31,14 +33,6 @@ const AboutPanel = () => {
 
   // RAF tracking
   const rafIdRef = useRef(null);
-
-  // Debounce timer for resize events
-  const resizeDebounceRef = useRef(null);
-
-  // Track docked state to skip toolbar resize updates when fully docked
-  const isFullyDockedRef = useRef(false);
-  // Cache the last stable docked position
-  const dockedOffsetRef = useRef({ x: 0, y: 0 });
 
   // Detect mobile viewport
   useEffect(() => {
@@ -51,7 +45,16 @@ const AboutPanel = () => {
     return () => media.removeEventListener('change', checkMobile);
   }, []);
 
-  // Unified scroll handler - single source of truth for all dock calculations
+  // Register portal target with context
+  useEffect(() => {
+    if (isMobile && portalRef.current) {
+      setPortalTarget(portalRef.current);
+    }
+    return () => setPortalTarget(null);
+  }, [isMobile, setPortalTarget]);
+
+  // Scroll handler - determines dock progress and floating FAB position
+  // When docked, FAB is portaled into panel and uses CSS positioning - no JS needed
   useEffect(() => {
     if (!isMobile || !panelRef.current) {
       setDockTarget(null);
@@ -69,23 +72,16 @@ const AboutPanel = () => {
     const COLLAPSE_THRESHOLD = 80;
     const DOCK_START_THRESHOLD = 80;
 
-    // Get current visual viewport dimensions (called every frame for accuracy)
+    // Get viewport info for floating FAB positioning
     const getViewportInfo = () => {
       const vv = window.visualViewport;
       const visualHeight = vv ? vv.height : window.innerHeight;
       const layoutHeight = window.innerHeight;
       const viewportWidth = vv ? vv.width : window.innerWidth;
-      // visualViewport.offsetTop accounts for iOS Safari URL bar
-      const viewportOffsetTop = vv ? vv.offsetTop : 0;
-
-      // Toolbar compensation: difference between layout and visual viewport
-      // When iOS Safari toolbar expands, visual viewport shrinks but CSS bottom stays fixed
-      // We need to compensate by moving the FAB up by this difference
       const toolbarOffset = layoutHeight - visualHeight;
 
-      // Calculate FAB dimensions based on viewport width
       let fabSize = 48;
-      let fabNormalBottom = 20; // Distance from bottom of visual viewport
+      let fabNormalBottom = 20;
       if (viewportWidth <= 320) {
         fabSize = 36;
         fabNormalBottom = 12;
@@ -94,50 +90,39 @@ const AboutPanel = () => {
         fabNormalBottom = 16;
       }
 
-      // Safe area only matters for the actual bottom padding
       const safeArea = parseInt(
         getComputedStyle(document.documentElement)
           .getPropertyValue('--safe-area-inset-bottom') || '0',
         10
       ) || 0;
 
-      return {
-        visualHeight,
-        layoutHeight,
-        viewportWidth,
-        viewportOffsetTop,
-        toolbarOffset,
-        fabSize,
-        fabNormalBottom,
-        fabNormalRight: 30,
-        safeArea,
-      };
+      return { visualHeight, viewportWidth, toolbarOffset, fabSize, fabNormalBottom, fabNormalRight: 30, safeArea };
     };
 
-    // Unified calculation - runs on every scroll/resize frame
     const calculate = () => {
-      const panelRect = panel.getBoundingClientRect();
-      const viewport = getViewportInfo();
-      const { visualHeight, layoutHeight, viewportWidth, toolbarOffset, fabSize, fabNormalBottom, fabNormalRight, safeArea } = viewport;
+      const currentScrollY = window.scrollY;
 
-      // Check if user has scrolled past threshold
+      // Check if user has scrolled past threshold (FAB visibility)
       if (!initialScrollCheckedRef.current) {
         initialScrollCheckedRef.current = true;
-        if (window.scrollY > COLLAPSE_THRESHOLD) {
+        if (currentScrollY > COLLAPSE_THRESHOLD) {
           hasScrolledRef.current = true;
         }
-      } else if (window.scrollY > COLLAPSE_THRESHOLD) {
+      } else if (currentScrollY > COLLAPSE_THRESHOLD) {
         hasScrolledRef.current = true;
       }
 
       const fab = getFabElement();
       if (!fab) return;
 
-      // Toolbar compensation: move FAB up when toolbar expands (visual viewport shrinks)
-      // This keeps FAB visually stable relative to the visible screen bottom
+      const panelRect = panel.getBoundingClientRect();
+      const viewport = getViewportInfo();
+      const { visualHeight, viewportWidth, toolbarOffset, fabSize, fabNormalBottom, fabNormalRight, safeArea } = viewport;
+
+      // Toolbar compensation for floating FAB
       const toolbarCompensation = -toolbarOffset;
 
-      // Don't dock until FAB is visible
+      // FAB not visible yet
       if (!hasScrolledRef.current) {
         setDockProgress(0);
         fab.style.setProperty('--dock-offset-x', '0px');
@@ -146,14 +131,10 @@ const AboutPanel = () => {
         return;
       }
 
-      // FAB's visual position (where it appears on screen after CSS bottom positioning)
-      // CSS positions from layout viewport bottom, but we calculate relative to visual viewport
-      const fabVisualCenterX = viewportWidth - fabNormalRight - (fabSize / 2);
-      // Where FAB appears in visual viewport (accounting for toolbar)
+      // Calculate dock progress based on panel position
       const fabVisualCenterY = visualHeight - fabNormalBottom - safeArea - (fabSize / 2);
-
-      // Calculate dock progress based on panel position relative to where FAB appears
       const distanceToFabCenter = fabVisualCenterY - panelRect.top;
+
       let progress = 0;
       if (distanceToFabCenter < 0) {
         progress = 0;
@@ -163,69 +144,35 @@ const AboutPanel = () => {
         progress = distanceToFabCenter / DOCK_START_THRESHOLD;
       }
 
-      // Update progress (context handles isDocked notification)
+      // Update progress - when >= 0.95, isDocked becomes true and FAB portals into panel
       setDockProgress(progress);
 
-      if (progress > 0) {
-        // Dock target position (right side of panel, vertically centered)
+      // When docked, FAB uses CSS position:absolute inside panel - no JS positioning needed
+      // We only calculate offset for the FLOATING state (progress < 0.95)
+      if (progress >= 0.95) {
+        // FAB is docked (portaled into panel) - CSS handles positioning
+        // Clear any transform offset since we're using position:absolute now
+        fab.style.setProperty('--dock-offset-x', '0px');
+        fab.style.setProperty('--dock-offset-y', '0px');
+        setFabOffset({ x: 0, y: 0 });
+      } else if (progress > 0) {
+        // TRANSITIONING: Interpolate position toward dock target
         const panelInnerPadding = 20;
         const targetCenterX = panelRect.right - panelInnerPadding - (fabSize / 2);
         const targetCenterY = panelRect.top + (panelRect.height / 2);
+        const fabVisualCenterX = viewportWidth - fabNormalRight - (fabSize / 2);
 
-        // When fully docked (progress >= 0.95), use a stable calculation method
-        // that doesn't depend on visual viewport changes
-        const isFullyDocked = progress >= 0.95;
+        const fullDeltaX = targetCenterX - fabVisualCenterX;
+        const fullDeltaY = targetCenterY - fabVisualCenterY;
 
-        if (isFullyDocked) {
-          // STABLE DOCKED POSITION: Calculate offset from FAB's CSS position
-          // FAB CSS: bottom: X, right: 30px (relative to layout viewport)
-          // We need to move it to panel position (also relative to layout viewport)
+        const currentDeltaX = fullDeltaX * progress;
+        const currentDeltaY = (fullDeltaY * progress) + toolbarCompensation;
 
-          // FAB's CSS position in layout viewport coordinates
-          const fabCssBottom = fabNormalBottom + safeArea;
-          const fabCssRight = fabNormalRight;
-
-          // FAB center in layout viewport coordinates (from top-left)
-          const fabLayoutX = viewportWidth - fabCssRight - (fabSize / 2);
-          const fabLayoutY = layoutHeight - fabCssBottom - (fabSize / 2);
-
-          // Panel target in layout viewport coordinates
-          // panelRect is already in viewport coordinates, but we need layout viewport
-          // Since layout viewport = visual viewport + toolbar offset at top,
-          // and panelRect.top is relative to visual viewport top...
-          // Actually panelRect is relative to the current viewport (visual on iOS)
-          // So we need to convert to layout viewport coordinates
-          const panelTargetX = targetCenterX; // X is the same
-          const panelTargetY = targetCenterY + toolbarOffset; // Adjust for toolbar
-
-          // Calculate stable offset (doesn't change with toolbar)
-          const stableDeltaX = panelTargetX - fabLayoutX;
-          const stableDeltaY = panelTargetY - fabLayoutY;
-
-          // Cache the docked offset and mark as fully docked
-          isFullyDockedRef.current = true;
-          dockedOffsetRef.current = { x: stableDeltaX, y: stableDeltaY };
-
-          fab.style.setProperty('--dock-offset-x', `${stableDeltaX}px`);
-          fab.style.setProperty('--dock-offset-y', `${stableDeltaY}px`);
-          setFabOffset({ x: stableDeltaX, y: stableDeltaY });
-        } else {
-          // No longer fully docked
-          isFullyDockedRef.current = false;
-          // TRANSITIONING: Interpolate with toolbar compensation
-          const fullDeltaX = targetCenterX - fabVisualCenterX;
-          const fullDeltaY = targetCenterY - fabVisualCenterY;
-
-          const currentDeltaX = fullDeltaX * progress;
-          const currentDeltaY = (fullDeltaY * progress) + toolbarCompensation;
-
-          fab.style.setProperty('--dock-offset-x', `${currentDeltaX}px`);
-          fab.style.setProperty('--dock-offset-y', `${currentDeltaY}px`);
-          setFabOffset({ x: currentDeltaX, y: currentDeltaY });
-        }
+        fab.style.setProperty('--dock-offset-x', `${currentDeltaX}px`);
+        fab.style.setProperty('--dock-offset-y', `${currentDeltaY}px`);
+        setFabOffset({ x: currentDeltaX, y: currentDeltaY });
       } else {
-        // Not docking at all
-        isFullyDockedRef.current = false;
+        // Not docking - just apply toolbar compensation
         fab.style.setProperty('--dock-offset-x', '0px');
         fab.style.setProperty('--dock-offset-y', `${toolbarCompensation}px`);
         setFabOffset({ x: 0, y: toolbarCompensation });
@@ -244,63 +191,13 @@ const AboutPanel = () => {
       });
     };
 
-    // Resize handler - recalculate for toolbar changes
-    // CRITICAL: When fully docked, skip recalculation to prevent jitter
-    // The docked position is stable and doesn't need to change with toolbar
-    const handleResize = () => {
-      // When fully docked, don't recalculate - the position is stable
-      if (isFullyDockedRef.current) {
-        return;
-      }
-
-      // Cancel any pending RAF to avoid double-calculation
-      if (rafIdRef.current !== null) {
-        cancelAnimationFrame(rafIdRef.current);
-        rafIdRef.current = null;
-      }
-      // Immediate recalculation
-      calculate();
-    };
-
-    // Debounced resize for expensive operations (not currently needed but kept for future)
-    const handleResizeDebounced = () => {
-      if (resizeDebounceRef.current) {
-        clearTimeout(resizeDebounceRef.current);
-      }
-      resizeDebounceRef.current = setTimeout(() => {
-        calculate();
-      }, 100);
-    };
-
-    const vv = window.visualViewport;
-
-    // Main scroll listener
     window.addEventListener('scroll', handleScroll, { passive: true });
-
-    // Window resize (orientation change, etc.)
-    window.addEventListener('resize', handleResizeDebounced, { passive: true });
-
-    // Visual viewport listeners for iOS Safari toolbar
-    if (vv) {
-      // Resize fires when toolbar expands/contracts
-      vv.addEventListener('resize', handleResize, { passive: true });
-      // Scroll fires when visual viewport pans (keyboard, etc.)
-      vv.addEventListener('scroll', handleResize, { passive: true });
-    }
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleResizeDebounced);
-      if (vv) {
-        vv.removeEventListener('resize', handleResize);
-        vv.removeEventListener('scroll', handleResize);
-      }
       if (rafIdRef.current !== null) {
         cancelAnimationFrame(rafIdRef.current);
         rafIdRef.current = null;
-      }
-      if (resizeDebounceRef.current) {
-        clearTimeout(resizeDebounceRef.current);
       }
       setDockTarget(null);
       setDockProgress(0);
@@ -367,6 +264,8 @@ const AboutPanel = () => {
           ))}
         </div>
       </div>
+      {/* Portal target for docked FAB - FAB is rendered here when docked */}
+      {isMobile && <div ref={portalRef} className="fab-dock-target" />}
     </section>
   );
 };

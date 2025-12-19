@@ -1825,9 +1825,28 @@
   pointer-events: auto;
 }
 
-/* Docking states: disable transitions for jitter-free scroll tracking */
-.mobile-fab.docking,
+/* Docking state: disable transitions for jitter-free scroll tracking */
+.mobile-fab.docking {
+  transition: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DOCKED STATE - FAB is portaled into AboutPanel
+
+   When docked, the FAB is a DOM child of the AboutPanel (via React Portal).
+   It uses position:absolute relative to the panel, so it scrolls naturally
+   with the panel. No JS calculations needed = no jitter possible.
+   ═══════════════════════════════════════════════════════════════════════════ */
 .mobile-fab.docked {
+  /* Switch from viewport-relative to panel-relative positioning */
+  position: absolute;
+  /* Position at right side of panel, vertically centered */
+  right: 20px;
+  top: 50%;
+  bottom: auto;
+  /* Simple vertical centering - no JS-calculated transform needed */
+  transform: translateY(-50%);
+  /* No transitions while docked for stability */
   transition: none;
 }
 

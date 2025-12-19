@@ -398,6 +398,33 @@
     opacity: 0;
     pointer-events: none;
   }
+
+  /* ═══════════════════════════════════════════════════════════════════════════
+     DOCKED FAB - POSITION ANCHOR
+
+     The AboutPanel establishes a positioning context for the docked FAB.
+     When fully docked, the FAB is portaled into the panel DOM and uses
+     position:absolute - it scrolls naturally with the panel.
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .about-panel-compact {
+    position: relative;
+  }
+
+  /* Portal target container - invisible, just provides DOM structure */
+  .fab-dock-target {
+    /* Don't affect layout */
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+  }
+
+  /* Re-enable pointer events on the actual FAB when docked */
+  .fab-dock-target .mobile-fab {
+    pointer-events: auto;
+  }
 }
 
 

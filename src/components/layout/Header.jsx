@@ -1,4 +1,5 @@
 import React, { useEffect, useLayoutEffect, useState, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTheme, useTouchDrag, useShimmerFollow, useIsTouch } from '../../hooks';
 import { usePageTransition, useFilterTransition, useFooterDock } from '../../contexts';
@@ -64,8 +65,8 @@ const Header = ({ label, onLogoClick }) => {
   const { isFiltering, filterPhase } = useFilterTransition();
 
   // Get footer dock state - FAB position is now controlled entirely by AboutPanel
-  // Header just reads isDocked for class updates and registers the FAB element
-  const { isDocked: isFabDocked, dockProgress, setFabElement } = useFooterDock();
+  // When docked, FAB is portaled into the panel and uses CSS position:absolute
+  const { isDocked: isFabDocked, dockProgress, setFabElement, getPortalTarget } = useFooterDock();
 
   // FAB element ref - registered with store so AboutPanel can manipulate it directly
   const fabRef = useRef(null);
@@ -694,51 +695,64 @@ const Header = ({ label, onLogoClick }) => {
         </div>
       </header>
 
-      {/* Mobile FAB - appears in bottom-right when scrolled on mobile */}
-      {isMobile && (
-        <div
-          ref={(el) => {
-            fabContainerRef.current = el;
-            fabRef.current = el;
-            // Immediately register with store for dock control
-            if (el) {
-              setFabElement(el);
-            }
-          }}
-          className={fabClass}
-          aria-hidden={!isCollapsed}
-        >
-          <span className="fab-photo-wrapper">
-            <span
-              ref={fabDragRef}
-              className="fab-photo"
-            >
-              <img src={logoMark} alt="Open menu" />
-            </span>
-          </span>
+      {/* Mobile FAB - appears in bottom-right when scrolled on mobile
+          When docked, it's portaled into the AboutPanel for stable CSS positioning */}
+      {isMobile && (() => {
+        const portalTarget = getPortalTarget();
+        const fabElement = (
           <div
-            className={fabMenuClass}
-            aria-hidden={!isFabMenuOpen}
+            ref={(el) => {
+              fabContainerRef.current = el;
+              fabRef.current = el;
+              // Immediately register with store for dock control
+              if (el) {
+                setFabElement(el);
+              }
+            }}
+            className={fabClass}
+            aria-hidden={!isCollapsed}
           >
-            <div className="fab-menu-content">
-              {navLinks.map((link) => (
-                <button
-                  key={link.path}
-                  type="button"
-                  className={`btn outline small ${isLinkActive(link.path) ? 'active' : ''} ${link.path === '/' ? 'home-link' : ''} ${fabTouchPressedPath === link.path ? 'touch-pressed' : ''}`}
-                  onClick={() => handleFabNav(link.path)}
-                  onTouchStart={(e) => handleFabNavTouchStart(e, link.path)}
-                  onTouchMove={handleFabNavTouchMove}
-                  onTouchEnd={(e) => handleFabNavTouchEnd(e, link.path)}
-                  onTouchCancel={handleFabNavTouchCancel}
-                >
-                  {link.label}
-                </button>
-              ))}
+            <span className="fab-photo-wrapper">
+              <span
+                ref={fabDragRef}
+                className="fab-photo"
+              >
+                <img src={logoMark} alt="Open menu" />
+              </span>
+            </span>
+            <div
+              className={fabMenuClass}
+              aria-hidden={!isFabMenuOpen}
+            >
+              <div className="fab-menu-content">
+                {navLinks.map((link) => (
+                  <button
+                    key={link.path}
+                    type="button"
+                    className={`btn outline small ${isLinkActive(link.path) ? 'active' : ''} ${link.path === '/' ? 'home-link' : ''} ${fabTouchPressedPath === link.path ? 'touch-pressed' : ''}`}
+                    onClick={() => handleFabNav(link.path)}
+                    onTouchStart={(e) => handleFabNavTouchStart(e, link.path)}
+                    onTouchMove={handleFabNavTouchMove}
+                    onTouchEnd={(e) => handleFabNavTouchEnd(e, link.path)}
+                    onTouchCancel={handleFabNavTouchCancel}
+                  >
+                    {link.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+
+        // When docked and portal target exists, render inside the AboutPanel
+        // This switches FAB from position:fixed to position:absolute
+        if (isFabDocked && portalTarget) {
+          return createPortal(fabElement, portalTarget);
+        }
+
+        // When floating, render in place (position:fixed)
+        return fabElement;
+      })()}
     </>
   );
 };
