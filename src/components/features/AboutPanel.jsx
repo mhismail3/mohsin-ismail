@@ -144,27 +144,31 @@ const AboutPanel = () => {
         progress = distanceToFabCenter / DOCK_START_THRESHOLD;
       }
 
+      // Calculate the full dock position (used for both transitioning and docked states)
+      const panelInnerPadding = 20;
+      const targetCenterX = panelRect.right - panelInnerPadding - (fabSize / 2);
+      const targetCenterY = panelRect.top + (panelRect.height / 2);
+      const fabVisualCenterX = viewportWidth - fabNormalRight - (fabSize / 2);
+
+      const fullDeltaX = targetCenterX - fabVisualCenterX;
+      const fullDeltaY = targetCenterY - fabVisualCenterY;
+
       // Update progress - when >= 0.95, isDocked becomes true and FAB portals into panel
       setDockProgress(progress);
 
-      // When docked, FAB uses CSS position:absolute inside panel - no JS positioning needed
-      // We only calculate offset for the FLOATING state (progress < 0.95)
+      // Position the FAB based on dock progress
+      // CRITICAL: Even when fully docked (progress >= 0.95), we keep the transform offset
+      // applied. This ensures the FAB stays in the correct visual position during the
+      // brief moment between when isDocked becomes true and when React portals the element.
+      // Once portaled, the .docked CSS class overrides the transform anyway.
       if (progress >= 0.95) {
-        // FAB is docked (portaled into panel) - CSS handles positioning
-        // Clear any transform offset since we're using position:absolute now
-        fab.style.setProperty('--dock-offset-x', '0px');
-        fab.style.setProperty('--dock-offset-y', '0px');
-        setFabOffset({ x: 0, y: 0 });
+        // Fully docked - apply full dock offset (no interpolation, no toolbar compensation)
+        // The .docked CSS will override this transform once the portal completes
+        fab.style.setProperty('--dock-offset-x', `${fullDeltaX}px`);
+        fab.style.setProperty('--dock-offset-y', `${fullDeltaY}px`);
+        setFabOffset({ x: fullDeltaX, y: fullDeltaY });
       } else if (progress > 0) {
         // TRANSITIONING: Interpolate position toward dock target
-        const panelInnerPadding = 20;
-        const targetCenterX = panelRect.right - panelInnerPadding - (fabSize / 2);
-        const targetCenterY = panelRect.top + (panelRect.height / 2);
-        const fabVisualCenterX = viewportWidth - fabNormalRight - (fabSize / 2);
-
-        const fullDeltaX = targetCenterX - fabVisualCenterX;
-        const fullDeltaY = targetCenterY - fabVisualCenterY;
-
         const currentDeltaX = fullDeltaX * progress;
         const currentDeltaY = (fullDeltaY * progress) + toolbarCompensation;
 
