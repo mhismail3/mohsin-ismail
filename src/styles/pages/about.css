@@ -380,32 +380,17 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   FOOTER DOCK - BUTTON FADE OUT
+   DOCKED FAB - POSITION ANCHOR
 
-   "More about me" button fades out smoothly as the FAB photo docks into the panel.
-   Uses CSS variable for gradual opacity controlled by JS dock progress.
+   On mobile/tablet (up to 1099px), the AboutPanel establishes a positioning
+   context for the docked FAB. When fully docked, the FAB is portaled into
+   the panel DOM and uses position:absolute - it scrolls naturally with the panel.
+
+   The "More about me" button is hidden on these screen sizes since the FAB
+   photo docks into the panel. It only appears on wide desktop (1100px+).
    ───────────────────────────────────────────────────────────────────────────── */
 
-@media (max-width: 840px) {
-  /* Use CSS variable for smooth opacity based on dock progress */
-  .about-panel-compact .see-all-link {
-    opacity: var(--button-opacity, 1);
-    transition: opacity 0.1s ease-out;
-  }
-
-  /* When fully docked, ensure it's hidden and not interactive */
-  .about-panel-compact .see-all-link.dock-hidden {
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  /* ═══════════════════════════════════════════════════════════════════════════
-     DOCKED FAB - POSITION ANCHOR
-
-     The AboutPanel establishes a positioning context for the docked FAB.
-     When fully docked, the FAB is portaled into the panel DOM and uses
-     position:absolute - it scrolls naturally with the panel.
-     ═══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 1099px) {
   .about-panel-compact {
     position: relative;
   }

@@ -1760,25 +1760,26 @@
    ============================================================================= */
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   MOBILE HEADER PHOTO FADE
-   On mobile, fade out the header photo when collapsed instead of showing it
-   in the top-left. The FAB takes over navigation duties.
+   MOBILE/TABLET HEADER PHOTO FADE
+   On mobile and tablet (up to 1099px), fade out the header photo when collapsed
+   instead of showing it in the top-left. The FAB takes over navigation duties.
+   At 1100px+, the photo slides to the left whitespace instead.
    ───────────────────────────────────────────────────────────────────────────── */
 
-@media (max-width: 840px) {
-  /* Override the collapsed state on mobile - fade out the header photo entirely */
+@media (max-width: 1099px) {
+  /* Override the collapsed state - fade out the header photo entirely */
   .top-bar.collapsed .brand-mark {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.25s ease-out;
   }
-  
-  /* Disable the pulse animation on mobile collapsed state */
+
+  /* Disable the pulse animation on collapsed state */
   .top-bar.collapsed .brand-mark::after {
     animation: none;
   }
-  
-  /* Hide the collapsed drop shadow on mobile */
+
+  /* Hide the collapsed drop shadow */
   .top-bar.collapsed .brand-mark-inner {
     box-shadow: none;
   }
@@ -1825,8 +1826,14 @@
   pointer-events: auto;
 }
 
+/* During exit animation, keep container visible so the shrink animation plays */
+.mobile-fab.exiting {
+  opacity: 1;
+  pointer-events: none; /* Disable interaction during exit */
+}
+
 /* Docking state: disable transitions for jitter-free scroll tracking */
-.mobile-fab.docking {
+.mobile-fab.docking:not(.exiting) {
   transition: none;
 }
 
@@ -1836,8 +1843,11 @@
    When docked, the FAB is a DOM child of the AboutPanel (via React Portal).
    It uses position:absolute relative to the panel, so it scrolls naturally
    with the panel. No JS calculations needed = no jitter possible.
+
+   IMPORTANT: When exiting, we DON'T apply docked positioning so the exit
+   animation plays from the fixed position (not inside the scrolled-away panel).
    ═══════════════════════════════════════════════════════════════════════════ */
-.mobile-fab.docked {
+.mobile-fab.docked:not(.exiting) {
   /* Switch from viewport-relative to panel-relative positioning */
   position: absolute;
   /* Position at right side of panel, vertically centered */
@@ -1925,14 +1935,17 @@
   animation: fabSpringIn 0.42s cubic-bezier(0.34, 1.4, 0.64, 1) both;
 }
 
-/* Exit animation - plays when FAB is hiding */
+/* Exit animation - plays when FAB is hiding
+   IMPORTANT: Must override .docked styles when exiting, so the shrink animation plays
+   even if the FAB was docked when the user started scrolling up */
 .mobile-fab.exiting .fab-photo-wrapper {
   animation: fabSpringOut 0.28s cubic-bezier(0.4, 0, 0.7, 0.2) forwards;
 }
 
-/* During docking, wrapper stays at scale(1) - no animation interference */
-.mobile-fab.docking .fab-photo-wrapper,
-.mobile-fab.docked .fab-photo-wrapper {
+/* During docking, wrapper stays at scale(1) - no animation interference
+   EXCEPT when exiting - exit animation takes priority */
+.mobile-fab.docking:not(.exiting) .fab-photo-wrapper,
+.mobile-fab.docked:not(.exiting) .fab-photo-wrapper {
   animation: none;
   transform: scale(1) translateY(0);
   opacity: 1;

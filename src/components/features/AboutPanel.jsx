@@ -22,10 +22,8 @@ import { useFooterDock } from '../../contexts';
 const AboutPanel = () => {
   const panelRef = useRef(null);
   const portalRef = useRef(null); // Portal target for docked FAB
-  const buttonRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
-  const [buttonOpacity, setButtonOpacity] = useState(1);
-  const { setDockProgress, setDockTarget, setFabOffset, setPortalTarget, isDocked, getProgress, getFabElement } = useFooterDock();
+  const { setDockProgress, setDockTarget, setFabOffset, setPortalTarget, isDocked, getFabElement } = useFooterDock();
 
   // Track if user has scrolled enough to see FAB
   const hasScrolledRef = useRef(false);
@@ -34,13 +32,13 @@ const AboutPanel = () => {
   // RAF tracking
   const rafIdRef = useRef(null);
 
-  // Detect mobile viewport
+  // Detect mobile/tablet viewport (FAB docking is used up to 1099px)
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.matchMedia('(max-width: 840px)').matches);
+      setIsMobile(window.matchMedia('(max-width: 1099px)').matches);
     };
     checkMobile();
-    const media = window.matchMedia('(max-width: 840px)');
+    const media = window.matchMedia('(max-width: 1099px)');
     media.addEventListener('change', checkMobile);
     return () => media.removeEventListener('change', checkMobile);
   }, []);
@@ -208,32 +206,12 @@ const AboutPanel = () => {
     };
   }, [isMobile, setDockProgress, setDockTarget, setFabOffset, getFabElement]);
 
-  // Button opacity based on dock state
-  useEffect(() => {
-    if (!isMobile) {
-      setButtonOpacity(1);
-      return;
-    }
-    const progress = getProgress();
-    if (progress <= 0.5) {
-      setButtonOpacity(1);
-    } else if (progress >= 0.95) {
-      setButtonOpacity(0);
-    } else {
-      setButtonOpacity(1 - ((progress - 0.5) / 0.45));
-    }
-  }, [isMobile, isDocked, getProgress]);
-
   const panelClass = [
     'panel',
     'about-panel',
     'about-panel-compact',
     isDocked ? 'docked' : '',
   ].filter(Boolean).join(' ');
-
-  const buttonStyle = isMobile ? {
-    '--button-opacity': buttonOpacity,
-  } : {};
 
   return (
     <section
@@ -243,14 +221,15 @@ const AboutPanel = () => {
     >
       <div className="panel-head">
         <div className="eyebrow">Get in Touch</div>
-        <Link
-          ref={buttonRef}
-          to="/about"
-          className={`see-all-link${isDocked ? ' dock-hidden' : ''}`}
-          style={buttonStyle}
-        >
-          More about me &rarr;
-        </Link>
+        {/* Only show "More about me" on wide desktop (1100px+) where photo slides left */}
+        {!isMobile && (
+          <Link
+            to="/about"
+            className="see-all-link"
+          >
+            More about me &rarr;
+          </Link>
+        )}
       </div>
       <div className="about-body">
         <div className="contact-links contact-links-compact">

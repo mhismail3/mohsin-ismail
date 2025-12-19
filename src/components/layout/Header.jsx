@@ -96,7 +96,9 @@ const Header = ({ label, onLogoClick }) => {
   }, []);
 
   // Trigger entrance/exit animations when FAB visibility changes
-  useEffect(() => {
+  // IMPORTANT: Use useLayoutEffect to set fabExiting synchronously BEFORE paint.
+  // This prevents a flash where .visible is removed but .exiting isn't added yet.
+  useLayoutEffect(() => {
     if (isCollapsed && !wasCollapsedRef.current && isMobile) {
       // FAB just became visible - trigger entrance animation
       // Clear any pending exit animation
@@ -335,14 +337,16 @@ const Header = ({ label, onLogoClick }) => {
     };
   }, [isFabMenuOpen, isFabMenuClosing, closeFabMenu]);
 
+  // FAB is shown on mobile/tablet (up to 1099px). At 1100px+, the photo slides
+  // to the left whitespace instead of using a FAB.
   useEffect(() => {
     const setMatches = () => {
       if (typeof window === 'undefined') return;
-      setIsMobile(window.matchMedia('(max-width: 840px)').matches);
+      setIsMobile(window.matchMedia('(max-width: 1099px)').matches);
     };
     setMatches();
     if (typeof window === 'undefined') return undefined;
-    const media = window.matchMedia('(max-width: 840px)');
+    const media = window.matchMedia('(max-width: 1099px)');
     const handler = (event) => setIsMobile(event.matches);
     media.addEventListener('change', handler);
     return () => media.removeEventListener('change', handler);
@@ -616,11 +620,15 @@ const Header = ({ label, onLogoClick }) => {
   // Mobile FAB classes
   // FAB stays visible during docking - it animates into position
   // 'bouncing' class is only applied during initial appearance animation (500ms)
+  // CRITICAL: Determine if FAB should show exit state inline during render.
+  // We need to detect the transition from collapsed→uncollapsed DURING render
+  // (before the useLayoutEffect runs) to prevent a flash frame without .visible.
+  const isExitingNow = !isCollapsed && wasCollapsedRef.current && isMobile;
   const fabClass = [
     'mobile-fab',
-    isCollapsed ? 'visible' : '',
+    (isCollapsed || fabExiting || isExitingNow) ? 'visible' : '',
     fabJustAppeared ? 'bouncing' : '',
-    fabExiting ? 'exiting' : '',
+    (fabExiting || isExitingNow) ? 'exiting' : '',
     dockProgress > 0 ? 'docking' : '',
     isFabDocked ? 'docked' : '',
     isFabDragging ? 'dragging' : '',
