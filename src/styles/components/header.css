@@ -1943,9 +1943,9 @@
 }
 
 /* During docking, wrapper stays at scale(1) - no animation interference
-   EXCEPT when exiting - exit animation takes priority */
-.mobile-fab.docking:not(.exiting) .fab-photo-wrapper,
-.mobile-fab.docked:not(.exiting) .fab-photo-wrapper {
+   EXCEPT when exiting or bouncing - those animations take priority */
+.mobile-fab.docking:not(.exiting):not(.bouncing) .fab-photo-wrapper,
+.mobile-fab.docked:not(.exiting):not(.bouncing) .fab-photo-wrapper {
   animation: none;
   transform: scale(1) translateY(0);
   opacity: 1;
