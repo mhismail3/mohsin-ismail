@@ -1,9 +1,66 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { usePageTitle, useInternalLinkNavigation } from '../hooks';
+import { usePageTitle, useInternalLinkNavigation, useTouchHover } from '../hooks';
 import { portfolioProjects } from '../data';
-import { AboutPanel, Carousel, Lightbox } from '../components/features';
+import { AboutPanel, Carousel, Lightbox, CodeBlock } from '../components/features';
 import { Pill, Icon } from '../components/ui';
+
+/**
+ * Component that renders project content with CodeBlock support.
+ */
+const ProjectContent = ({ html, codeBlocks }) => {
+  const { handleLinkClick } = useInternalLinkNavigation();
+  const contentRef = useRef(null);
+
+  // Parse HTML and find code block placeholders
+  const contentParts = useMemo(() => {
+    if (!html) return [];
+
+    const parts = [];
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    const body = doc.body;
+
+    const processNode = (node) => {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        const el = node;
+
+        if (el.hasAttribute('data-codeblock')) {
+          const index = parseInt(el.getAttribute('data-codeblock'), 10);
+          const codeBlock = codeBlocks[index];
+          if (codeBlock) {
+            parts.push({ type: 'codeblock', language: codeBlock.language, code: codeBlock.code, key: `code-${index}` });
+          }
+          return;
+        }
+      }
+
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        parts.push({ type: 'html', content: node.outerHTML, key: `html-${parts.length}` });
+      } else if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
+        parts.push({ type: 'html', content: node.textContent, key: `text-${parts.length}` });
+      }
+    };
+
+    body.childNodes.forEach(processNode);
+    return parts;
+  }, [html, codeBlocks]);
+
+  return (
+    <div
+      ref={contentRef}
+      className="project-description"
+      onClick={handleLinkClick}
+    >
+      {contentParts.map((part) => {
+        if (part.type === 'codeblock') {
+          return <CodeBlock key={part.key} code={part.code} language={part.language} maxLines={12} />;
+        }
+        return <div key={part.key} dangerouslySetInnerHTML={{ __html: part.content }} />;
+      })}
+    </div>
+  );
+};
 
 const ProjectPage = () => {
   const { slug } = useParams();
@@ -90,10 +147,9 @@ const ProjectPage = () => {
         </div>
 
         <div className="project-content">
-          <div 
-            className="project-description"
-            onClick={handleContentClick}
-            dangerouslySetInnerHTML={{ __html: project.description }}
+          <ProjectContent
+            html={project.description}
+            codeBlocks={project.codeBlocks || []}
           />
         </div>
 

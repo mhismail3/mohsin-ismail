@@ -1,5 +1,30 @@
 import { parseDate, formatShortDate } from '../utils/formatDate';
-import { parseFrontmatter, parseMarkdown, SANITIZE_CONFIG_BASIC } from '../utils/markdown';
+import { parseFrontmatter, SANITIZE_CONFIG_POSTS, DOMPurify, marked } from '../utils/markdown';
+
+/**
+ * Extract code blocks from markdown and replace with placeholders.
+ * Returns { processedContent, codeBlocks }
+ */
+const extractCodeBlocks = (markdown) => {
+  const codeBlocks = [];
+  const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
+
+  const processedContent = markdown.replace(codeBlockRegex, (match, language, code) => {
+    const index = codeBlocks.length;
+    const lang = language || 'text';
+    const trimmedCode = code.trim();
+
+    codeBlocks.push({
+      language: lang,
+      code: trimmedCode,
+    });
+
+    // Return a placeholder div that we'll replace with CodeBlock component
+    return `<div data-codeblock="${index}" data-language="${lang}" data-code="${encodeURIComponent(trimmedCode)}"></div>`;
+  });
+
+  return { processedContent, codeBlocks };
+};
 
 // Import all project.md files from public/projects/{slug}/ directories
 const rawProjects = import.meta.glob('../../public/projects/*/project.md', {
@@ -10,15 +35,18 @@ const rawProjects = import.meta.glob('../../public/projects/*/project.md', {
 
 const portfolioProjects = Object.entries(rawProjects).map(([path, raw]) => {
   const { data, content } = parseFrontmatter(raw);
-  
+
   // Extract slug from path: ../../public/projects/{slug}/project.md
   const pathParts = path.split('/');
   const slugIndex = pathParts.indexOf('projects') + 1;
   const fileSlug = pathParts[slugIndex] || 'project';
   const slug = data.slug || fileSlug;
-  
-  // Parse markdown content to HTML
-  const description = parseMarkdown(content, SANITIZE_CONFIG_BASIC);
+
+  // Extract code blocks before parsing markdown
+  const { processedContent, codeBlocks } = extractCodeBlocks(content);
+
+  // Parse markdown content to HTML (code blocks are now placeholders)
+  const description = DOMPurify.sanitize(marked.parse(processedContent), SANITIZE_CONFIG_POSTS);
   
   // Build image paths from the /projects/{slug}/ directory (served from public)
   const basePath = `/projects/${slug}`;
@@ -46,6 +74,7 @@ const portfolioProjects = Object.entries(rawProjects).map(([path, raw]) => {
     dateValue: parseDate(data.date),
     summary: data.summary || '',
     description,
+    codeBlocks,
     github: data.github || null,
     live: data.live || null,
     image: cover,

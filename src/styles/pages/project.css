@@ -71,8 +71,12 @@
 .project-description {
   font-size: 1.00rem;
   line-height: 1.55;
-  max-width: 720px;
   margin: 0;
+}
+
+/* Wrapper divs from React rendering should be transparent */
+.project-description > div:not(.code-block) {
+  display: contents;
 }
 
 .project-description p {
@@ -141,6 +145,196 @@
   color: inherit;
   border-color: currentColor;
   opacity: 0.9;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   CODE BLOCK COMPONENT OVERRIDES
+   Match post page styling for CodeBlock component
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.project-description .code-block {
+  margin: 1rem 0 1.5rem 0;
+}
+
+.project-description .code-block pre {
+  background: transparent;
+  color: var(--ink);
+  border: none;
+  box-shadow: none;
+  padding: var(--space-xl);
+  border-radius: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   BLOCKQUOTE - Base Styles
+   Simple blockquotes without attribution
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.project-description blockquote {
+  position: relative;
+  margin: 1.25rem 0;
+  padding: 0 0 0 1.25rem;
+  border-left: 3px solid var(--pine);
+  color: var(--color-text-muted);
+  transition: transform var(--duration-normal) var(--ease-out),
+              border-color var(--theme-transition-duration) var(--theme-transition-ease),
+              color var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+.project-description blockquote p {
+  margin: 0;
+}
+
+.project-description blockquote p + p {
+  margin-top: 0.6rem;
+}
+
+/* Quote attribution/citation (legacy simple format) */
+.project-description blockquote cite {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.85em;
+  font-weight: 600;
+  color: var(--pine);
+  transition: color var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+.project-description blockquote cite::before {
+  content: '— ';
+}
+
+/* Desktop hover - simple blockquote */
+@media (hover: hover) and (pointer: fine) {
+  .project-description blockquote:not(.attributed-quote):hover {
+    transform: translateX(4px);
+    border-color: var(--clay);
+  }
+
+  .project-description blockquote:not(.attributed-quote):hover cite {
+    color: var(--clay);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ATTRIBUTED QUOTE - Clean Literary Style
+
+   Enhanced blockquote with integrated attribution:
+   - Decorative opening quotation mark
+   - Clean serif typography
+   - Attribution inline within the quote block
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.project-description blockquote.attributed-quote {
+  position: relative;
+  margin: 1.5rem 0;
+  padding: 0 0 0 1.5rem;
+  border-left: 3px solid var(--pine);
+  background: transparent;
+  transition: transform var(--duration-normal) var(--ease-out),
+              border-color var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+/* Large decorative opening quotation mark */
+.project-description blockquote.attributed-quote::before {
+  content: '"';
+  position: absolute;
+  top: -0.4em;
+  left: -0.08em;
+  font-family: var(--font-display);
+  font-size: 4rem;
+  line-height: 1;
+  color: var(--pine);
+  opacity: 0.12;
+  pointer-events: none;
+  user-select: none;
+  transition: opacity var(--duration-normal) var(--ease-out),
+              color var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+/* Quote text container */
+.project-description blockquote.attributed-quote .quote-text {
+  position: relative;
+}
+
+.project-description blockquote.attributed-quote .quote-text p {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: var(--leading-relaxed);
+  color: var(--color-text-muted);
+  margin: 0;
+  transition: color var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+.project-description blockquote.attributed-quote .quote-text p + p {
+  margin-top: 0.6rem;
+}
+
+/* Attribution - single line within quote block */
+.project-description blockquote.attributed-quote .quote-attribution {
+  display: block;
+  margin-top: 0.75rem;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--pine);
+  transition: color var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+/* All attribution elements - same size and inline */
+.project-description blockquote.attributed-quote .quote-author,
+.project-description blockquote.attributed-quote .quote-source,
+.project-description blockquote.attributed-quote .quote-context {
+  display: inline;
+  font-size: inherit;
+  font-style: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
+
+/* Em-dash before author */
+.project-description blockquote.attributed-quote .quote-author::before {
+  content: '— ';
+}
+
+/* Separator before source */
+.project-description blockquote.attributed-quote .quote-source::before {
+  content: ', ';
+}
+
+/* Additional context */
+.project-description blockquote.attributed-quote .quote-context::before {
+  content: ', ';
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ATTRIBUTED QUOTE - Hover States
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (hover: hover) and (pointer: fine) {
+  .project-description blockquote.attributed-quote:hover {
+    transform: translateX(4px);
+    border-color: var(--clay);
+  }
+
+  .project-description blockquote.attributed-quote:hover::before {
+    opacity: 0.2;
+    color: var(--clay);
+  }
+
+  .project-description blockquote.attributed-quote:hover .quote-attribution {
+    color: var(--clay);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ATTRIBUTED QUOTE - Responsive
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 480px) {
+  .project-description blockquote.attributed-quote::before {
+    font-size: 3rem;
+    top: -0.3em;
+  }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────

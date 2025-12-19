@@ -11,7 +11,7 @@ tags:
   - CSS3
   - GitHub Pages
   - Browser APIs
-status: "🚀 Shipped"
+status: "🔄 Active"
 cover: cover.png
 gallery:
   - gallery-1.png
