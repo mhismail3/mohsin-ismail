@@ -1848,6 +1848,8 @@
   transform: translateY(-50%);
   /* No transitions while docked for stability */
   transition: none;
+  /* Ensure FAB remains interactive when docked */
+  pointer-events: auto;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
