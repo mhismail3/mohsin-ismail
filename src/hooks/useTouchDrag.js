@@ -48,7 +48,11 @@ const useTouchDrag = ({
   dragScale = 1.08,
   boundsPadding = 12,
 } = {}) => {
-  const ref = useRef(null);
+  // Use state to track the element so effect re-runs when element changes (e.g., after portal)
+  const [element, setElement] = useState(null);
+  const ref = useCallback((el) => {
+    setElement(el);
+  }, []);
   const [isDragging, setIsDragging] = useState(false);
   const [isSnapping, setIsSnapping] = useState(false);
 
@@ -152,17 +156,17 @@ const useTouchDrag = ({
   }, []);
 
   // Apply transform directly to DOM for maximum responsiveness
-  const applyTransform = useCallback((x, y, scale) => {
-    const element = ref.current;
-    if (!element) return;
-    
+  const applyTransform = useCallback((x, y, scale, el) => {
+    const targetEl = el || element;
+    if (!targetEl) return;
+
     // Compose transform: translate first, then scale
     // This ensures the scale doesn't affect the translation
     const transform = `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
-    element.style.transform = transform;
+    targetEl.style.transform = transform;
     // Force GPU acceleration
-    element.style.willChange = 'transform';
-  }, []);
+    targetEl.style.willChange = 'transform';
+  }, [element]);
 
   // Update position smoothly using requestAnimationFrame
   const updatePosition = useCallback(() => {
@@ -177,32 +181,32 @@ const useTouchDrag = ({
 
   // Start snap-back animation
   const snapBack = useCallback(() => {
-    const element = ref.current;
     if (!element) return;
-    
+
     setIsSnapping(true);
-    
+
     // Apply CSS transition for snap-back
     const transition = `transform ${snapDuration}ms cubic-bezier(0.175, 0.885, 0.32, 1.275)`;
     element.style.transition = transition;
-    
+
     // Return to origin with scale 1
     applyTransform(0, 0, 1);
-    
+
     // Clear snapping state after animation completes
     setTimeout(() => {
       setIsSnapping(false);
-      element.style.transition = '';
-      element.style.willChange = '';
+      if (element) {
+        element.style.transition = '';
+        element.style.willChange = '';
+      }
     }, snapDuration);
-  }, [snapDuration, applyTransform]);
+  }, [element, snapDuration, applyTransform]);
 
   /**
    * Common drag start logic for both touch and mouse.
    */
   const startDrag = useCallback((clientX, clientY, inputType, touchId = null) => {
     const state = dragState.current;
-    const element = ref.current;
 
     state.startX = clientX;
     state.startY = clientY;
@@ -233,7 +237,7 @@ const useTouchDrag = ({
       element.style.transition = '';
     }
     setIsSnapping(false);
-  }, [calculateBounds]);
+  }, [element, calculateBounds]);
 
   /**
    * Common drag move logic for both touch and mouse.
@@ -263,19 +267,18 @@ const useTouchDrag = ({
       state.isDragging = true;
       setIsDragging(true);
 
-      const element = ref.current;
       if (element) {
         // Disable transitions during drag for immediate response
         element.style.transition = 'none';
       }
-      
+
       // Start the animation loop immediately
       state.rafId = requestAnimationFrame(updatePosition);
       return true; // Drag activated
     }
-    
+
     return false;
-  }, [clampDelta, dragThreshold, updatePosition]);
+  }, [element, clampDelta, dragThreshold, updatePosition]);
 
   /**
    * Common drag end logic for both touch and mouse.
@@ -446,7 +449,6 @@ const useTouchDrag = ({
 
   // Attach event listeners
   useEffect(() => {
-    const element = ref.current;
     if (!element || !enabled) return;
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -498,13 +500,12 @@ const useTouchDrag = ({
       if (state.rafId) {
         cancelAnimationFrame(state.rafId);
       }
-      if (element) {
-        element.style.transform = '';
-        element.style.transition = '';
-        element.style.willChange = '';
-      }
+      element.style.transform = '';
+      element.style.transition = '';
+      element.style.willChange = '';
     };
   }, [
+    element,
     enabled,
     handleTouchStart,
     handleTouchMove,
@@ -520,15 +521,14 @@ const useTouchDrag = ({
 
   // Update cursor during drag
   useEffect(() => {
-    const element = ref.current;
     if (!element || !enabled) return;
-    
+
     if (isDragging) {
       element.style.cursor = 'grabbing';
     } else {
       element.style.cursor = 'grab';
     }
-  }, [isDragging, enabled]);
+  }, [element, isDragging, enabled]);
 
   return {
     ref,
