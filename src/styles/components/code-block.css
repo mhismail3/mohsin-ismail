@@ -60,7 +60,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 0.22rem 0.5rem 0.18rem;
+  padding: 0.2rem 0.5rem;
   font-size: 0.7rem;
   font-weight: 600;
   font-family: var(--font-body);
@@ -70,14 +70,15 @@
   border: var(--border-retro);
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color var(--theme-transition-duration) var(--theme-transition-ease), 
-              transform var(--duration-fast) ease, 
-              box-shadow var(--theme-transition-duration) var(--theme-transition-ease), 
+  transition: background-color var(--theme-transition-duration) var(--theme-transition-ease),
+              transform var(--duration-fast) ease,
+              box-shadow var(--theme-transition-duration) var(--theme-transition-ease),
               border-color var(--theme-transition-duration) var(--theme-transition-ease),
-              color var(--duration-fast) ease, 
+              color var(--duration-fast) ease,
               -webkit-text-fill-color var(--duration-fast) ease;
   box-shadow: 1.5px 1.5px 0px var(--retro-shadow-color);
   min-width: 64px;
+  height: 24px;
   justify-content: center;
 }
 
@@ -98,8 +99,6 @@
 
 .code-block-copy svg {
   flex-shrink: 0;
-  position: relative;
-  top: 1px;
 }
 
 .code-block-copy .copy-icon,
@@ -140,7 +139,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 0.22rem 0.5rem 0.18rem;
+  padding: 0.2rem 0.5rem;
   font-size: 0.7rem;
   font-weight: 600;
   font-family: var(--font-body);
@@ -158,6 +157,7 @@
               -webkit-text-fill-color var(--duration-fast) ease;
   box-shadow: 1.5px 1.5px 0px var(--retro-shadow-color);
   min-width: 64px;
+  height: 24px;
   justify-content: center;
 }
 
