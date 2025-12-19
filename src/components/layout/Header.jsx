@@ -629,7 +629,8 @@ const Header = ({ label, onLogoClick }) => {
     (isCollapsed || fabExiting || isExitingNow) ? 'visible' : '',
     fabJustAppeared ? 'bouncing' : '',
     (fabExiting || isExitingNow) ? 'exiting' : '',
-    dockProgress > 0 ? 'docking' : '',
+    // Only apply .docking during transition - not after fully docked
+    (dockProgress > 0 && !isFabDocked) ? 'docking' : '',
     isFabDocked ? 'docked' : '',
     isFabDragging ? 'dragging' : '',
     isFabSnapping ? 'snapping' : '',

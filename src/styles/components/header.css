@@ -1846,6 +1846,9 @@
 
    IMPORTANT: When exiting, we DON'T apply docked positioning so the exit
    animation plays from the fixed position (not inside the scrolled-away panel).
+
+   NOTE: .docking class is removed when isDocked becomes true, so we don't need
+   :not(.docking) here. The JS ensures .docking only applies during transition.
    ═══════════════════════════════════════════════════════════════════════════ */
 .mobile-fab.docked:not(.exiting) {
   /* Switch from viewport-relative to panel-relative positioning */
