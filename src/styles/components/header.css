@@ -1160,6 +1160,11 @@
   --collapse-ease: cubic-bezier(0.2, 0, 0.1, 1);
 }
 
+/* During pagination transitions: instant header state changes (no delay) */
+body.pagination-active .top-bar {
+  --collapse-duration: 0s;
+}
+
 /* Elements that fade out during collapse - all use same timing */
 /* Also includes theme transition properties so colors animate during theme switch */
 .top-bar .brand-name,
@@ -1830,6 +1835,12 @@
 .mobile-fab.exiting {
   opacity: 1;
   pointer-events: none; /* Disable interaction during exit */
+}
+
+/* During pagination transitions: completely hide FAB to prevent glitches */
+.mobile-fab.pagination-frozen {
+  opacity: 0 !important;
+  pointer-events: none;
 }
 
 /* Docking state: disable transitions for jitter-free scroll tracking */

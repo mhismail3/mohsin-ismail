@@ -15,12 +15,12 @@ const STAGGER_MS = 50;
 function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const { isReady } = usePageTransition();
-  const { isFiltering, filterPhase, startFilterTransition } = useFilterTransition();
+  const { isFiltering, filterPhase, transitionType, startFilterTransition } = useFilterTransition();
   usePageTitle('Blog - Mohsin Ismail');
 
   const postListRef = useRef(null);
   const isFirstRenderRef = useRef(true);
-  
+
   // Track if we've ever filtered (to enable stagger animations on filter changes)
   const [hasFiltered, setHasFiltered] = useState(false);
   
@@ -56,7 +56,21 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
       return () => clearTimeout(timer);
     }
   }, [isReady]);
+
   
+  // Add/remove body class during pagination to disable header transitions
+  useEffect(() => {
+    if (transitionType === 'pagination' && isFiltering) {
+      document.body.classList.add('pagination-active');
+    } else {
+      document.body.classList.remove('pagination-active');
+    }
+
+    return () => {
+      document.body.classList.remove('pagination-active');
+    };
+  }, [transitionType, isFiltering]);
+
   // Sync displayTags with selectedTags when not filtering
   // During filtering, we keep the old displayTags until fade-in starts
   useEffect(() => {
@@ -134,14 +148,19 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
     }
   }, [visiblePosts, isFiltering, filterPhase]);
   
-  // Update displayPosts when entering 'in' phase - this is the key fix!
-  // By updating displayPosts and newlyVisibleSlugs together in the same effect,
-  // React batches them into a single render, so new posts always have the correct class
+  // Update displayPosts when entering 'update' phase for pagination (while invisible)
+  // or 'in' phase for tag filtering
   useEffect(() => {
+    // For pagination: swap content during 'update' phase (while faded out)
+    if (filterPhase === 'update' && transitionType === 'pagination') {
+      setDisplayPosts(visiblePosts);
+    }
+
+    // For all transitions entering 'in' phase: calculate animation classes
     if (filterPhase === 'in') {
       const currentSlugs = new Set(visiblePosts.map(p => p.slug));
       const prevSlugs = prevVisibleSlugsRef.current || new Set();
-      
+
       // Find posts that weren't visible before
       const newSlugs = new Set();
       currentSlugs.forEach(slug => {
@@ -149,16 +168,18 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
           newSlugs.add(slug);
         }
       });
-      
-      // Update displayPosts and newlyVisibleSlugs TOGETHER (React batches these)
-      // This ensures new posts render with card-entering class from the start
-      setDisplayPosts(visiblePosts);
+
+      // For tag filtering: update displayPosts now (pagination already updated in 'update')
+      if (transitionType !== 'pagination') {
+        setDisplayPosts(visiblePosts);
+      }
+
       setNewlyVisibleSlugs(newSlugs);
-      
+
       // Update ref for next comparison
       prevVisibleSlugsRef.current = currentSlugs;
-      
-      // Clear after animation completes (base duration + stagger for all cards)
+
+      // Clear after animation completes
       if (newSlugs.size > 0) {
         const timer = setTimeout(() => {
           setNewlyVisibleSlugs(new Set());
@@ -166,36 +187,47 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
         return () => clearTimeout(timer);
       }
     }
-  }, [filterPhase, visiblePosts]);
+  }, [filterPhase, transitionType, visiblePosts]);
 
   // Orchestrated transition using context
-  const performTransition = useCallback((updateFn) => {
+  const performTransition = useCallback((updateFn, options = {}) => {
     // Skip animation on first render
     if (isFirstRenderRef.current) {
       updateFn();
       return;
     }
 
-    // Mark that we've filtered at least once
-    setHasFiltered(true);
-    
+    // Mark that we've filtered at least once (but only for actual filtering, not pagination)
+    if (!options.isPagination) {
+      setHasFiltered(true);
+    }
+
     // Use the centralized filter transition
-    startFilterTransition(updateFn);
+    startFilterTransition(updateFn, options);
   }, [startFilterTransition]);
 
   const handlePrev = useCallback(() => {
+    // Prevent action if already transitioning
+    if (isFiltering) return;
+
     performTransition(() => {
       setPage((p) => Math.max(1, p - 1));
-    });
-  }, [performTransition, setPage]);
+    }, { isPagination: true });
+  }, [isFiltering, performTransition, setPage]);
 
   const handleNext = useCallback(() => {
+    // Prevent action if already transitioning
+    if (isFiltering) return;
+
     performTransition(() => {
       setPage((p) => Math.min(totalPages, p + 1));
-    });
-  }, [performTransition, totalPages, setPage]);
+    }, { isPagination: true });
+  }, [isFiltering, performTransition, totalPages, setPage]);
 
   const handleTagToggle = useCallback((tag) => {
+    // Prevent action if already transitioning
+    if (isFiltering) return;
+
     performTransition(() => {
       setPage(1);
       setSelectedTags((current) =>
@@ -204,14 +236,17 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
           : [...current, tag]
       );
     });
-  }, [performTransition, setPage, setSelectedTags]);
+  }, [isFiltering, performTransition, setPage, setSelectedTags]);
 
   const resetTags = useCallback(() => {
+    // Prevent action if already transitioning
+    if (isFiltering) return;
+
     performTransition(() => {
       setPage(1);
       setSelectedTags([]);
     });
-  }, [performTransition, setPage, setSelectedTags]);
+  }, [isFiltering, performTransition, setPage, setSelectedTags]);
 
   // CSS custom property for stagger timing
   const listStyle = {
@@ -239,11 +274,16 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
   // Determine panel classes for coordinated fade
   const getPanelClass = () => {
     const classes = ['panel', 'posts-panel'];
-    
+
     if (filterPhase === 'out' || filterPhase === 'update') {
       classes.push('filter-transitioning');
+
+      // Add pagination-specific class for different transition behavior
+      if (transitionType === 'pagination') {
+        classes.push('pagination-transitioning');
+      }
     }
-    
+
     return classes.join(' ');
   };
 
@@ -275,17 +315,17 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
           )}
         </div>
 
-        <div 
+        <div
           className={getPostListClass()}
           ref={postListRef}
           style={listStyle}
         >
           {displayPosts.map((post, index) => {
             const isNewlyVisible = newlyVisibleSlugs.has(post.slug);
-            const cardClass = hasFiltered 
+            const cardClass = hasFiltered
               ? (isNewlyVisible ? 'card-entering' : 'card-stable')
               : '';
-            
+
             return (
               <PostCard
                 key={post.slug}
@@ -306,7 +346,13 @@ function BlogPage({ selectedTags, setSelectedTags, page, setPage }) {
         </div>
       </section>
 
-      <Pagination page={page} totalPages={totalPages} onPrev={handlePrev} onNext={handleNext} />
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        onPrev={handlePrev}
+        onNext={handleNext}
+        disabled={isFiltering && transitionType === 'pagination'}
+      />
 
       <section className="panel hero">
         <div className="eyebrow">Filter by Tag</div>

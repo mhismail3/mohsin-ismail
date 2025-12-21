@@ -3,14 +3,15 @@ import { Button } from '../ui';
 
 /**
  * Pagination component for navigating through pages.
- * 
+ *
  * @param {Object} props
  * @param {number} props.page - Current page number
  * @param {number} props.totalPages - Total number of pages
  * @param {Function} props.onPrev - Callback for previous page
  * @param {Function} props.onNext - Callback for next page
+ * @param {boolean} props.disabled - Whether pagination is disabled during transitions
  */
-const Pagination = ({ page, totalPages, onPrev, onNext }) => {
+const Pagination = ({ page, totalPages, onPrev, onNext, disabled = false }) => {
   const hidePrev = page === 1;
   const hideNext = page >= totalPages;
 
@@ -20,6 +21,7 @@ const Pagination = ({ page, totalPages, onPrev, onNext }) => {
         variant="outline"
         size="small"
         onClick={onPrev}
+        disabled={disabled || hidePrev}
         style={hidePrev ? { visibility: 'hidden' } : undefined}
         aria-hidden={hidePrev}
         tabIndex={hidePrev ? -1 : undefined}
@@ -34,6 +36,7 @@ const Pagination = ({ page, totalPages, onPrev, onNext }) => {
         variant="outline"
         size="small"
         onClick={onNext}
+        disabled={disabled || hideNext}
         style={hideNext ? { visibility: 'hidden' } : undefined}
         aria-hidden={hideNext}
         tabIndex={hideNext ? -1 : undefined}

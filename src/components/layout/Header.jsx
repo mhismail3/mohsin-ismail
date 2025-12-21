@@ -62,7 +62,7 @@ const Header = ({ label, onLogoClick }) => {
   
   // Get filter transition state - during filtering, we suspend scroll reactions
   // but we DON'T immediately reset collapsed state (header stays as-is during fade-out)
-  const { isFiltering, filterPhase } = useFilterTransition();
+  const { isFiltering, filterPhase, transitionType } = useFilterTransition();
 
   // Get footer dock state - FAB position is now controlled entirely by AboutPanel
   // When docked, FAB is portaled into the panel and uses CSS position:absolute
@@ -98,7 +98,16 @@ const Header = ({ label, onLogoClick }) => {
   // Trigger entrance/exit animations when FAB visibility changes
   // IMPORTANT: Use useLayoutEffect to set fabExiting synchronously BEFORE paint.
   // This prevents a flash where .visible is removed but .exiting isn't added yet.
+  // SKIP animations during pagination transitions - FAB should stay frozen during fade
   useLayoutEffect(() => {
+    // Don't animate FAB during pagination transitions - it should stay invisible
+    // During pagination, header state changes but we want FAB frozen until transition completes
+    if (transitionType === 'pagination' && isFiltering) {
+      // Update ref to track state changes, but don't trigger animations
+      wasCollapsedRef.current = isCollapsed;
+      return;
+    }
+
     if (isCollapsed && !wasCollapsedRef.current && isMobile) {
       // FAB just became visible - trigger entrance animation
       // Clear any pending exit animation
@@ -127,7 +136,7 @@ const Header = ({ label, onLogoClick }) => {
       }, 280);
     }
     wasCollapsedRef.current = isCollapsed;
-  }, [isCollapsed, isMobile]);
+  }, [isCollapsed, isMobile, transitionType, isFiltering]);
 
   // Reset collapsed state when NAVIGATION starts (not filtering)
   // For filtering, we let the header stay as-is during fade-out, then
@@ -143,20 +152,33 @@ const Header = ({ label, onLogoClick }) => {
     }
   }, [isNavigating]);
   
-  // When filter transition starts fading out, the invisible scroll has just happened.
-  // Check scroll position IMMEDIATELY so header can start expanding right away,
-  // rather than waiting for the entire transition to complete.
-  // This makes the header feel much more responsive when clicking tags from bottom of page.
+  // When filter transition starts, expand header appropriately based on transition type.
+  //
+  // For PAGINATION: filterPhase becomes 'out' BEFORE scroll-to-top happens (scroll is
+  // delayed by FADE_OUT_MS). We delay the header expansion by 200ms to coordinate with
+  // the fade-out animation timing.
+  //
+  // For TAG FILTERING: filterPhase becomes 'out' AFTER the instant scroll has already
+  // happened. We check the current scroll position and expand if needed.
   useEffect(() => {
     if (filterPhase === 'out') {
-      // The invisible scroll just happened - check position and expand if needed
-      const scrollY = window.scrollY;
-      setIsScrolled(scrollY > 10);
-      if (scrollY <= EXPAND_THRESHOLD) {
-        setIsCollapsed(false);
+      if (transitionType === 'pagination') {
+        // PAGINATION: Delay header expansion by 200ms to coordinate with fade-out
+        const timeoutId = setTimeout(() => {
+          setIsCollapsed(false);
+          setIsScrolled(false);
+        }, 200);
+        return () => clearTimeout(timeoutId);
+      } else {
+        // TAG FILTERING: React to scroll that already happened
+        const scrollY = window.scrollY;
+        setIsScrolled(scrollY > 10);
+        if (scrollY <= EXPAND_THRESHOLD) {
+          setIsCollapsed(false);
+        }
       }
     }
-  }, [filterPhase]);
+  }, [filterPhase, transitionType]);
 
   // Simple scroll-based collapse with snap points
   // SUSPENDED during navigation and filtering to prevent flicker
@@ -623,10 +645,14 @@ const Header = ({ label, onLogoClick }) => {
   // CRITICAL: Determine if FAB should show exit state inline during render.
   // We need to detect the transition from collapsed→uncollapsed DURING render
   // (before the useLayoutEffect runs) to prevent a flash frame without .visible.
-  const isExitingNow = !isCollapsed && wasCollapsedRef.current && isMobile;
+  // DURING PAGINATION: Freeze FAB visibility state - don't react to isCollapsed changes
+  const isPaginationActive = transitionType === 'pagination' && isFiltering;
+  const isExitingNow = !isPaginationActive && !isCollapsed && wasCollapsedRef.current && isMobile;
   const fabClass = [
     'mobile-fab',
-    (isCollapsed || fabExiting || isExitingNow) ? 'visible' : '',
+    // During pagination: keep FAB in same state (use ref to remember what it was)
+    // Otherwise: use current isCollapsed state
+    (isPaginationActive ? wasCollapsedRef.current : isCollapsed) || fabExiting || isExitingNow ? 'visible' : '',
     fabJustAppeared ? 'bouncing' : '',
     (fabExiting || isExitingNow) ? 'exiting' : '',
     // Only apply .docking during transition - not after fully docked
@@ -634,6 +660,8 @@ const Header = ({ label, onLogoClick }) => {
     isFabDocked ? 'docked' : '',
     isFabDragging ? 'dragging' : '',
     isFabSnapping ? 'snapping' : '',
+    // Add class to hide FAB during pagination transitions
+    isPaginationActive ? 'pagination-frozen' : '',
   ].filter(Boolean).join(' ');
 
   const fabMenuClass = [
