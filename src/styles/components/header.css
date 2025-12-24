@@ -690,7 +690,7 @@
 }
 
 .top-menu .btn.active {
-  background: var(--color-surface-active);
+  /* Keep same background as inactive buttons - only change text color */
   border-color: var(--pine);
   color: var(--pine);
 }
@@ -977,12 +977,13 @@
     0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* Dark mode active state - more opaque with pine tint */
+/* Dark mode active state - keep same background, only change text color */
 [data-theme="dark"] .top-menu.mobile .btn.active {
-  background: rgba(30, 70, 60, 0.9);
+  /* Keep same background as inactive buttons */
   border-color: rgba(10, 138, 110, 0.6);
-  box-shadow: 
-    3px 3px 0px rgba(0, 0, 0, 0.35),
+  color: var(--pine);
+  box-shadow:
+    3px 3px 0px rgba(0, 0, 0, 0.4),
     0 0 0 1px rgba(10, 138, 110, 0.2),
     0 0 12px rgba(10, 138, 110, 0.2);
 }
@@ -1463,6 +1464,10 @@ body.pagination-active .top-bar {
   padding: 0.45rem 0.9rem 0.35rem 0.9rem;
   font-size: var(--text-base);
   font-weight: 600;
+  /* Explicit background for consistency */
+  background: var(--bg-white);
+  border-color: var(--retro-border-color);
+  color: var(--ink);
   opacity: 0;
   -webkit-transform: translateY(-12px) scale(0.88) rotate(-2deg);
   transform: translateY(-12px) scale(0.88) rotate(-2deg);
@@ -1548,7 +1553,7 @@ body.pagination-active .top-bar {
 
 /* Active state for collapsed menu buttons (including home) */
 .top-menu.from-collapsed .btn.active {
-  background: var(--color-surface-active);
+  /* Keep same background as inactive buttons - only change text color */
   border-color: var(--pine);
   color: var(--pine);
 }
@@ -1559,11 +1564,11 @@ body.pagination-active .top-bar {
    ───────────────────────────────────────────────────────────────────────────── */
 
 [data-theme="dark"] .top-menu.from-collapsed .btn {
-  /* Frosted glass background - nearly solid for visibility */
-  background: rgba(50, 48, 44, 0.97);
+  /* Solid background - fully opaque for better visibility and consistency */
+  background: rgba(50, 48, 44, 1);
   backdrop-filter: blur(16px) saturate(1.3);
   -webkit-backdrop-filter: blur(16px) saturate(1.3);
-  
+
   /* Luminous border - subtle warm glow that catches the eye */
   border-color: rgba(255, 248, 240, 0.18);
   
@@ -1581,12 +1586,13 @@ body.pagination-active .top-bar {
     0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* Dark mode active state - more opaque with pine tint */
+/* Dark mode active state - keep same background, only change text color */
 [data-theme="dark"] .top-menu.from-collapsed .btn.active {
-  background: rgba(30, 70, 60, 0.9);
+  /* Keep same background as inactive buttons */
   border-color: rgba(10, 138, 110, 0.6);
-  box-shadow: 
-    3px 3px 0px rgba(0, 0, 0, 0.35),
+  color: var(--pine);
+  box-shadow:
+    3px 3px 0px rgba(0, 0, 0, 0.4),
     0 0 0 1px rgba(10, 138, 110, 0.2),
     0 0 12px rgba(10, 138, 110, 0.2);
 }
@@ -2142,18 +2148,22 @@ body.pagination-active .top-bar {
   padding: 0.45rem 0.9rem 0.35rem 0.9rem;
   font-size: var(--text-base);
   font-weight: 600;
+  /* Explicit background for consistency */
+  background: var(--bg-white);
+  border-color: var(--retro-border-color);
+  color: var(--ink);
   opacity: 0;
-  
+
   /* Start position: below and scaled down */
   -webkit-transform: translateY(12px) scale(0.88) rotate(2deg);
   transform: translateY(12px) scale(0.88) rotate(2deg);
   -webkit-transform-origin: right center;
   transform-origin: right center;
-  
+
   box-shadow: 1px 1px 0px var(--retro-shadow-color);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  
+
   -webkit-transition: opacity 0.28s var(--ease-out),
                       -webkit-transform var(--duration-slower) var(--ease-bounce),
                       box-shadow 0.32s var(--ease-bounce);
@@ -2191,7 +2201,7 @@ body.pagination-active .top-bar {
 
 /* Active link styling */
 .fab-menu .btn.active {
-  background: var(--color-surface-active);
+  /* Keep same background as inactive buttons - only change text color */
   border-color: var(--pine);
   color: var(--pine);
 }
@@ -2236,11 +2246,11 @@ body.pagination-active .top-bar {
    ───────────────────────────────────────────────────────────────────────────── */
 
 [data-theme="dark"] .fab-menu .btn {
-  /* Frosted glass background - more opaque for better visibility */
-  background: rgba(55, 52, 47, 0.92);
+  /* Solid background - fully opaque for better visibility and consistency */
+  background: rgba(55, 52, 47, 1);
   backdrop-filter: blur(16px) saturate(1.3);
   -webkit-backdrop-filter: blur(16px) saturate(1.3);
-  
+
   /* Luminous border - subtle warm glow that catches the eye */
   border-color: rgba(255, 248, 240, 0.18);
   
@@ -2258,12 +2268,13 @@ body.pagination-active .top-bar {
     0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* Dark mode active state - more opaque with pine tint */
+/* Dark mode active state - keep same background, only change text color */
 [data-theme="dark"] .fab-menu .btn.active {
-  background: rgba(30, 70, 60, 0.9);
+  /* Keep same background as inactive buttons */
   border-color: rgba(10, 138, 110, 0.6);
-  box-shadow: 
-    2px 2px 0px rgba(0, 0, 0, 0.35),
+  color: var(--pine);
+  box-shadow:
+    2px 2px 0px rgba(0, 0, 0, 0.4),
     0 0 0 1px rgba(10, 138, 110, 0.2),
     0 0 12px rgba(10, 138, 110, 0.2);
 }
