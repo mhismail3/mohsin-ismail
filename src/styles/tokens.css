@@ -20,14 +20,14 @@
 @property --gradient-fade-end {
   syntax: '<color>';
   inherits: true;
-  initial-value: #fffefb;
+  initial-value: #fdfdff;
 }
 
 /* Gradient fade start (transparent version) */
 @property --gradient-fade-start {
   syntax: '<color>';
   inherits: true;
-  initial-value: rgba(255, 254, 251, 0);
+  initial-value: rgba(253, 253, 255, 0);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -128,11 +128,11 @@
      Raw color values - use semantic tokens below for actual styling
      ───────────────────────────────────────────────────────────────────────────── */
   
-  /* Light theme base colors */
-  --cream: #f8f3e8;
+  /* Light theme base colors - cool gray-white palette */
+  --cream: #f8f9fc;
   --ink: #1f1a14;
-  --line: #e2d7c8;
-  --muted: #5b5249;
+  --line: #dfe2e8;
+  --muted: #5d6169;
   
   /* Accent colors (shared between themes) */
   --aero: #2c8f7a;
@@ -151,38 +151,38 @@
   --color-border: var(--line);
   --color-border-subtle: rgba(31, 26, 20, 0.08);
   
-  /* Surface colors */
-  --color-surface: #fffefb;
-  --color-surface-elevated: #fdfbf7;
-  --color-surface-glass: rgba(255, 255, 255, 0.82);
-  --color-surface-glass-solid: rgba(255, 255, 255, 0.96);
-  
+  /* Surface colors - cool whites */
+  --color-surface: #fdfdff;
+  --color-surface-elevated: #fafbfd;
+  --color-surface-glass: rgba(253, 253, 255, 0.82);
+  --color-surface-glass-solid: rgba(253, 253, 255, 0.96);
+
   /* Interactive state colors */
   --color-surface-active: #e0f2f1;
-  --color-surface-hover: #fdfbf7;
+  --color-surface-hover: #fafbfd;
   --color-surface-warning: #fbe9e7;
   --color-surface-success: #e8f5e9;
-  --color-surface-muted: #f2f7f4;
+  --color-surface-muted: #f2f5f8;
   
   /* Code block colors */
   --color-code-bg: #111827;
   --color-code-text: #e5e7eb;
-  --color-code-header: #faf8f5;
-  --color-code-hover: #f5f0e8;
+  --color-code-header: #f5f6f9;
+  --color-code-hover: #eef0f4;
   
   /* Misc UI colors */
-  --color-selection: #dfeeea;
-  --color-overlay: rgba(248, 243, 232, 0.92);
-  --color-badge: #eaeaea;
+  --color-selection: #e2eef5;
+  --color-overlay: rgba(248, 249, 252, 0.92);
+  --color-badge: #e8eaee;
   --color-panel-border-inner: rgba(31, 26, 20, 0.04);
-  
-  /* Fade colors for text truncation - must match panel-bg (#fffefb) exactly */
-  --color-fade-start: rgba(255, 254, 251, 0);
-  --color-fade-end: #fffefb;
-  
+
+  /* Fade colors for text truncation - must match panel-bg (#fdfdff) exactly */
+  --color-fade-start: rgba(253, 253, 255, 0);
+  --color-fade-end: #fdfdff;
+
   /* Animatable gradient colors (registered with @property above) */
-  --gradient-fade-end: #fffefb;
-  --gradient-fade-start: rgba(255, 254, 251, 0);
+  --gradient-fade-end: #fdfdff;
+  --gradient-fade-start: rgba(253, 253, 255, 0);
   
   /* Shimmer effect colors (registered with @property for smooth theme transitions) */
   --shimmer-base: #1f1a14;
@@ -285,8 +285,8 @@
      PANEL BACKGROUNDS
      Solid colors only - no gradients for consistency
      ───────────────────────────────────────────────────────────────────────────── */
-  
-  --panel-bg: #fffefb;
+
+  --panel-bg: #fdfdff;
   --bg-card: var(--color-surface);
   --bg-white: #ffffff;
 
