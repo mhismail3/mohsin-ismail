@@ -392,9 +392,13 @@ const posts = Object.entries(rawPosts).map(([path, raw]) => {
   // Add IDs to headings for anchor linking
   html = addHeadingIds(html, headings);
 
+  // Post type: 'mini' for short commentary posts, 'long' for full posts (default)
+  const postType = data.type || 'long';
+
   return {
     slug,
-    title: data.title || slug,
+    title: data.title || (postType === 'mini' ? null : slug),
+    type: postType,
     date: data.date || new Date().toISOString(),
     dateValue: parseDate(data.date),
     tags: Array.isArray(data.tags) ? data.tags : [],
