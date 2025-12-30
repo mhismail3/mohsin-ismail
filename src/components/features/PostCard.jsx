@@ -149,6 +149,19 @@ const PostCard = React.forwardRef(({
         {...(isTouch ? {} : containerHandlers)}
       >
         <div className="post-meta">
+          {/* Mini posts: button INSIDE post-meta so text wraps around float */}
+          {isMini && miniContentOverflows && (
+            <div className="link-btn-wrapper">
+              <Pill
+                variant="icon"
+                onClick={handleExpandToggle}
+                aria-label={isExpanded ? 'Collapse post' : 'Expand post'}
+                aria-expanded={isExpanded}
+              >
+                <Icon name="chevronDown" size={16} />
+              </Pill>
+            </div>
+          )}
           <div
             ref={isTouch ? undefined : eyebrowRef}
             className={`eyebrow${isTouch ? '' : ' eyebrow-shimmer shimmer-hidden'}`}
@@ -190,32 +203,19 @@ const PostCard = React.forwardRef(({
             )
           )}
         </div>
-        <div className="link-btn-wrapper">
-          {isMini ? (
-            /* Only show chevron if content overflows */
-            miniContentOverflows && (
-              <Pill
-                variant="icon"
-                onClick={handleExpandToggle}
-                aria-label={isExpanded ? 'Collapse post' : 'Expand post'}
-                aria-expanded={isExpanded}
-              >
-                <Icon name="chevronDown" size={16} />
-              </Pill>
-            )
-          ) : (
-            <>
-              <Pill
-                variant="icon"
-                onClick={handleCopyLink}
-                aria-label="Copy link to post"
-              >
-                <Icon name="link" size={16} />
-              </Pill>
-              {showToast && <div className="toast">Copied link</div>}
-            </>
-          )}
-        </div>
+        {/* Regular posts: button after content (grid layout) */}
+        {!isMini && (
+          <div className="link-btn-wrapper">
+            <Pill
+              variant="icon"
+              onClick={handleCopyLink}
+              aria-label="Copy link to post"
+            >
+              <Icon name="link" size={16} />
+            </Pill>
+            {showToast && <div className="toast">Copied link</div>}
+          </div>
+        )}
         {/* Excerpt for regular posts only */}
         {!isMini && (
           <p

@@ -1190,7 +1190,9 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
   /* Max height for collapsed state - use rem for consistency across mixed content.
      Slightly generous to avoid mid-line cutoff; gradient handles visual fade. */
   max-height: 9rem;
-  overflow: hidden;
+  /* Use overflow: clip instead of hidden - clips content but doesn't create BFC,
+     allowing text to wrap around floated elements (like the chevron button) */
+  overflow: clip;
   transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -1420,29 +1422,39 @@ html:not(.theme-ready) .post-card--mini.has-overflow .mini-post-flow::after {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   MINI POST - MOBILE LAYOUT
+   MINI POST - CHEVRON POSITIONING
 
-   On mobile, allow content to wrap around the chevron button instead of
-   rigidly splitting into two grid columns. This maximizes content space
-   and shows more text before the gradient fade kicks in.
+   Position the chevron in the top-right (same spot as regular post link icons)
+   with content wrapping around it to maximize space usage.
+
+   The button is placed inside .post-meta and floated right. To get text to
+   wrap around the float, child elements must not be block-level containers
+   that would clear the float.
    ───────────────────────────────────────────────────────────────────────────── */
 
+/* Switch from grid to block layout so content can flow naturally */
+.post-card--mini .post-head {
+  display: block;
+  position: relative;
+}
+
+/* Float the chevron button to top-right so content wraps around it */
+.post-card--mini .link-btn-wrapper {
+  float: right;
+  margin-left: var(--space-sm);
+  margin-bottom: var(--space-xs);
+}
+
+/* Override the base mini-post-flow max-height to work with float layout.
+   Use a larger value to show more content, and let text wrap around button. */
+.post-card--mini .mini-post-flow {
+  max-height: 13rem;
+}
+
+/* Show more content before truncation on mobile */
 @media (max-width: 640px) {
-  /* Switch from grid to block layout so content can wrap around button */
-  .post-card--mini .post-head {
-    display: block;
-  }
-
-  /* Float the chevron button to top-right so content wraps around it */
-  .post-card--mini .link-btn-wrapper {
-    float: right;
-    margin-left: var(--space-sm);
-    margin-bottom: var(--space-xs);
-  }
-
-  /* Show more content before truncation on mobile */
   .post-card--mini .mini-post-flow {
-    max-height: 12rem;
+    max-height: 16rem;
   }
 }
 
