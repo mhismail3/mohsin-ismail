@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { formatDateParts } from '../../utils/formatDate';
 import { useTapFeedback, useShimmerFollowGroup, useIsTouch } from '../../hooks';
 import { Icon, Pill } from '../ui';
+import MiniPostContent from './MiniPostContent';
 
 const PostCard = React.forwardRef(({
   post,
@@ -13,12 +14,18 @@ const PostCard = React.forwardRef(({
 }, ref) => {
   const [showToast, setShowToast] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [miniContentOverflows, setMiniContentOverflows] = useState(false);
   const excerptRef = useRef(null);
   const titleRef = useRef(null);
   const eyebrowRef = useRef(null);
+  const miniContentRef = useRef(null);
   const navigate = useNavigate();
   const { getTapProps } = useTapFeedback();
   const { containerHandlers, registerTarget, clearTargets } = useShimmerFollowGroup();
+
+  // Check if this is a mini post (short commentary style)
+  const isMini = post.type === 'mini';
   
   // Detect touch-only devices (no hover capability)
   const isTouch = useIsTouch();
@@ -54,6 +61,33 @@ const PostCard = React.forwardRef(({
     return () => resizeObserver.disconnect();
   }, [post.excerpt]);
 
+  // Detect if mini post content overflows (needs expand/collapse)
+  // Only check when collapsed - preserve state when expanded
+  useEffect(() => {
+    if (!isMini || isExpanded) return;
+
+    const checkMiniOverflow = () => {
+      const el = miniContentRef.current;
+      if (el) {
+        // Check if content exceeds the max-height constraint
+        setMiniContentOverflows(el.scrollHeight > el.clientHeight + 1);
+      }
+    };
+
+    // Check after a brief delay to allow content to render
+    const timer = setTimeout(checkMiniOverflow, 50);
+
+    const resizeObserver = new ResizeObserver(checkMiniOverflow);
+    if (miniContentRef.current) {
+      resizeObserver.observe(miniContentRef.current);
+    }
+
+    return () => {
+      clearTimeout(timer);
+      resizeObserver.disconnect();
+    };
+  }, [isMini, isExpanded, post.content]);
+
   const handleTagClick = (tag) => {
     if (onTagClick) {
       // In-page filtering (BlogPage)
@@ -77,29 +111,45 @@ const PostCard = React.forwardRef(({
     }
   };
 
+  // Handle expand toggle for mini posts
+  const handleExpandToggle = (e) => {
+    e.stopPropagation();
+    setIsExpanded(!isExpanded);
+  };
+
   // Navigate to post when clicking anywhere in the post-head area
+  // Mini posts don't navigate - expansion is controlled exclusively by chevron button
   const handlePostHeadClick = (e) => {
     // Don't navigate if clicking on interactive elements (handled by their own handlers)
-    // The copy button already has stopPropagation, but we also check for links
     if (e.target.closest('a')) return;
+    // Mini posts: no click action on content area (chevron handles expand/collapse)
+    if (isMini) return;
+    // Regular posts: navigate to post page
     navigate(`/posts/${post.slug}`);
   };
 
   return (
     <article
       ref={ref}
-      className={['post-card', className].filter(Boolean).join(' ')}
+      className={[
+        'post-card',
+        isMini && 'post-card--mini',
+        isMini && !post.title && 'no-title',
+        isMini && isExpanded && 'expanded',
+        isMini && miniContentOverflows && !isExpanded && 'has-overflow',
+        className
+      ].filter(Boolean).join(' ')}
       {...props}
     >
-      <div 
-        className="post-head" 
-        onClick={handlePostHeadClick} 
-        role="link" 
-        tabIndex={-1}
+      <div
+        className="post-head"
+        onClick={handlePostHeadClick}
+        role={isMini ? undefined : 'link'}
+        tabIndex={isMini ? undefined : -1}
         {...(isTouch ? {} : containerHandlers)}
       >
         <div className="post-meta">
-          <div 
+          <div
             ref={isTouch ? undefined : eyebrowRef}
             className={`eyebrow${isTouch ? '' : ' eyebrow-shimmer shimmer-hidden'}`}
           >
@@ -108,33 +158,73 @@ const PostCard = React.forwardRef(({
               return <>{datePart}<span className="eyebrow-dot">•</span>{timePart}</>;
             })()}
           </div>
-          <h3>
-            <Link 
-              ref={isTouch ? undefined : titleRef}
-              to={`/posts/${post.slug}`} 
-              className={`post-title-link${isTouch ? ' touch-title' : ' shimmer-hidden'}`}
-              {...getTapProps()}
+          {isMini ? (
+            /* Mini post: title and content always rendered inline */
+            <div
+              ref={miniContentRef}
+              className="mini-post-flow"
             >
-              {post.title}
-            </Link>
-          </h3>
+              {post.title && (
+                <strong
+                  ref={isTouch ? undefined : titleRef}
+                  className={`post-title-mini${isTouch ? ' touch-title' : ' shimmer-hidden'}`}
+                >
+                  {post.title}
+                </strong>
+              )}
+              <MiniPostContent post={post} />
+            </div>
+          ) : (
+            /* Regular post: title as h3 link */
+            post.title && (
+              <h3>
+                <Link
+                  ref={isTouch ? undefined : titleRef}
+                  to={`/posts/${post.slug}`}
+                  className={`post-title-link${isTouch ? ' touch-title' : ' shimmer-hidden'}`}
+                  {...getTapProps()}
+                >
+                  {post.title}
+                </Link>
+              </h3>
+            )
+          )}
         </div>
         <div className="link-btn-wrapper">
-          <Pill
-            variant="icon"
-            onClick={handleCopyLink}
-            aria-label="Copy link to post"
-          >
-            <Icon name="link" size={16} />
-          </Pill>
-          {showToast && <div className="toast">Copied link</div>}
+          {isMini ? (
+            /* Only show chevron if content overflows */
+            miniContentOverflows && (
+              <Pill
+                variant="icon"
+                onClick={handleExpandToggle}
+                aria-label={isExpanded ? 'Collapse post' : 'Expand post'}
+                aria-expanded={isExpanded}
+              >
+                <Icon name="chevronDown" size={16} />
+              </Pill>
+            )
+          ) : (
+            <>
+              <Pill
+                variant="icon"
+                onClick={handleCopyLink}
+                aria-label="Copy link to post"
+              >
+                <Icon name="link" size={16} />
+              </Pill>
+              {showToast && <div className="toast">Copied link</div>}
+            </>
+          )}
         </div>
-        <p 
-          ref={excerptRef}
-          className={`post-excerpt${isOverflowing ? ' has-overflow' : ''}`}
-        >
-          {post.excerpt}
-        </p>
+        {/* Excerpt for regular posts only */}
+        {!isMini && (
+          <p
+            ref={excerptRef}
+            className={`post-excerpt${isOverflowing ? ' has-overflow' : ''}`}
+          >
+            {post.excerpt}
+          </p>
+        )}
       </div>
 
       <div className="tag-row">

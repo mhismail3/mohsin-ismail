@@ -1170,3 +1170,249 @@ html:not(.theme-ready) .post-excerpt.has-overflow::after {
     max-width: 100%;
   }
 }
+
+/* =============================================================================
+   MINI POST CARD VARIANT
+   Compact, inline-expandable posts for short-form commentary content.
+   Always renders full markdown content inline. Long posts get truncated
+   with gradient fade and expand/collapse chevron.
+   ============================================================================= */
+
+/* Mini posts have default cursor - expansion controlled by chevron button only */
+.post-card--mini .post-head {
+  cursor: default;
+}
+
+/* Container for inline flow of title + content */
+.mini-post-flow {
+  line-height: var(--leading-normal);
+  position: relative;
+  /* Max height for collapsed state - use rem for consistency across mixed content.
+     Slightly generous to avoid mid-line cutoff; gradient handles visual fade. */
+  max-height: 9rem;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* When expanded, allow full height */
+.post-card--mini.expanded .mini-post-flow {
+  max-height: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MINI POST GRADIENT FADE - Animatable gradient using @property
+
+   Uses CSS @property registered custom properties (--gradient-fade-end and
+   --gradient-fade-start) which can be animated. Same approach as regular
+   post excerpt fade for smooth theme transitions.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.post-card--mini.has-overflow .mini-post-flow::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3.5rem;
+  background: linear-gradient(
+    to bottom,
+    var(--gradient-fade-start) 0%,
+    var(--gradient-fade-end) 85%
+  );
+  pointer-events: none;
+  opacity: 1;
+  /* Transition both the @property registered colors AND opacity for expand/collapse */
+  transition: --gradient-fade-start var(--theme-transition-duration) var(--theme-transition-ease),
+              --gradient-fade-end var(--theme-transition-duration) var(--theme-transition-ease),
+              opacity 0.25s ease-out;
+}
+
+/* Disable gradient color transitions on initial page load to prevent flash */
+html:not(.theme-ready) .post-card--mini.has-overflow .mini-post-flow::after {
+  transition: opacity 0.25s ease-out;
+}
+
+/* Hide gradient when expanded */
+.post-card--mini.expanded .mini-post-flow::after {
+  opacity: 0;
+}
+
+/* Mini post title - inline, bold, followed by content */
+.post-card--mini .post-title-mini {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--ink);
+  display: inline;
+  margin-right: 0.35em;
+}
+
+/* Touch styling for mini post title */
+.post-card--mini .post-title-mini.touch-title {
+  color: var(--shimmer-base);
+
+  /* LETTERPRESS: Layered drop-shadows for 3D depth - same as regular post titles */
+  filter:
+    drop-shadow(-0.5px -0.5px 0 var(--shimmer-highlight))
+    drop-shadow(1px 1px 0 var(--shimmer-shadow-1))
+    drop-shadow(1px 1px 0 var(--shimmer-shadow-2));
+
+  transition:
+    color 0.2s ease,
+    filter var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MINI POST TITLE - SHIMMER EFFECT
+
+   Same cursor-following shimmer effect as regular post titles.
+   Only active on devices with hover capability (not touch screens).
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (hover: hover) {
+  .post-card--mini .post-title-mini:not(.touch-title) {
+    /* CSS variables for cursor-following shimmer (set by JS) */
+    --shimmer-x: 50%;
+    --shimmer-width: 0%;
+
+    /* Sophisticated shimmer gradient - same as regular post titles */
+    background: linear-gradient(
+      90deg,
+      var(--shimmer-base) 0%,
+      var(--shimmer-base) calc(var(--shimmer-x) - var(--shimmer-width) * 1.8),
+      color-mix(in srgb, var(--shimmer-accent) 3%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 1.6),
+      color-mix(in srgb, var(--shimmer-accent) 8%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 1.4),
+      color-mix(in srgb, var(--shimmer-accent) 18%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 1.2),
+      color-mix(in srgb, var(--shimmer-accent) 35%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 1.0),
+      color-mix(in srgb, var(--shimmer-accent) 65%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 0.5),
+      color-mix(in srgb, var(--shimmer-accent) 90%, var(--shimmer-base)) calc(var(--shimmer-x) - var(--shimmer-width) * 0.15),
+      var(--shimmer-accent) var(--shimmer-x),
+      color-mix(in srgb, var(--shimmer-accent) 90%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 0.15),
+      color-mix(in srgb, var(--shimmer-accent) 65%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 0.5),
+      color-mix(in srgb, var(--shimmer-accent) 35%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 1.0),
+      color-mix(in srgb, var(--shimmer-accent) 18%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 1.2),
+      color-mix(in srgb, var(--shimmer-accent) 8%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 1.4),
+      color-mix(in srgb, var(--shimmer-accent) 3%, var(--shimmer-base)) calc(var(--shimmer-x) + var(--shimmer-width) * 1.6),
+      var(--shimmer-base) calc(var(--shimmer-x) + var(--shimmer-width) * 1.8),
+      var(--shimmer-base) 100%
+    );
+    background-size: 100% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    /* LETTERPRESS: Layered drop-shadows for 3D depth */
+    filter:
+      drop-shadow(-0.5px -0.5px 0 var(--shimmer-highlight))
+      drop-shadow(1px 1px 0 var(--shimmer-shadow-1))
+      drop-shadow(1px 1px 0 var(--shimmer-shadow-2));
+
+    /* Transitions - instant position tracking, smooth fade in/out */
+    transition:
+      --shimmer-width 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+      --shimmer-base var(--theme-transition-duration) var(--theme-transition-ease),
+      --shimmer-accent var(--theme-transition-duration) var(--theme-transition-ease),
+      --shimmer-highlight var(--theme-transition-duration) var(--theme-transition-ease),
+      --shimmer-shadow-1 var(--theme-transition-duration) var(--theme-transition-ease),
+      --shimmer-shadow-2 var(--theme-transition-duration) var(--theme-transition-ease),
+      filter var(--theme-transition-duration) var(--theme-transition-ease);
+  }
+
+  /* Hover state - springy fade-in easing */
+  .post-card--mini .post-head:hover .post-title-mini:not(.touch-title) {
+    filter:
+      drop-shadow(-0.5px -0.5px 0 var(--shimmer-highlight))
+      drop-shadow(0.5px 0.5px 0 var(--shimmer-accent))
+      drop-shadow(0.5px 0.5px 0 transparent);
+    transition:
+      --shimmer-width 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+      --shimmer-base var(--theme-transition-duration) var(--theme-transition-ease),
+      --shimmer-accent var(--theme-transition-duration) var(--theme-transition-ease),
+      --shimmer-highlight var(--theme-transition-duration) var(--theme-transition-ease),
+      --shimmer-shadow-1 var(--theme-transition-duration) var(--theme-transition-ease),
+      --shimmer-shadow-2 var(--theme-transition-duration) var(--theme-transition-ease),
+      filter var(--theme-transition-duration) var(--theme-transition-ease);
+  }
+
+  /* Shimmer hidden state override for mini titles */
+  .post-card--mini .post-title-mini.shimmer-hidden {
+    background: var(--shimmer-base) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+  }
+}
+
+/* Mini post body styling - inline flow */
+.mini-post-body {
+  display: inline;
+  /* Override .post-body's border-top which renders incorrectly on inline elements */
+  border-top: none;
+}
+
+/* First paragraph flows inline with title */
+.mini-post-body > p:first-child,
+.mini-post-body > span:first-child > p:first-child {
+  display: inline;
+}
+
+/* Subsequent elements get normal block display with spacing */
+.mini-post-body > *:not(:first-child),
+.mini-post-body > span:not(:first-child) > * {
+  display: block;
+  margin-top: 0.75em;
+}
+
+/* Block elements that need their own line */
+.mini-post-body blockquote,
+.mini-post-body pre,
+.mini-post-body .code-block,
+.mini-post-body ul,
+.mini-post-body ol {
+  display: block;
+  margin-top: 0.75em;
+}
+
+/* Remove bottom margin from all block elements in mini post body.
+   Spacing is controlled via margin-top on subsequent elements.
+   Must target nested elements since content is wrapped in <span> tags. */
+.mini-post-body p,
+.mini-post-body blockquote,
+.mini-post-body ul,
+.mini-post-body ol,
+.mini-post-body pre {
+  margin-bottom: 0;
+}
+
+/* Chevron rotation animation for expand button */
+.post-card--mini .link-btn-wrapper .pill svg {
+  transition: transform 0.25s var(--ease-bounce);
+}
+
+.post-card--mini.expanded .link-btn-wrapper .pill svg {
+  transform: rotate(180deg);
+}
+
+/* Simple footnote markers for mini posts (no popup) */
+.mini-post-body .footnote-marker {
+  font-size: 0.75em;
+  color: var(--aero);
+  cursor: help;
+  margin-left: 0.1em;
+  vertical-align: super;
+  line-height: 0;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .mini-post-flow {
+    transition: none;
+  }
+
+  .post-card--mini.has-overflow .mini-post-flow::after {
+    transition: none;
+  }
+
+  .post-card--mini .link-btn-wrapper .pill svg {
+    transition: none;
+  }
+}
