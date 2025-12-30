@@ -1,21 +1,39 @@
 {
-  "/posts/2025-11-30-this-is-my-new-website/gallery-1.png": {
-    "original": "/posts/2025-11-30-this-is-my-new-website/gallery-1.png",
+  "/posts/2025-11-30-welcome-this-is-my-website/gallery-1.png": {
+    "original": "/posts/2025-11-30-welcome-this-is-my-website/gallery-1.png",
     "width": 3589,
     "height": 2252,
     "srcset": {
-      "400": "/optimized/posts/2025-11-30-this-is-my-new-website/gallery-1-400w.png",
-      "800": "/optimized/posts/2025-11-30-this-is-my-new-website/gallery-1-800w.png",
-      "1200": "/optimized/posts/2025-11-30-this-is-my-new-website/gallery-1-1200w.png",
-      "1600": "/optimized/posts/2025-11-30-this-is-my-new-website/gallery-1-1600w.png"
+      "400": "/optimized/posts/2025-11-30-welcome-this-is-my-website/gallery-1-400w.png",
+      "800": "/optimized/posts/2025-11-30-welcome-this-is-my-website/gallery-1-800w.png",
+      "1200": "/optimized/posts/2025-11-30-welcome-this-is-my-website/gallery-1-1200w.png",
+      "1600": "/optimized/posts/2025-11-30-welcome-this-is-my-website/gallery-1-1600w.png"
     },
     "webp": {
-      "400": "/optimized/posts/2025-11-30-this-is-my-new-website/gallery-1-400w.webp",
-      "800": "/optimized/posts/2025-11-30-this-is-my-new-website/gallery-1-800w.webp",
-      "1200": "/optimized/posts/2025-11-30-this-is-my-new-website/gallery-1-1200w.webp",
-      "1600": "/optimized/posts/2025-11-30-this-is-my-new-website/gallery-1-1600w.webp"
+      "400": "/optimized/posts/2025-11-30-welcome-this-is-my-website/gallery-1-400w.webp",
+      "800": "/optimized/posts/2025-11-30-welcome-this-is-my-website/gallery-1-800w.webp",
+      "1200": "/optimized/posts/2025-11-30-welcome-this-is-my-website/gallery-1-1200w.webp",
+      "1600": "/optimized/posts/2025-11-30-welcome-this-is-my-website/gallery-1-1600w.webp"
     },
     "blur": "data:image/webp;base64,UklGRnQAAABXRUJQVlA4WAoAAAAQAAAAEwAADAAAQUxQSBkAAAABF9D/iAgoaNuG8ZgN4kU9BBH9T0j/CRU4AFZQOCA0AAAAEAMAnQEqFAANAD85hrlTryklorAIAeAnCWkAAEK3HGwAAP7ZIUgLcQ6rxaIYRa6VaEfAAA=="
+  },
+  "/posts/2025-12-20-an-experiment-/gallery-1.png": {
+    "original": "/posts/2025-12-20-an-experiment-/gallery-1.png",
+    "width": 1986,
+    "height": 1090,
+    "srcset": {
+      "400": "/optimized/posts/2025-12-20-an-experiment-/gallery-1-400w.png",
+      "800": "/optimized/posts/2025-12-20-an-experiment-/gallery-1-800w.png",
+      "1200": "/optimized/posts/2025-12-20-an-experiment-/gallery-1-1200w.png",
+      "1600": "/optimized/posts/2025-12-20-an-experiment-/gallery-1-1600w.png"
+    },
+    "webp": {
+      "400": "/optimized/posts/2025-12-20-an-experiment-/gallery-1-400w.webp",
+      "800": "/optimized/posts/2025-12-20-an-experiment-/gallery-1-800w.webp",
+      "1200": "/optimized/posts/2025-12-20-an-experiment-/gallery-1-1200w.webp",
+      "1600": "/optimized/posts/2025-12-20-an-experiment-/gallery-1-1600w.webp"
+    },
+    "blur": "data:image/webp;base64,UklGRjQAAABXRUJQVlA4ICgAAACwAgCdASoUAAsAPzmGuVO0qSWisAgCkCcJaQAAeyAA/uyJe6RR+gAA"
   },
   "/projects/brackets-editor-theme/cover.jpg": {
     "original": "/projects/brackets-editor-theme/cover.jpg",
@@ -82,6 +100,50 @@
       "1200": "/optimized/projects/brackets-editor-theme/gallery-3-1200w.webp"
     },
     "blur": "data:image/webp;base64,UklGRjgAAABXRUJQVlA4ICwAAAAQAwCdASoUAA4APzmGulQ0qSWjMAgCkCcJaQAAetFIHAAA/uv3DjKxMMwAAA=="
+  },
+  "/projects/homebrew-tools/cover.png": {
+    "original": "/projects/homebrew-tools/cover.png",
+    "width": 1024,
+    "height": 1024,
+    "srcset": {
+      "400": "/optimized/projects/homebrew-tools/cover-400w.png",
+      "800": "/optimized/projects/homebrew-tools/cover-800w.png"
+    },
+    "webp": {
+      "400": "/optimized/projects/homebrew-tools/cover-400w.webp",
+      "800": "/optimized/projects/homebrew-tools/cover-800w.webp"
+    },
+    "blur": "data:image/webp;base64,UklGRkIAAABXRUJQVlA4IDYAAAAQAwCdASoUABQAPzmQvlevKaYjqAqp4CcJZwDO7BWcWAAA/u2iiwLqWzzBIhzrF2rcK6MkMAA="
+  },
+  "/projects/homebrew-tools/gallery-1.png": {
+    "original": "/projects/homebrew-tools/gallery-1.png",
+    "width": 1024,
+    "height": 1024,
+    "srcset": {
+      "400": "/optimized/projects/homebrew-tools/gallery-1-400w.png",
+      "800": "/optimized/projects/homebrew-tools/gallery-1-800w.png"
+    },
+    "webp": {
+      "400": "/optimized/projects/homebrew-tools/gallery-1-400w.webp",
+      "800": "/optimized/projects/homebrew-tools/gallery-1-800w.webp"
+    },
+    "blur": "data:image/webp;base64,UklGRlQAAABXRUJQVlA4IEgAAADQAwCdASoUABQAPzGEtFOuqSUisAwB0CYJZwAAUqEE0KIeK/yGfEAA/ujw7yQQS7xB/W+lDzlVDFCLDFjJUrX33AWtqkIAAAA="
+  },
+  "/projects/homebrew-tools/gallery-2.png": {
+    "original": "/projects/homebrew-tools/gallery-2.png",
+    "width": 1536,
+    "height": 1024,
+    "srcset": {
+      "400": "/optimized/projects/homebrew-tools/gallery-2-400w.png",
+      "800": "/optimized/projects/homebrew-tools/gallery-2-800w.png",
+      "1200": "/optimized/projects/homebrew-tools/gallery-2-1200w.png"
+    },
+    "webp": {
+      "400": "/optimized/projects/homebrew-tools/gallery-2-400w.webp",
+      "800": "/optimized/projects/homebrew-tools/gallery-2-800w.webp",
+      "1200": "/optimized/projects/homebrew-tools/gallery-2-1200w.webp"
+    },
+    "blur": "data:image/webp;base64,UklGRlIAAABXRUJQVlA4IEYAAADwAwCdASoUAA0APzmIulOvKSWisAgB4CcJYgCsACFcgFry/HW7lbCwAP3sW4d2Gw0JpmeWveLPEFAls3mB4X/T8gJ+qAAA"
   },
   "/projects/loops-ios-app/cover.jpg": {
     "original": "/projects/loops-ios-app/cover.jpg",

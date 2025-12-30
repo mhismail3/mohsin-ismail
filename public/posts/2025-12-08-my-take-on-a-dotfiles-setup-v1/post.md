@@ -49,6 +49,6 @@ The `.macos` file is where it gets interesting. It does the following:
 
 ---
 
-This is still very much a work in progress. I'm refining things as I go - adding new tools, tweaking preferences, and figuring out what I actually need on the home server versus my daily driver. The nice thing about having it all in a git repo is that I can iterate freely, and if something breaks, rolling back is just a `git checkout` away.
+This is still very much a work in progress. I'm refining things as I go - adding new tools, tweaking preferences, and figuring out what I actually need on the home server versus my daily driver.
 
 If you're curious, the repo is public at [github.com/mhismail3/dotfiles](https://github.com/mhismail3/dotfiles).

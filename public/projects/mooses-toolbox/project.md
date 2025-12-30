@@ -19,13 +19,13 @@ gallery:
   - gallery-3.png
 ---
 
-I kept running into the same annoyance: needing a quick utility—strip EXIF data, convert a screen recording to GIF, check where a link redirects—and every online tool was either plastered with ads, required an account, or silently uploaded my files to some server. So I built my own.
+I kept running into the same annoyance where I'd need a quick utility, like stripping EXIF data from a photo, converting a screen recording to a GIF, or checking where a link redirects to. And every online tool was either plastered with ads, required an account, or silently uploaded my files to some server. So I built my own.
 
 Moose's Toolbox is a growing collection of browser-based utilities that run entirely client-side. Drop a file in, get your result out, and nothing ever leaves your machine.
 
 ### The Architecture
 
-Each tool is intentionally lightweight and portable—just an `index.html` for the UI and an `app.js` for the logic. A shared `shared.css` stylesheet keeps the visual language consistent across all tools, using the same design system as this portfolio site.
+Each tool is intentionally lightweight and portable - just an `index.html` for the UI and an `app.js` for the logic. A shared `shared.css` stylesheet keeps the visual language consistent across all tools, using the same design system as this portfolio site.
 
 Every tool includes a dark/light mode toggle that persists to `localStorage` and respects system preferences via `prefers-color-scheme`. An `Info` button on each page provides usage instructions without cluttering the main interface.
 

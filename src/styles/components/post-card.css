@@ -1363,7 +1363,6 @@ html:not(.theme-ready) .post-card--mini.has-overflow .mini-post-flow::after {
 }
 
 /* Block elements that need their own line */
-.mini-post-body blockquote,
 .mini-post-body pre,
 .mini-post-body .code-block,
 .mini-post-body ul,
@@ -1372,15 +1371,33 @@ html:not(.theme-ready) .post-card--mini.has-overflow .mini-post-flow::after {
   margin-top: 0.75em;
 }
 
-/* Remove bottom margin from all block elements in mini post body.
-   Spacing is controlled via margin-top on subsequent elements.
+/* Blockquotes need more breathing room from surrounding text */
+.mini-post-body > span:not(:first-child) > blockquote,
+.mini-post-body blockquote {
+  display: block;
+  margin-top: 1.25em;
+}
+
+/* Remove bottom margin from paragraphs in mini post body.
+   Block-level markdown components (blockquotes, lists, code) get spacing
+   both above and below for visual separation from surrounding text.
    Must target nested elements since content is wrapped in <span> tags. */
-.mini-post-body p,
-.mini-post-body blockquote,
+.mini-post-body p {
+  margin-bottom: 0;
+}
+
+/* Block-level markdown components need margin below for separation from following text */
 .mini-post-body ul,
 .mini-post-body ol,
-.mini-post-body pre {
-  margin-bottom: 0;
+.mini-post-body pre,
+.mini-post-body .code-block {
+  margin-bottom: 0.75em;
+}
+
+/* Blockquotes get more breathing room */
+.mini-post-body > span:not(:first-child) > blockquote,
+.mini-post-body blockquote {
+  margin-bottom: 1.25em;
 }
 
 /* Chevron rotation animation for expand button */
