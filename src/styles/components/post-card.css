@@ -1349,6 +1349,8 @@ html:not(.theme-ready) .post-card--mini.has-overflow .mini-post-flow::after {
   display: inline;
   /* Override .post-body's border-top which renders incorrectly on inline elements */
   border-top: none;
+  /* Smooth color transition for theme changes */
+  transition: color var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
 /* First paragraph flows inline with title */
