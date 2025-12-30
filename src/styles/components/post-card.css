@@ -1419,6 +1419,33 @@ html:not(.theme-ready) .post-card--mini.has-overflow .mini-post-flow::after {
   line-height: 0;
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   MINI POST - MOBILE LAYOUT
+
+   On mobile, allow content to wrap around the chevron button instead of
+   rigidly splitting into two grid columns. This maximizes content space
+   and shows more text before the gradient fade kicks in.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  /* Switch from grid to block layout so content can wrap around button */
+  .post-card--mini .post-head {
+    display: block;
+  }
+
+  /* Float the chevron button to top-right so content wraps around it */
+  .post-card--mini .link-btn-wrapper {
+    float: right;
+    margin-left: var(--space-sm);
+    margin-bottom: var(--space-xs);
+  }
+
+  /* Show more content before truncation on mobile */
+  .post-card--mini .mini-post-flow {
+    max-height: 12rem;
+  }
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .mini-post-flow {
