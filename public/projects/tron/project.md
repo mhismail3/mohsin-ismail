@@ -15,6 +15,7 @@ tags:
   - iOS
 status: "🔄 Active"
 cover: cover.png
+excludeCoverFromCarousel: true
 gallery:
   - 04-context-progress-pill.gif
   - 07-skills-sheet.gif

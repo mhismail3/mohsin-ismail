@@ -81,6 +81,7 @@ const portfolioProjects = Object.entries(rawProjects).map(([path, raw]) => {
     gallery,
     tags: Array.isArray(data.tags) ? data.tags : [],
     status: data.status || null,
+    excludeCoverFromCarousel: data.excludeCoverFromCarousel || false,
   };
 }).sort((a, b) => {
   const isArchivedA = typeof a.status === 'string' && a.status.toLowerCase() === 'archived';
