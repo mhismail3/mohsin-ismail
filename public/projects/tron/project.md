@@ -34,7 +34,7 @@ I wrote about this a bit in a [previous blog post](/posts/2026-01-21-from-claude
 
 What I actually wanted was control. Control over the system prompt — what the agent knows, how it reasons, what persona it takes on. Control over the context window — when to compact, what to preserve, how to manage memory across sessions. Control over the execution layer — which tools are available, how they're validated, what happens before and after every action the agent takes.
 
-So I built **Tron** from scratch. TypeScript server, event-sourced state, real-time streaming, multi-model LLM support, and eventually a native iOS app as the primary interface. It's been my daily driver for the past couple of months.
+So I built **Tron** from scratch. TypeScript server, event-sourced state, real-time streaming, multi-model LLM support, and eventually a native iOS app as the primary interface.
 
 ---
 
