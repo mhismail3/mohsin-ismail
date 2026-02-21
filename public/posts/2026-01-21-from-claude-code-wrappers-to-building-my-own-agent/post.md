@@ -1,5 +1,5 @@
 ---
-title: "From Claude Code Wrappers to Building My Own Agent"
+title: "Building my own Agent"
 date: "2026-01-21T16:50:00-08:00"
 tags:
   - ai
@@ -12,7 +12,7 @@ tags:
 
 About a month ago I wrote about [trying to access Claude Code remotely](/posts/2025-12-20-an-experiment-) through Telegram and Discord bots. That experiment didn't pan out, but it got me thinking - why was I fighting someone else's harness when I could just build my own?
 
-So that's what I did. I called it **[Tron](https://github.com/mhismail3/tron)**.
+So I started working on writing my own agent from the ground up - I call it **[Tron](https://github.com/mhismail3/tron)**.
 
 ---
 
@@ -28,4 +28,4 @@ Here's the thing I keep coming back to: people talk about vibecoding like it's o
 
 Tron has event sourcing for crash safety, a four-level memory hierarchy so the agent doesn't lose context, multi-model support if I want to swap between Claude and GPT mid-session. None of this came out perfect on the first try, but I kept iterating, kept fixing edge cases, kept polishing the small details. The agent helped me build the agent, which is kind of fun to think about.
 
-I'm still adding features, but the core is solid enough that I use it every day. Code's on [GitHub](https://github.com/mhismail3/tron) if you want to take a look!
+I'm still adding features, but the core is solid enough that I use it daily (though I still rely on Claude Code for the more complicated things that I need to work reliably). Code's on [GitHub](https://github.com/mhismail3/tron) if you want to take a look!
