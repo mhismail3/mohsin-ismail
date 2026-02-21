@@ -20,13 +20,9 @@ The core problem with wrapping Claude Code was that I was always working against
 
 At some point I realized I was approaching it backwards. Instead of wrapping an existing agent, I could just build one from scratch around the models directly - that way I own the whole stack and can do whatever I want with it.
 
----
-
 The setup is pretty straightforward: a TypeScript server runs on my Mac mini as a persistent daemon, handling the agent loop, tool execution, and storing everything as events in SQLite. Every action the agent takes becomes an immutable event, which means I can fork a session from any point in history or rewind if something goes wrong (this has already saved me a few times).
 
 The main client is a fully native iOS app - SwiftUI, real-time streaming over WebSocket, offline-capable with a local event database. I can start a session on my laptop and pick it up on my phone. The whole thing *just works*, and I've been using it daily for the past few weeks.
-
----
 
 Here's the thing I keep coming back to: people talk about vibecoding like it's only good for quick prototypes. Get to 85% and then hand it off to a "real" engineer. But I don't think that's right - with enough persistence you can push through to 99%. It just takes more iterations than most people expect.
 
