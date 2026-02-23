@@ -502,6 +502,23 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   TL;DR / QUICK LOOK SECTION
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.project-description .tldr-section {
+  margin: 0 0 0.5rem;
+}
+
+.project-description .tldr-label {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-md);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
    VIDEO DEMOS
    YouTube Shorts embeds in a horizontal row with 9:16 aspect ratio
    ───────────────────────────────────────────────────────────────────────────── */
@@ -509,14 +526,24 @@
 .project-description .video-demos {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-xl);
-  margin: 1rem 0 1.5rem;
+  gap: var(--space-lg);
+  margin: 0 auto 1rem;
+  max-width: 480px;
+}
+
+.project-description .video-demo-item {
+  display: flex;
+  flex-direction: column;
 }
 
 .project-description .video-demo-item h3 {
-  font-size: var(--text-base);
-  margin: 0 0 var(--space-md);
+  font-size: var(--text-sm);
+  margin: 0 0 var(--space-sm);
   text-align: center;
+  height: 2.6rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
 }
 
 .project-description .video-short-wrapper {
@@ -544,16 +571,13 @@
 
 @media (max-width: 768px) {
   .project-description .video-demos {
-    grid-template-columns: repeat(3, 1fr);
     gap: var(--space-md);
+    max-width: 100%;
   }
 }
 
 @media (max-width: 520px) {
   .project-description .video-demos {
-    grid-template-columns: 1fr;
-    max-width: 280px;
-    margin-left: auto;
-    margin-right: auto;
+    gap: var(--space-sm);
   }
 }

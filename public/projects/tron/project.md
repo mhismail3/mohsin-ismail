@@ -29,6 +29,35 @@ gallery:
   - 06-edit-tool-chip.gif
 ---
 
+<div class="tldr-section">
+<div class="video-demos">
+
+<div class="video-demo-item">
+<h3>The Interface</h3>
+<div class="video-short-wrapper">
+<iframe src="https://www.youtube.com/embed/Tm0KkVxsK8s" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</div>
+
+<div class="video-demo-item">
+<h3>Chatting with an Agent</h3>
+<div class="video-short-wrapper">
+<iframe src="https://www.youtube.com/embed/wfa9PY34QmI" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</div>
+
+<div class="video-demo-item">
+<h3>Some Other Features</h3>
+<div class="video-short-wrapper">
+<iframe src="https://www.youtube.com/embed/PGV61_YvPLk" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+</div>
+
+</div>
+</div>
+
+---
+
 ## Why Build Your Own Agent
 
 I wrote about this a bit in a [previous blog post](/posts/2026-01-21-from-claude-code-wrappers-to-building-my-own-agent) — after spending weeks trying to wrap Claude Code through Telegram bots and Discord, I realized I was fighting someone else's abstractions. Parsing terminal output is fragile. The Agent SDK meant paying for API calls on top of a Max subscription. Everything felt like a workaround.
@@ -106,35 +135,6 @@ Three providers, every frontier model, and more than just text in. Tron supports
 ### Sub-Agents with Tool Controls
 
 Tron has a sub-agent system where the primary agent can spawn child agents for parallel task execution. The interesting part is the tool denial configuration — you can give a sub-agent access to all tools, restrict specific ones, or create a text-only sub-agent with no tool access at all. You can even deny specific *patterns* within a tool, like blocking `rm -rf` in Bash while allowing everything else. Sub-agents can run in-process (blocking, for quick tasks) or in a Tmux session (fire-and-forget, for long-running work).
-
----
-
-## Demos
-
-<div class="video-demos">
-
-<div class="video-demo-item">
-<h3>The Interface</h3>
-<div class="video-short-wrapper">
-<iframe src="https://www.youtube.com/embed/Tm0KkVxsK8s" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-</div>
-</div>
-
-<div class="video-demo-item">
-<h3>Chatting with an Agent</h3>
-<div class="video-short-wrapper">
-<iframe src="https://www.youtube.com/embed/wfa9PY34QmI" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-</div>
-</div>
-
-<div class="video-demo-item">
-<h3>Some Other Features</h3>
-<div class="video-short-wrapper">
-<iframe src="https://www.youtube.com/embed/PGV61_YvPLk" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-</div>
-</div>
-
-</div>
 
 ---
 

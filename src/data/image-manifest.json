@@ -493,6 +493,24 @@
     },
     "blur": "data:image/webp;base64,UklGRjgAAABXRUJQVlA4ICwAAADQAgCdASoUAAoAPzmGulQvKSWosAgB4CcJZwAAhAwAAP7tN9Fsc/hnqAAAAA=="
   },
+  "/projects/tron/cover.png": {
+    "original": "/projects/tron/cover.png",
+    "width": 1820,
+    "height": 1024,
+    "srcset": {
+      "400": "/optimized/projects/tron/cover-400w.png",
+      "800": "/optimized/projects/tron/cover-800w.png",
+      "1200": "/optimized/projects/tron/cover-1200w.png",
+      "1600": "/optimized/projects/tron/cover-1600w.png"
+    },
+    "webp": {
+      "400": "/optimized/projects/tron/cover-400w.webp",
+      "800": "/optimized/projects/tron/cover-800w.webp",
+      "1200": "/optimized/projects/tron/cover-1200w.webp",
+      "1600": "/optimized/projects/tron/cover-1600w.webp"
+    },
+    "blur": "data:image/webp;base64,UklGRjQAAABXRUJQVlA4ICgAAADQAgCdASoUAAsAPzmGuVOvKSWisAgB4CcJZwAAe/QAAP7uG2ngeAAA"
+  },
   "/about/gallery-1.jpeg": {
     "original": "/about/gallery-1.jpeg",
     "width": 4032,
