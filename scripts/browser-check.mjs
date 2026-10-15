@@ -89,7 +89,12 @@ function internalLinkProblem(href) {
   const p = decodeURIComponent(u.pathname);
   if (p === '/' || ['/blog', '/about', '/portfolio'].includes(p.replace(/\/$/, ''))) return null;
   const route = p.match(/^\/(posts|portfolio)\/([^/]+)\/?$/);
-  if (route) return fs.existsSync(path.join(root, 'dist', route[1], route[2], 'index.html')) ? null : 'no prerendered page';
+  if (route) {
+    if (fs.existsSync(path.join(root, 'dist', route[1], route[2], 'index.html'))) return null;
+    // Drafts only exist on the dev server.
+    if (route[1] === 'posts' && fs.existsSync(path.join(root, 'drafts', route[2], 'post.md'))) return null;
+    return 'no prerendered page';
+  }
   return fs.existsSync(path.join(root, 'dist', p)) ? null : 'file not in dist';
 }
 

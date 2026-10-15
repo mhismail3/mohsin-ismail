@@ -11,7 +11,8 @@
     "prerender": "node scripts/prerender-meta.js",
     "preview": "vite preview",
     "check:browser": "node scripts/browser-check.mjs",
-    "validate": "node scripts/validate-content.mjs"
+    "validate": "node scripts/validate-content.mjs && node scripts/check-styles.mjs",
+    "lint:voice": "node scripts/voice-lint.mjs"
   },
   "keywords": [
     "portfolio",

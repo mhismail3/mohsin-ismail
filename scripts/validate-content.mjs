@@ -74,6 +74,7 @@ for (const p of [...posts, ...drafts]) {
   if (data.tags !== undefined && (!Array.isArray(data.tags) || data.tags.some((t) => typeof t !== 'string'))) err(p.file, '`tags` must be a list of strings');
   if (!p.content.trim()) err(p.file, 'empty body');
   Object.keys(data).filter((k) => !POST_KEYS.has(k)).forEach((k) => warn(p.file, `unknown frontmatter key "${k}"`));
+  if (!p.draft && /TODO\(mohsin\)|^DRAFT\b/m.test(p.content)) err(p.file, 'published post still contains a TODO(mohsin) placeholder or DRAFT note');
   checkBody(p, { isDraft: p.draft });
 }
 

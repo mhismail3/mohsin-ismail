@@ -21,5 +21,8 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     base,
+    // Allow private Tailscale access (`tailscale serve`) for phone testing; tailnet names only.
+    server: { allowedHosts: ['.ts.net'] },
+    preview: { allowedHosts: ['.ts.net'] },
   };
 });

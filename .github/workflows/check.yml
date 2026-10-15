@@ -1,0 +1,44 @@
+name: Check
+
+# Build + real-browser check on branches and PRs (deploy.yml handles main).
+on:
+  push:
+    branches-ignore: [main]
+  pull_request:
+
+concurrency:
+  group: check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build (validate content, optimize images, vite, prerender)
+        env:
+          # Site is served at the root (public/CNAME), same as deploy.yml; GITHUB_REPOSITORY would otherwise set /mohsin-ismail/.
+          VITE_BASE_PATH: /
+        run: npm run build
+
+      - name: Browser check (desktop + iPhone, light + dark)
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+        run: npm run check:browser -- --out shots/ci
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-check-shots
+          path: shots/ci
+          retention-days: 7

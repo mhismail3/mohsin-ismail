@@ -13,3 +13,7 @@ public/optimized/
 # Browser-check screenshots
 shots/
 
+
+# Private, local-only: unpublished drafts (dev server only) and the voice guide
+drafts/
+guides/voice.md
