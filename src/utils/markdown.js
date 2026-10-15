@@ -81,18 +81,6 @@ export const parseMarkdown = (markdown, sanitizeConfig = SANITIZE_CONFIG_BASIC) 
   return DOMPurify.sanitize(html, sanitizeConfig);
 };
 
-/**
- * Parse inline markdown (single line, no block elements).
- * 
- * @param {string} markdown - Inline markdown
- * @param {Object} sanitizeConfig - DOMPurify configuration
- * @returns {string} Sanitized HTML
- */
-export const parseInlineMarkdown = (markdown, sanitizeConfig = SANITIZE_CONFIG_BASIC) => {
-  const html = marked.parseInline(markdown);
-  return DOMPurify.sanitize(html, sanitizeConfig);
-};
-
 // ─────────────────────────────────────────────────────────────────────────────
 // TEXT PROCESSING
 // ─────────────────────────────────────────────────────────────────────────────

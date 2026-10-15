@@ -11,6 +11,5 @@ export { default as FeaturedProjectCard } from './FeaturedProjectCard';
 export { default as CodeBlock } from './CodeBlock';
 export { default as PostImage } from './PostImage';
 export { default as FootnotePopupManager } from './FootnotePopupManager';
-export { default as InlineFootnote } from './InlineFootnote';
 export { default as TableOfContents } from './TableOfContents';
 export { default as MiniPostContent } from './MiniPostContent';

@@ -567,6 +567,13 @@ const Header = ({ label, onLogoClick }) => {
   // Handle brand button click - coordinates with the drag hook on the photo.
   // The drag hook handles tap/click on the photo; this handler covers the brand-name text.
   const handleBrandClick = useCallback((e) => {
+    // Keyboard activation (Enter/Space reports detail === 0) has no pointer target;
+    // open the menu, which is what the photo does for pointer users.
+    if (e.detail === 0) {
+      e.preventDefault();
+      toggleMenu();
+      return;
+    }
     // The drag hook handles all interactions directly on the photo (brand-mark-inner).
     // Check if click originated from within the brand-mark to avoid double-handling.
     const brandMark = e.currentTarget.querySelector('.brand-mark');
@@ -584,7 +591,7 @@ const Header = ({ label, onLogoClick }) => {
     }
     // When collapsed, CSS pointer-events prevents clicks on brand-name anyway,
     // but this is a safety fallback if the event somehow fires.
-  }, [isCollapsed, handleHome]);
+  }, [isCollapsed, handleHome, toggleMenu]);
 
   // Build nav links - always include Home since photo is now the menu trigger
   const navLinks = [{ label: 'Home', path: '/' }, ...NAV_LINKS];
@@ -712,6 +719,7 @@ const Header = ({ label, onLogoClick }) => {
         <div
           className={menuClass}
           aria-hidden={!isOpen}
+          inert={!isOpen}
         >
           <div className="top-menu-content">
             {navLinks.map((link) => (
@@ -760,6 +768,7 @@ const Header = ({ label, onLogoClick }) => {
             <div
               className={fabMenuClass}
               aria-hidden={!isFabMenuOpen}
+              inert={!isFabMenuOpen}
             >
               <div className="fab-menu-content">
                 {navLinks.map((link) => (

@@ -60,18 +60,16 @@ const PortfolioPage = () => {
       return;
     }
 
-    setItems((current) => {
-      const nextBatch = portfolioProjects.slice(cursorRef.current, cursorRef.current + LOAD_BATCH);
-      const processedNext = nextBatch.map((p, idx) => processProject(p, cursorRef.current + idx));
-      
-      cursorRef.current += nextBatch.length;
-      
-      if (cursorRef.current >= portfolioProjects.length) {
-        setHasMore(false);
-      }
-      
-      return [...current, ...processedNext];
-    });
+    // Advance the cursor outside the state updater: updaters must be pure
+    // (StrictMode double-invokes them, which used to skip a batch in dev).
+    const start = cursorRef.current;
+    const nextBatch = portfolioProjects.slice(start, start + LOAD_BATCH);
+    const processedNext = nextBatch.map((p, idx) => processProject(p, start + idx));
+    cursorRef.current = start + nextBatch.length;
+    if (cursorRef.current >= portfolioProjects.length) {
+      setHasMore(false);
+    }
+    setItems((current) => [...current, ...processedNext]);
   }, []);
 
   // Intersection observer for infinite scroll

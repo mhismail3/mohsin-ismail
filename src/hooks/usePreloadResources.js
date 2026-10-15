@@ -96,49 +96,6 @@ const usePreloadImages = (imageSrcs = [], options = {}) => {
 };
 
 /**
- * Hook to prefetch resources for likely-to-visit pages
- * Uses <link rel="prefetch"> for lower priority background fetching
- *
- * @param {string[]} urls - Array of URLs to prefetch
- * @param {Object} options
- * @param {boolean} options.enabled - Whether to enable prefetching
- * @param {string} options.as - Resource type ('document', 'image', 'script', etc.)
- */
-const usePrefetch = (urls = [], options = {}) => {
-  const { enabled = true, as = 'document' } = options;
-  const prefetchedRefs = useRef(new Set());
-
-  useEffect(() => {
-    if (!enabled || !urls.length) return;
-
-    for (const url of urls) {
-      // Skip if already prefetched
-      if (prefetchedRefs.current.has(url)) continue;
-
-      // Check if prefetch link already exists
-      const existing = document.querySelector(
-        `link[rel="prefetch"][href="${url}"]`
-      );
-      if (existing) {
-        prefetchedRefs.current.add(url);
-        continue;
-      }
-
-      // Create and inject prefetch link
-      const link = document.createElement('link');
-      link.rel = 'prefetch';
-      link.href = url;
-      if (as) {
-        link.as = as;
-      }
-
-      document.head.appendChild(link);
-      prefetchedRefs.current.add(url);
-    }
-  }, [urls.join(','), enabled, as]);
-};
-
-/**
  * Hook to prerender likely-to-visit pages
  * Uses the Speculation Rules API when available, falls back to prefetch
  *
@@ -202,5 +159,5 @@ const usePrerender = (urls = [], options = {}) => {
   }, [urls.join(','), enabled, eagerness]);
 };
 
-export { usePreloadImages, usePrefetch, usePrerender };
+export { usePreloadImages, usePrerender };
 export default usePreloadImages;

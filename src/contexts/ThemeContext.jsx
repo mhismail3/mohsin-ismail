@@ -46,9 +46,6 @@ export const ThemeProvider = ({ children }) => {
       metaThemeColor.setAttribute('content', theme === 'dark' ? '#1a1814' : '#f8f9fc');
     }
     
-    // Persist to localStorage
-    localStorage.setItem(THEME_KEY, theme);
-    
     // Enable transitions after initial theme is applied
     // This prevents gradient flash on page load
     if (!root.classList.contains('theme-ready')) {
@@ -80,8 +77,12 @@ export const ThemeProvider = ({ children }) => {
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
+  // Only an explicit toggle is persisted; until then the site follows the OS setting
+  // (persisting on every mount made the system-preference listener above dead code).
   const toggleTheme = useCallback(() => {
-    setTheme((current) => (current === 'light' ? 'dark' : 'light'));
+    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    localStorage.setItem(THEME_KEY, next);
+    setTheme(next);
   }, []);
 
   const isDark = theme === 'dark';

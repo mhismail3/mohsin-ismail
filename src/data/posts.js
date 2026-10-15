@@ -107,6 +107,12 @@ const rawPosts = import.meta.glob('../../public/posts/*/post.md', {
   eager: true,
 });
 
+// Unpublished drafts live in /drafts/{slug}/post.md (outside public/, so they are never
+// copied to dist). They are only loaded by the dev server; production builds drop them.
+const rawDrafts = import.meta.env.DEV
+  ? import.meta.glob('../../drafts/*/post.md', { query: '?raw', import: 'default', eager: true })
+  : {};
+
 /**
  * Generate a URL-friendly slug from heading text.
  * Handles special characters, emojis, and multiple headings with same text.
@@ -364,15 +370,16 @@ const extractFootnotes = (markdown) => {
   return { processedContent: result, footnotes };
 };
 
-const posts = Object.entries(rawPosts).map(([path, raw]) => {
+const buildPost = ([path, raw]) => {
   const { data, content } = parseFrontmatter(raw);
+  const isDraft = path.includes('/drafts/');
   
   // Extract slug from folder name: ../../public/posts/{slug}/post.md
   const pathParts = path.split('/');
   const slug = pathParts[pathParts.length - 2] ?? 'post';
   
-  // Base path for resolving relative images in this post
-  const basePath = `/posts/${slug}`;
+  // Base path for resolving relative images in this post (dev server serves /drafts/ from the repo root)
+  const basePath = isDraft ? `/drafts/${slug}` : `/posts/${slug}`;
   
   // Extract headings for Table of Contents (before any processing)
   const headings = extractHeadings(content);
@@ -410,10 +417,25 @@ const posts = Object.entries(rawPosts).map(([path, raw]) => {
     headings,
     enableTableOfContents: data.enableTableOfContents === true,
     exclude: data.exclude === true,
+    draft: isDraft,
     basePath,
   };
-})
-  .filter((post) => post.exclude !== true)
+};
+
+// One malformed file must not take down the whole site: log it and skip it.
+// (`npm run validate` fails the build on the same problem, so this only guards runtime.)
+const safeBuildPost = (entry) => {
+  try {
+    return buildPost(entry);
+  } catch (error) {
+    console.error(`Skipping post ${entry[0]}:`, error);
+    return null;
+  }
+};
+
+const posts = [...Object.entries(rawPosts), ...Object.entries(rawDrafts)]
+  .map(safeBuildPost)
+  .filter((post) => post && post.exclude !== true)
   .sort((a, b) => b.dateValue.getTime() - a.dateValue.getTime());
 
 export const uniqueTags = Array.from(new Set(posts.flatMap((post) => post.tags))).sort(

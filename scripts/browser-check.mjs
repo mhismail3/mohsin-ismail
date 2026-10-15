@@ -117,6 +117,11 @@ async function checkPage(context, base, pagePath, file) {
     window.scrollTo(0, 0);
   });
   await page.waitForLoadState('networkidle');
+  // Wait for every started image (lazy carousels, large originals) so screenshots are stable.
+  await page.waitForFunction(() => [...document.images].every((img) => img.complete)
+    && [...document.querySelectorAll('.progressive-image')].every((el) => !el.querySelector('img')
+      || el.classList.contains('is-loaded') || el.classList.contains('has-error')), null, { timeout: 15000 }).catch(() => {});
+  await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(800);
 
   const dom = await page.evaluate(() => {
@@ -138,7 +143,8 @@ async function checkPage(context, base, pagePath, file) {
     }
     const brokenImages = [...document.images]
       .filter((img) => img.complete && img.naturalWidth === 0 && img.getAttribute('src'))
-      .map((img) => img.getAttribute('src'));
+      .map((img) => img.getAttribute('src'))
+      .concat([...document.querySelectorAll('.progressive-image.has-error')].map((el) => `ProgressiveImage error: ${el.getAttribute('aria-label') || el.className}`));
     const links = [...document.querySelectorAll('a[href]')]
       .map((a) => a.href)
       .filter((h) => h.startsWith(location.origin));
@@ -148,7 +154,12 @@ async function checkPage(context, base, pagePath, file) {
   problems.brokenImages = dom.brokenImages;
   problems.brokenLinks = dom.links.map((h) => [h, internalLinkProblem(h)]).filter(([, e]) => e).map(([h, e]) => `${new URL(h).pathname} (${e})`);
 
-  await page.screenshot({ path: file, fullPage: true, animations: 'disabled' });
+  // Third-party iframes (YouTube) render nondeterministically; mask them so diffs only show our UI.
+  // Full page for layout, plus the first screen exactly as a visitor sees it. Chromium's full-page
+  // capture can paint images inside horizontal scrollers (e.g. the About carousel) blank; trust the fold shot there.
+  const shotOpts = { animations: 'disabled', mask: [page.locator('iframe')], maskColor: '#888' };
+  await page.screenshot({ path: file.replace(/\.png$/, '--fold.png'), ...shotOpts });
+  await page.screenshot({ path: file, fullPage: true, ...shotOpts });
   await page.close();
   return problems;
 }
@@ -182,9 +193,14 @@ try {
         const bad = r.consoleErrors.length + r.pageErrors.length + r.failedRequests.length + r.brokenImages.length + r.brokenLinks.length + (r.overflow ? 1 : 0);
         failures += bad ? 1 : 0;
         const entry = { page: p, viewport: vpName, theme, screenshot: name, ok: !bad, ...r };
-        if (compareDir && fs.existsSync(path.join(compareDir, name))) entry.diff = await diff(path.join(compareDir, name), file);
+        if (compareDir && fs.existsSync(path.join(compareDir, name))) {
+          entry.diff = await diff(path.join(compareDir, name), file);
+          const fold = name.replace(/\.png$/, '--fold.png');
+          if (fs.existsSync(path.join(compareDir, fold))) entry.foldDiff = await diff(path.join(compareDir, fold), path.join(outDir, fold));
+        }
         results.push(entry);
-        const d = entry.diff ? (entry.diff.sizeChanged ? ` diff:${entry.diff.sizeChanged}` : ` diff:${entry.diff.changedPct}%`) : '';
+        const fmt = (x) => (x.sizeChanged ? x.sizeChanged : `${x.changedPct}%`);
+        const d = entry.diff ? ` diff:${fmt(entry.diff)}${entry.foldDiff ? ` fold:${fmt(entry.foldDiff)}` : ''}` : '';
         console.log(`${bad ? 'FAIL' : 'ok  '} ${vpName.padEnd(7)} ${theme.padEnd(5)} ${p}${d}`);
         if (bad) console.log('     ' + JSON.stringify({ ...r, overflow: r.overflow }, null, 0).slice(0, 800));
       }
@@ -196,7 +212,8 @@ try {
   server.stop();
 }
 fs.writeFileSync(path.join(outDir, 'report.json'), JSON.stringify({ base: server.url, at: new Date().toISOString(), results }, null, 2));
-const visual = results.filter((r) => r.diff && (r.diff.sizeChanged || r.diff.changedPct > 0.5));
+const changed = (x) => x && (x.sizeChanged || x.changedPct > 0.5);
+const visual = results.filter((r) => changed(r.diff) || changed(r.foldDiff));
 console.log(`\n${results.length} checks, ${failures} with problems${compareDir ? `, ${visual.length} visibly different vs ${path.relative(root, compareDir)}` : ''}. Report: ${path.relative(root, outDir)}/report.json`);
-visual.forEach((r) => console.log(`  changed: ${r.screenshot} ${JSON.stringify(r.diff)}`));
+visual.forEach((r) => console.log(`  changed: ${r.screenshot} full=${JSON.stringify(r.diff)} fold=${JSON.stringify(r.foldDiff)}`));
 process.exit(failures ? 1 : 0);

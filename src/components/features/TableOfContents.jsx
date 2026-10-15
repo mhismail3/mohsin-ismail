@@ -10,11 +10,6 @@ const TableOfContents = ({ headings }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const contentRef = useRef(null);
 
-  // Don't render if there are no headings
-  if (!headings || headings.length === 0) {
-    return null;
-  }
-
   const toggleExpanded = useCallback(() => {
     setIsExpanded((prev) => !prev);
   }, []);
@@ -42,6 +37,11 @@ const TableOfContents = ({ headings }) => {
       element.classList.remove('toc-target-highlight');
     }, 2000);
   }, []);
+
+  // Don't render if there are no headings (after all hooks, to keep hook order stable)
+  if (!headings || headings.length === 0) {
+    return null;
+  }
 
   // Strip markdown from heading text for display
   const cleanHeadingText = (text) => {

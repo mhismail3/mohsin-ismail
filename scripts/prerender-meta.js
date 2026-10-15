@@ -7,14 +7,16 @@
  * 3. Generates individual HTML files in dist/ for each route with proper OG tags
  * 4. These HTML files include the correct meta tags that social media crawlers can read
  * 
- * Since we use HashRouter (#/posts/slug), we also create files for hash routes.
+ * The app uses BrowserRouter, so each route gets a real dist/{route}/index.html.
  * Twitter/X and other crawlers will see the proper meta tags before any JS executes.
+ * Also writes sitemap.xml and robots.txt. Content loading is shared with
+ * scripts/validate-content.mjs via scripts/content.mjs (excluded posts are skipped).
  */
 
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import matter from 'gray-matter';
+import { publishedPosts, loadProjects, postTitle } from './content.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -64,81 +66,34 @@ function createExcerpt(content, maxLength = 160) {
 }
 
 /**
- * Read and parse a markdown file with frontmatter
- */
-function parseMarkdownFile(filePath) {
-  try {
-    const content = fs.readFileSync(filePath, 'utf-8');
-    const { data, content: body } = matter(content);
-    return { frontmatter: data, content: body };
-  } catch (err) {
-    console.error(`Error reading ${filePath}:`, err.message);
-    return null;
-  }
-}
-
-/**
- * Get all posts from public/posts/[slug]/post.md
+ * Posts with a public URL (skips `exclude: true`; drafts/ is never built).
+ * Throws on bad frontmatter so the build fails loudly instead of dropping a page.
  */
 function getAllPosts() {
-  const postsDir = path.join(PUBLIC_DIR, 'posts');
-  if (!fs.existsSync(postsDir)) return [];
-
-  const posts = [];
-  const folders = fs.readdirSync(postsDir, { withFileTypes: true })
-    .filter(d => d.isDirectory());
-
-  for (const folder of folders) {
-    const postFile = path.join(postsDir, folder.name, 'post.md');
-    if (fs.existsSync(postFile)) {
-      const parsed = parseMarkdownFile(postFile);
-      if (parsed) {
-        posts.push({
-          slug: folder.name,
-          title: parsed.frontmatter.title || folder.name,
-          date: parsed.frontmatter.date,
-          tags: parsed.frontmatter.tags || [],
-          excerpt: createExcerpt(parsed.content),
-          // Check for gallery images to use as OG image
-          image: getPostImage(folder.name),
-        });
-      }
-    }
-  }
-
-  return posts;
+  return publishedPosts().map((post) => ({
+    slug: post.slug,
+    title: postTitle(post, createExcerpt),
+    date: post.data.date,
+    tags: post.data.tags || [],
+    excerpt: createExcerpt(post.content),
+    // Check for gallery images to use as OG image
+    image: getPostImage(post.slug),
+  }));
 }
 
 /**
- * Get all projects from public/projects/[slug]/project.md
+ * Get all projects from public/projects/[slug]/project.md (slug matches the app: frontmatter slug or folder)
  */
 function getAllProjects() {
-  const projectsDir = path.join(PUBLIC_DIR, 'projects');
-  if (!fs.existsSync(projectsDir)) return [];
-
-  const projects = [];
-  const folders = fs.readdirSync(projectsDir, { withFileTypes: true })
-    .filter(d => d.isDirectory());
-
-  for (const folder of folders) {
-    const projectFile = path.join(projectsDir, folder.name, 'project.md');
-    if (fs.existsSync(projectFile)) {
-      const parsed = parseMarkdownFile(projectFile);
-      if (parsed) {
-        projects.push({
-          slug: folder.name,
-          title: parsed.frontmatter.title || folder.name,
-          date: parsed.frontmatter.date,
-          summary: parsed.frontmatter.summary || createExcerpt(parsed.content),
-          tags: parsed.frontmatter.tags || [],
-          // Use cover image if available
-          image: getProjectCover(folder.name, parsed.frontmatter.cover),
-        });
-      }
-    }
-  }
-
-  return projects;
+  return loadProjects().map((project) => ({
+    slug: project.slug,
+    title: project.data.title || project.folder,
+    date: project.data.date,
+    summary: project.data.summary || createExcerpt(project.content),
+    tags: project.data.tags || [],
+    // Use cover image if available
+    image: getProjectCover(project.slug, project.data.cover),
+  }));
 }
 
 /**
@@ -257,7 +212,7 @@ function generatePageHtml(baseHtml, options) {
     <meta property="og:description" content="${escapeHtml(description)}" />
     <meta property="og:image" content="${escapeHtml(image)}" />
     <meta property="og:site_name" content="${SITE_NAME}" />
-    ${publishedTime ? `<meta property="article:published_time" content="${publishedTime}" />` : ''}
+    ${publishedTime ? `<meta property="article:published_time" content="${escapeHtml(String(publishedTime))}" />` : ''}
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
@@ -470,6 +425,22 @@ async function prerender() {
   console.log('\n📋 Creating 404.html with SPA redirect...');
   const notFoundHtml = generate404Html();
   writeHtmlFile('404.html', notFoundHtml);
+
+  // sitemap.xml + robots.txt from the same route list
+  const isoDate = (d) => { const t = new Date(d); return Number.isNaN(t.getTime()) ? null : t.toISOString().slice(0, 10); };
+  const urls = [
+    { loc: `${SITE_URL}/` },
+    { loc: `${SITE_URL}/blog` },
+    { loc: `${SITE_URL}/portfolio` },
+    { loc: `${SITE_URL}/about` },
+    ...posts.map((p) => ({ loc: `${SITE_URL}/posts/${p.slug}`, lastmod: isoDate(p.date) })),
+    ...projects.map((p) => ({ loc: `${SITE_URL}/portfolio/${p.slug}`, lastmod: isoDate(p.date) })),
+  ];
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls
+    .map((u) => `  <url><loc>${escapeHtml(u.loc)}</loc>${u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : ''}</url>`)
+    .join('\n')}\n</urlset>\n`;
+  writeHtmlFile('sitemap.xml', sitemap);
+  writeHtmlFile('robots.txt', `User-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}/sitemap.xml\n`);
 
   console.log('\n✅ Prerendering complete!\n');
   console.log(`Generated pages for:`);

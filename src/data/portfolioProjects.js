@@ -33,7 +33,7 @@ const rawProjects = import.meta.glob('../../public/projects/*/project.md', {
   eager: true,
 });
 
-const portfolioProjects = Object.entries(rawProjects).map(([path, raw]) => {
+const buildProject = ([path, raw]) => {
   const { data, content } = parseFrontmatter(raw);
 
   // Extract slug from path: ../../public/projects/{slug}/project.md
@@ -83,7 +83,17 @@ const portfolioProjects = Object.entries(rawProjects).map(([path, raw]) => {
     status: data.status || null,
     excludeCoverFromCarousel: data.excludeCoverFromCarousel || false,
   };
-}).sort((a, b) => {
+};
+
+// One malformed project file must not blank the site; `npm run validate` fails the build instead.
+const portfolioProjects = Object.entries(rawProjects).map((entry) => {
+  try {
+    return buildProject(entry);
+  } catch (error) {
+    console.error(`Skipping project ${entry[0]}:`, error);
+    return null;
+  }
+}).filter(Boolean).sort((a, b) => {
   const isArchivedA = typeof a.status === 'string' && a.status.toLowerCase() === 'archived';
   const isArchivedB = typeof b.status === 'string' && b.status.toLowerCase() === 'archived';
 

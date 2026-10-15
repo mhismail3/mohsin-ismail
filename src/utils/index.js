@@ -3,7 +3,6 @@ export { formatDate, formatDateParts, formatShortDate, parseDate } from './forma
 export {
   parseFrontmatter,
   parseMarkdown,
-  parseInlineMarkdown,
   stripFootnotes,
   stripMarkdown,
   SANITIZE_CONFIG_BASIC,

@@ -3,15 +3,15 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Portfolio site for Mohsin Ismail",
-  "main": "index.js",
   "scripts": {
     "dev": "vite",
-    "build": "npm run optimize-images && vite build && npm run prerender",
+    "build": "npm run validate && npm run optimize-images && vite build && npm run prerender",
     "build:only": "vite build",
     "optimize-images": "node scripts/optimize-images.js",
     "prerender": "node scripts/prerender-meta.js",
     "preview": "vite preview",
-    "check:browser": "node scripts/browser-check.mjs"
+    "check:browser": "node scripts/browser-check.mjs",
+    "validate": "node scripts/validate-content.mjs"
   },
   "keywords": [
     "portfolio",

@@ -33,8 +33,11 @@ const useInternalLinkNavigation = ({ onBeforeNavigate } = {}) => {
     const isHashLink = href.startsWith('#');
     const isMailto = href.startsWith('mailto:');
     const isExternal = href.startsWith('http://') || href.startsWith('https://');
-    const isAbsoluteInternal = isExternal && href.startsWith(window.location.origin);
-    const isRelativeInternal = href.startsWith('/');
+    const isAbsoluteInternal = isExternal && (() => {
+      try { return new URL(href).origin === window.location.origin; } catch { return false; }
+    })();
+    // Protocol-relative URLs (//host/path) are external, not app routes.
+    const isRelativeInternal = href.startsWith('/') && !href.startsWith('//');
 
     // Allow hash links, mailto, and true external links to work normally
     if (isHashLink || isMailto) {
@@ -52,7 +55,8 @@ const useInternalLinkNavigation = ({ onBeforeNavigate } = {}) => {
     // Handle same-origin absolute URLs
     if (isAbsoluteInternal) {
       e.preventDefault();
-      const path = href.replace(window.location.origin, '');
+      const { pathname, search, hash } = new URL(href);
+      const path = `${pathname}${search}${hash}`;
       onBeforeNavigate?.();
       navigate(path);
       return true;
