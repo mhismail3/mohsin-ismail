@@ -64,7 +64,12 @@ async function startPreview() {
     throw new Error('dist/ missing — run `npm run build:only` (or `npm run build`) first');
   }
   const port = await freePort();
-  const proc = spawn(process.execPath, [path.join(root, 'node_modules/vite/bin/vite.js'), 'preview', '--host', '127.0.0.1', '--port', String(port), '--strictPort'], { cwd: root, stdio: ['ignore', 'pipe', 'pipe'] });
+  const proc = spawn(process.execPath, [path.join(root, 'node_modules/vite/bin/vite.js'), 'preview', '--host', '127.0.0.1', '--port', String(port), '--strictPort'], {
+    cwd: root,
+    stdio: ['ignore', 'pipe', 'pipe'],
+    // The site is served from / (public/CNAME). In GitHub Actions GITHUB_REPOSITORY would make vite use /<repo>/.
+    env: { ...process.env, VITE_BASE_PATH: process.env.VITE_BASE_PATH || '/' },
+  });
   const url = `http://127.0.0.1:${port}`;
   for (let i = 0; i < 100; i += 1) {
     try { if ((await fetch(url)).ok) return { url, stop: () => proc.kill() }; } catch { /* not up yet */ }
