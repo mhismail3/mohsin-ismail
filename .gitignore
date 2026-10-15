@@ -9,3 +9,7 @@ docs/
 
 # Generated optimized images (rebuilt on each build)
 public/optimized/
+
+# Browser-check screenshots
+shots/
+

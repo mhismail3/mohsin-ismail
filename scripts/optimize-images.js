@@ -23,6 +23,8 @@ const ROOT_DIR = path.resolve(__dirname, '..');
 const PUBLIC_DIR = path.join(ROOT_DIR, 'public');
 const OPTIMIZED_DIR = path.join(PUBLIC_DIR, 'optimized');
 const MANIFEST_PATH = path.join(ROOT_DIR, 'src', 'data', 'image-manifest.json');
+// Per-source fingerprint cache so unchanged images are not re-encoded (public/optimized is gitignored).
+const CACHE_PATH = path.join(OPTIMIZED_DIR, '.cache.json');
 
 // Image size configurations
 const SIZES = {
@@ -261,12 +263,15 @@ function getDirSize(dirPath) {
 async function optimize() {
   console.log('\n🖼️  Starting image optimization...\n');
 
-  // Clean up existing optimized directory
-  if (fs.existsSync(OPTIMIZED_DIR)) {
-    console.log('  Cleaning existing optimized directory...');
+  const force = process.argv.includes('--force') || process.env.OPTIMIZE_IMAGES_FORCE === '1';
+  if (force && fs.existsSync(OPTIMIZED_DIR)) {
+    console.log('  --force: cleaning existing optimized directory...');
     fs.rmSync(OPTIMIZED_DIR, { recursive: true });
   }
   fs.mkdirSync(OPTIMIZED_DIR, { recursive: true });
+
+  let cache = {};
+  try { cache = JSON.parse(fs.readFileSync(CACHE_PATH, 'utf8')); } catch { /* no cache yet */ }
 
   // Get all images
   const images = getAllImages();
@@ -285,21 +290,54 @@ async function optimize() {
 
   // Initialize manifest
   const manifest = {};
+  const nextCache = {};
+  const outputsExist = (entry) => [...Object.values(entry.srcset), ...Object.values(entry.webp)]
+    .every((rel) => fs.existsSync(path.join(PUBLIC_DIR, rel)));
 
   // Process each image
   let processed = 0;
+  let reused = 0;
+  const failed = [];
   for (const image of images) {
+    const key = `/${image.relativePath}`;
+    const { size, mtimeMs } = fs.statSync(image.absolutePath);
+    const fingerprint = `${size}:${Math.round(mtimeMs)}`;
+    const cached = cache[key];
+    if (cached && cached.fingerprint === fingerprint && outputsExist(cached.entry)) {
+      manifest[key] = cached.entry;
+      nextCache[key] = cached;
+      reused++;
+      processed++;
+      continue;
+    }
+
     process.stdout.write(`  Processing [${processed + 1}/${images.length}] ${image.filename}...`);
 
     try {
-      await optimizeImage(image, manifest);
+      const entry = await optimizeImage(image, manifest);
+      nextCache[key] = { fingerprint, entry };
       process.stdout.write(' ✓\n');
     } catch (error) {
+      failed.push(image.relativePath);
       process.stdout.write(` ✗ (${error.message})\n`);
     }
 
     processed++;
   }
+  if (reused) console.log(`  Reused ${reused} unchanged image(s) from cache (use --force to rebuild all)`);
+
+  // Remove optimized files no longer referenced (deleted/renamed sources).
+  const referenced = new Set(Object.values(manifest).flatMap((e) => [...Object.values(e.srcset), ...Object.values(e.webp)])
+    .map((rel) => path.join(PUBLIC_DIR, rel)));
+  const prune = (dir) => {
+    for (const item of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, item.name);
+      if (item.isDirectory()) prune(full);
+      else if (full !== CACHE_PATH && !referenced.has(full)) fs.rmSync(full);
+    }
+  };
+  prune(OPTIMIZED_DIR);
+  fs.writeFileSync(CACHE_PATH, JSON.stringify(nextCache));
 
   // Write manifest
   console.log('\n  Writing image manifest...');
@@ -321,6 +359,11 @@ async function optimize() {
   console.log(`    Savings:        ${formatBytes(savings)} (${savingsPercent}%)`);
   console.log(`    Images processed: ${processed}`);
   console.log(`    Manifest: ${MANIFEST_PATH}\n`);
+
+  if (failed.length) {
+    console.error(`❌ ${failed.length} image(s) failed to optimize: ${failed.join(', ')}`);
+    process.exit(1);
+  }
 }
 
 // Run optimization

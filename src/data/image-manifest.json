@@ -347,6 +347,134 @@
     },
     "blur": "data:image/webp;base64,UklGRjgAAABXRUJQVlA4ICwAAADwAgCdASoSABQAPzmWwlmvKqcjqAgB4CcJaQAAPaaKAAD+7Vi9hOp2VDgAAA=="
   },
+  "/projects/niya/cover.png": {
+    "original": "/projects/niya/cover.png",
+    "width": 1536,
+    "height": 1024,
+    "srcset": {
+      "400": "/optimized/projects/niya/cover-400w.png",
+      "800": "/optimized/projects/niya/cover-800w.png",
+      "1200": "/optimized/projects/niya/cover-1200w.png"
+    },
+    "webp": {
+      "400": "/optimized/projects/niya/cover-400w.webp",
+      "800": "/optimized/projects/niya/cover-800w.webp",
+      "1200": "/optimized/projects/niya/cover-1200w.webp"
+    },
+    "blur": "data:image/webp;base64,UklGRj4AAABXRUJQVlA4IDIAAADQAgCdASoUAA0APzmIuVOvKSWisAgB4CcJaQAAe/QAAP7tQ+ciLHsyJIMvSOSQT9BAAA=="
+  },
+  "/projects/niya/gallery-1.png": {
+    "original": "/projects/niya/gallery-1.png",
+    "width": 1206,
+    "height": 2622,
+    "srcset": {
+      "400": "/optimized/projects/niya/gallery-1-400w.png",
+      "800": "/optimized/projects/niya/gallery-1-800w.png",
+      "1200": "/optimized/projects/niya/gallery-1-1200w.png"
+    },
+    "webp": {
+      "400": "/optimized/projects/niya/gallery-1-400w.webp",
+      "800": "/optimized/projects/niya/gallery-1-800w.webp",
+      "1200": "/optimized/projects/niya/gallery-1-1200w.webp"
+    },
+    "blur": "data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAADwAgCdASoJABQAPzmGuVOvKSWisAgB4CcJZwDDNDLBAAD+7PuX36zlCjORgAAA"
+  },
+  "/projects/niya/gallery-2.png": {
+    "original": "/projects/niya/gallery-2.png",
+    "width": 1206,
+    "height": 2622,
+    "srcset": {
+      "400": "/optimized/projects/niya/gallery-2-400w.png",
+      "800": "/optimized/projects/niya/gallery-2-800w.png",
+      "1200": "/optimized/projects/niya/gallery-2-1200w.png"
+    },
+    "webp": {
+      "400": "/optimized/projects/niya/gallery-2-400w.webp",
+      "800": "/optimized/projects/niya/gallery-2-800w.webp",
+      "1200": "/optimized/projects/niya/gallery-2-1200w.webp"
+    },
+    "blur": "data:image/webp;base64,UklGRjwAAABXRUJQVlA4IDAAAADwAgCdASoJABQAPzmGulQvKSWjMAgB4CcJZwC7ADKUAAD+7Pk5aQ4KlG61Tz9AAAA="
+  },
+  "/projects/niya/gallery-3.png": {
+    "original": "/projects/niya/gallery-3.png",
+    "width": 1206,
+    "height": 2622,
+    "srcset": {
+      "400": "/optimized/projects/niya/gallery-3-400w.png",
+      "800": "/optimized/projects/niya/gallery-3-800w.png",
+      "1200": "/optimized/projects/niya/gallery-3-1200w.png"
+    },
+    "webp": {
+      "400": "/optimized/projects/niya/gallery-3-400w.webp",
+      "800": "/optimized/projects/niya/gallery-3-800w.webp",
+      "1200": "/optimized/projects/niya/gallery-3-1200w.webp"
+    },
+    "blur": "data:image/webp;base64,UklGRjYAAABXRUJQVlA4ICoAAADwAgCdASoJABQAPzmGuVQvKSWjMAgB4CcJZwDG9C0kAAD+7QHulffgAAA="
+  },
+  "/projects/niya/gallery-4.png": {
+    "original": "/projects/niya/gallery-4.png",
+    "width": 1206,
+    "height": 2622,
+    "srcset": {
+      "400": "/optimized/projects/niya/gallery-4-400w.png",
+      "800": "/optimized/projects/niya/gallery-4-800w.png",
+      "1200": "/optimized/projects/niya/gallery-4-1200w.png"
+    },
+    "webp": {
+      "400": "/optimized/projects/niya/gallery-4-400w.webp",
+      "800": "/optimized/projects/niya/gallery-4-800w.webp",
+      "1200": "/optimized/projects/niya/gallery-4-1200w.webp"
+    },
+    "blur": "data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAAAQAwCdASoJABQAPzmEuVOvKKWisAgB4CcJZwAAg+TKBUAA/u0UgcyLNLeLgAAA"
+  },
+  "/projects/niya/gallery-5.png": {
+    "original": "/projects/niya/gallery-5.png",
+    "width": 1206,
+    "height": 2622,
+    "srcset": {
+      "400": "/optimized/projects/niya/gallery-5-400w.png",
+      "800": "/optimized/projects/niya/gallery-5-800w.png",
+      "1200": "/optimized/projects/niya/gallery-5-1200w.png"
+    },
+    "webp": {
+      "400": "/optimized/projects/niya/gallery-5-400w.webp",
+      "800": "/optimized/projects/niya/gallery-5-800w.webp",
+      "1200": "/optimized/projects/niya/gallery-5-1200w.webp"
+    },
+    "blur": "data:image/webp;base64,UklGRkAAAABXRUJQVlA4IDQAAACwAgCdASoJABQAPzmGuVOvKSWisAgB4CcJaQAAeyAA/ui6ntqiJGtl9Su9+I7oPDZjgAAA"
+  },
+  "/projects/niya/gallery-6.png": {
+    "original": "/projects/niya/gallery-6.png",
+    "width": 1206,
+    "height": 2622,
+    "srcset": {
+      "400": "/optimized/projects/niya/gallery-6-400w.png",
+      "800": "/optimized/projects/niya/gallery-6-800w.png",
+      "1200": "/optimized/projects/niya/gallery-6-1200w.png"
+    },
+    "webp": {
+      "400": "/optimized/projects/niya/gallery-6-400w.webp",
+      "800": "/optimized/projects/niya/gallery-6-800w.webp",
+      "1200": "/optimized/projects/niya/gallery-6-1200w.webp"
+    },
+    "blur": "data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAABQAwCdASoJABQAPzmGuVOvKSWisAgB4CcJZwC90CK4S36cGAD+sSV4zdNPK6AA"
+  },
+  "/projects/niya/gallery-7.png": {
+    "original": "/projects/niya/gallery-7.png",
+    "width": 1206,
+    "height": 2622,
+    "srcset": {
+      "400": "/optimized/projects/niya/gallery-7-400w.png",
+      "800": "/optimized/projects/niya/gallery-7-800w.png",
+      "1200": "/optimized/projects/niya/gallery-7-1200w.png"
+    },
+    "webp": {
+      "400": "/optimized/projects/niya/gallery-7-400w.webp",
+      "800": "/optimized/projects/niya/gallery-7-800w.webp",
+      "1200": "/optimized/projects/niya/gallery-7-1200w.webp"
+    },
+    "blur": "data:image/webp;base64,UklGRj4AAABXRUJQVlA4IDIAAAAQAwCdASoJABQAPzmGuVOvKSWisAgB4CcJaQAAYfVuDAAA/rPSUOBKavK0EtxlK2AAAA=="
+  },
   "/projects/old-portfolio/cover.jpeg": {
     "original": "/projects/old-portfolio/cover.jpeg",
     "width": 2048,
@@ -495,8 +623,8 @@
   },
   "/projects/tron/cover.png": {
     "original": "/projects/tron/cover.png",
-    "width": 1820,
-    "height": 1024,
+    "width": 1920,
+    "height": 1200,
     "srcset": {
       "400": "/optimized/projects/tron/cover-400w.png",
       "800": "/optimized/projects/tron/cover-800w.png",
@@ -509,7 +637,7 @@
       "1200": "/optimized/projects/tron/cover-1200w.webp",
       "1600": "/optimized/projects/tron/cover-1600w.webp"
     },
-    "blur": "data:image/webp;base64,UklGRjQAAABXRUJQVlA4ICgAAADQAgCdASoUAAsAPzmGuVOvKSWisAgB4CcJZwAAe/QAAP7uG2ngeAAA"
+    "blur": "data:image/webp;base64,UklGRjYAAABXRUJQVlA4ICoAAADQAgCdASoUAA0APzmGuVOvKSWisAgB4CcJZQAAe/QAAP7uhMznYZLNwAA="
   },
   "/about/gallery-1.jpeg": {
     "original": "/about/gallery-1.jpeg",
